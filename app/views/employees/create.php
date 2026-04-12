@@ -1,90 +1,184 @@
-<section class="stack-md">
-	<div class="page-actions">
-		<h2>Create Employee</h2>
-		<a href="/employees">Back to list</a>
-	</div>
+<?php
+$oldInput = is_array($old ?? null) ? $old : [];
+$departmentOptions = is_array($departments ?? null) ? $departments : [];
+$designationOptions = is_array($designations ?? null) ? $designations : [];
+$supervisorOptions = is_array($supervisors ?? null) ? $supervisors : [];
+?>
+
+<section class="emp-page">
+	<header class="emp-hero">
+		<div class="emp-hero-copy">
+			<p class="emp-kicker">Create Employee</p>
+			<h2 class="emp-title font-display">Add a new team member profile</h2>
+			<p class="emp-subtitle">Capture identity, assignment, and employment details in one structured flow.</p>
+			<div class="emp-tags">
+				<span class="emp-tag">Guided data entry</span>
+				<span class="emp-tag">Validation ready</span>
+			</div>
+		</div>
+
+		<div class="emp-hero-actions">
+			<a class="emp-action-link" href="/employees">Back to list</a>
+		</div>
+	</header>
 
 	<?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-	<form class="form-grid" method="post" action="/employees">
+	<form class="emp-form-card" method="post" action="/employees">
 		<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
 
-		<label>First Name<input type="text" name="first_name" value="<?= e((string) (($old['first_name'] ?? ''))) ?>" required></label>
-		<label>Middle Name<input type="text" name="middle_name" value="<?= e((string) (($old['middle_name'] ?? ''))) ?>"></label>
-		<label>Last Name<input type="text" name="last_name" value="<?= e((string) (($old['last_name'] ?? ''))) ?>" required></label>
+		<section class="emp-form-section">
+			<div class="emp-section-head">
+				<h3>Personal Details</h3>
+				<p>Basic information used across attendance, payroll, and leave workflows.</p>
+			</div>
 
-		<label>Gender
-			<select name="gender" required>
-				<option value="">Select</option>
-				<option value="Male">Male</option>
-				<option value="Female">Female</option>
-				<option value="Other">Other</option>
-			</select>
-		</label>
+			<div class="emp-form-grid">
+				<div class="emp-field">
+					<label for="first_name">First Name</label>
+					<input id="first_name" type="text" name="first_name" value="<?= e((string) ($oldInput['first_name'] ?? '')) ?>" required>
+				</div>
 
-		<label>Date of Birth<input type="date" name="date_of_birth" value="<?= e((string) (($old['date_of_birth'] ?? ''))) ?>" required></label>
-		<label>Marital Status
-			<select name="marital_status">
-				<?php foreach (['Single', 'Married', 'Divorced', 'Widowed'] as $item): ?>
-					<option value="<?= e($item) ?>" <?= (($old['marital_status'] ?? 'Single') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
+				<div class="emp-field">
+					<label for="middle_name">Middle Name</label>
+					<input id="middle_name" type="text" name="middle_name" value="<?= e((string) ($oldInput['middle_name'] ?? '')) ?>">
+				</div>
 
-		<label>Nationality<input type="text" name="nationality" value="<?= e((string) (($old['nationality'] ?? ''))) ?>"></label>
-		<label>Phone<input type="text" name="phone" value="<?= e((string) (($old['phone'] ?? ''))) ?>"></label>
-		<label>Email<input type="email" name="email" value="<?= e((string) (($old['email'] ?? ''))) ?>"></label>
+				<div class="emp-field">
+					<label for="last_name">Last Name</label>
+					<input id="last_name" type="text" name="last_name" value="<?= e((string) ($oldInput['last_name'] ?? '')) ?>" required>
+				</div>
 
-		<label>Department
-			<select name="department_id" required>
-				<option value="">Select</option>
-				<?php foreach (($departments ?? []) as $department): ?>
-					<option value="<?= (int) $department['id'] ?>"><?= e((string) $department['department_name']) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
+				<div class="emp-field">
+					<label for="gender">Gender</label>
+					<select id="gender" name="gender" required>
+						<option value="">Select</option>
+						<?php foreach (['Male', 'Female', 'Other'] as $gender): ?>
+							<option value="<?= e($gender) ?>" <?= (($oldInput['gender'] ?? '') === $gender) ? 'selected' : '' ?>><?= e($gender) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
 
-		<label>Designation
-			<select name="designation_id" required>
-				<option value="">Select</option>
-				<?php foreach (($designations ?? []) as $designation): ?>
-					<option value="<?= (int) $designation['id'] ?>"><?= e((string) $designation['designation_name']) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
+				<div class="emp-field">
+					<label for="date_of_birth">Date of Birth</label>
+					<input id="date_of_birth" type="date" name="date_of_birth" value="<?= e((string) ($oldInput['date_of_birth'] ?? '')) ?>" required>
+				</div>
 
-		<label>Employment Type
-			<select name="employment_type">
-				<?php foreach (['Full-Time', 'Part-Time', 'Contract', 'Intern'] as $item): ?>
-					<option value="<?= e($item) ?>" <?= (($old['employment_type'] ?? 'Full-Time') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
-		<label>Employment Status
-			<select name="employment_status">
-				<?php foreach (['Active', 'Probation', 'On Leave', 'Resigned', 'Terminated'] as $item): ?>
-					<option value="<?= e($item) ?>" <?= (($old['employment_status'] ?? 'Active') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
+				<div class="emp-field">
+					<label for="marital_status">Marital Status</label>
+					<select id="marital_status" name="marital_status">
+						<?php foreach (['Single', 'Married', 'Divorced', 'Widowed'] as $item): ?>
+							<option value="<?= e($item) ?>" <?= (($oldInput['marital_status'] ?? 'Single') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
 
-		<label>Date Hired<input type="date" name="date_hired" value="<?= e((string) (($old['date_hired'] ?? ''))) ?>" required></label>
-		<label>Date Regularized<input type="date" name="date_regularized" value="<?= e((string) (($old['date_regularized'] ?? ''))) ?>"></label>
-		<label>Date Separated<input type="date" name="date_separated" value="<?= e((string) (($old['date_separated'] ?? ''))) ?>"></label>
+				<div class="emp-field">
+					<label for="nationality">Nationality</label>
+					<input id="nationality" type="text" name="nationality" value="<?= e((string) ($oldInput['nationality'] ?? '')) ?>">
+				</div>
 
-		<label>Supervisor
-			<select name="supervisor_id">
-				<option value="">None</option>
-				<?php foreach (($supervisors ?? []) as $supervisor): ?>
-					<option value="<?= (int) $supervisor['id'] ?>"><?= e((string) ($supervisor['employee_code'] . ' - ' . $supervisor['first_name'] . ' ' . $supervisor['last_name'])) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
+				<div class="emp-field">
+					<label for="phone">Phone</label>
+					<input id="phone" type="text" name="phone" value="<?= e((string) ($oldInput['phone'] ?? '')) ?>">
+				</div>
 
-		<label class="full-width">Address<textarea name="address" rows="3"><?= e((string) (($old['address'] ?? ''))) ?></textarea></label>
+				<div class="emp-field">
+					<label for="email">Email</label>
+					<input id="email" type="email" name="email" value="<?= e((string) ($oldInput['email'] ?? '')) ?>">
+				</div>
 
-		<div class="full-width">
-			<button class="btn btn-primary" type="submit">Create Employee</button>
+				<div class="emp-field full">
+					<label for="address">Address</label>
+					<textarea id="address" name="address" rows="3"><?= e((string) ($oldInput['address'] ?? '')) ?></textarea>
+				</div>
+			</div>
+		</section>
+
+		<section class="emp-form-section">
+			<div class="emp-section-head">
+				<h3>Employment Details</h3>
+				<p>Assignment and status details that control downstream module visibility.</p>
+			</div>
+
+			<div class="emp-form-grid">
+				<div class="emp-field">
+					<label for="department_id">Department</label>
+					<select id="department_id" name="department_id" required>
+						<option value="">Select</option>
+						<?php foreach ($departmentOptions as $department): ?>
+							<option value="<?= (int) $department['id'] ?>" <?= ((string) ($oldInput['department_id'] ?? '') === (string) $department['id']) ? 'selected' : '' ?>>
+								<?= e((string) $department['department_name']) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="emp-field">
+					<label for="designation_id">Designation</label>
+					<select id="designation_id" name="designation_id" required>
+						<option value="">Select</option>
+						<?php foreach ($designationOptions as $designation): ?>
+							<option value="<?= (int) $designation['id'] ?>" <?= ((string) ($oldInput['designation_id'] ?? '') === (string) $designation['id']) ? 'selected' : '' ?>>
+								<?= e((string) $designation['designation_name']) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="emp-field">
+					<label for="employment_type">Employment Type</label>
+					<select id="employment_type" name="employment_type">
+						<?php foreach (['Full-Time', 'Part-Time', 'Contract', 'Intern'] as $item): ?>
+							<option value="<?= e($item) ?>" <?= (($oldInput['employment_type'] ?? 'Full-Time') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="emp-field">
+					<label for="employment_status">Employment Status</label>
+					<select id="employment_status" name="employment_status">
+						<?php foreach (['Active', 'Probation', 'On Leave', 'Resigned', 'Terminated'] as $item): ?>
+							<option value="<?= e($item) ?>" <?= (($oldInput['employment_status'] ?? 'Active') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="emp-field">
+					<label for="date_hired">Date Hired</label>
+					<input id="date_hired" type="date" name="date_hired" value="<?= e((string) ($oldInput['date_hired'] ?? '')) ?>" required>
+				</div>
+
+				<div class="emp-field">
+					<label for="date_regularized">Date Regularized</label>
+					<input id="date_regularized" type="date" name="date_regularized" value="<?= e((string) ($oldInput['date_regularized'] ?? '')) ?>">
+				</div>
+
+				<div class="emp-field">
+					<label for="date_separated">Date Separated</label>
+					<input id="date_separated" type="date" name="date_separated" value="<?= e((string) ($oldInput['date_separated'] ?? '')) ?>">
+				</div>
+
+				<div class="emp-field full">
+					<label for="supervisor_id">Supervisor</label>
+					<select id="supervisor_id" name="supervisor_id">
+						<option value="">None</option>
+						<?php foreach ($supervisorOptions as $supervisor): ?>
+							<option value="<?= (int) $supervisor['id'] ?>" <?= ((string) ($oldInput['supervisor_id'] ?? '') === (string) $supervisor['id']) ? 'selected' : '' ?>>
+								<?= e((string) ($supervisor['employee_code'] . ' - ' . $supervisor['first_name'] . ' ' . $supervisor['last_name'])) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+			</div>
+		</section>
+
+		<div class="emp-form-actions">
+			<p class="emp-form-hint">Required fields are validated before employee creation.</p>
+			<div class="emp-hero-actions">
+				<a class="emp-action-link" href="/employees">Cancel</a>
+				<button class="emp-action-primary" type="submit">Create employee</button>
+			</div>
 		</div>
 	</form>
 </section>

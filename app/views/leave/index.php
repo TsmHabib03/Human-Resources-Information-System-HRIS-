@@ -1,106 +1,226 @@
-<section class="stack-md">
-	<h2>Leave Management</h2>
+<?php
+$leaveRequests = is_array($requests ?? null) ? $requests : [];
+$employeeOptions = is_array($employees ?? null) ? $employees : [];
+$typeOptions = is_array($leaveTypes ?? null) ? $leaveTypes : [];
+$statusList = is_array($statusOptions ?? null) ? $statusOptions : [];
+$oldInput = is_array($old ?? null) ? $old : [];
+
+$currentQuery = (string) ($query ?? '');
+$currentStatus = (string) ($status ?? '');
+$currentPage = (int) ($page ?? 1);
+$pageCount = (int) ($totalPages ?? 1);
+$totalCount = (int) ($total ?? 0);
+
+$pendingCount = 0;
+$approvedCount = 0;
+$rejectedCount = 0;
+
+foreach ($leaveRequests as $entry) {
+	$entryStatus = (string) ($entry['status'] ?? '');
+	if ($entryStatus === 'Pending') {
+		$pendingCount++;
+	} elseif ($entryStatus === 'Approved') {
+		$approvedCount++;
+	} elseif ($entryStatus === 'Rejected') {
+		$rejectedCount++;
+	}
+}
+
+$statusClassMap = [
+	'pending' => 'leave-badge-pending',
+	'approved' => 'leave-badge-approved',
+	'rejected' => 'leave-badge-rejected',
+	'cancelled' => 'leave-badge-cancelled',
+];
+?>
+
+<section class="leave-page">
+	<header class="leave-hero">
+		<div class="leave-hero-copy">
+			<p class="leave-kicker">Leave Management</p>
+			<h2 class="leave-title font-display">Manage requests and approvals in one workflow</h2>
+			<p class="leave-subtitle">Submit leave requests, review status quickly, and process approvals without context switching.</p>
+			<div class="leave-tags">
+				<span class="leave-tag">Request intake</span>
+				<span class="leave-tag">Approval queue</span>
+				<span class="leave-tag">Audit tracked</span>
+			</div>
+		</div>
+
+		<aside class="leave-hero-side">
+			<article class="leave-stat">
+				<span class="leave-stat-label">Total requests</span>
+				<span class="leave-stat-value"><?= e((string) $totalCount) ?></span>
+			</article>
+			<article class="leave-stat">
+				<span class="leave-stat-label">Pending</span>
+				<span class="leave-stat-value"><?= e((string) $pendingCount) ?></span>
+			</article>
+			<article class="leave-stat">
+				<span class="leave-stat-label">Approved / Rejected</span>
+				<span class="leave-stat-value"><?= e((string) ($approvedCount + $rejectedCount)) ?></span>
+			</article>
+		</aside>
+	</header>
 
 	<?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-	<form class="form-grid" method="post" action="/leave/request">
-		<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-
-		<label>Employee
-			<select name="employee_id" required>
-				<option value="">Select</option>
-				<?php foreach (($employees ?? []) as $employee): ?>
-					<option value="<?= (int) $employee['id'] ?>" <?= ((int) (($old['employee_id'] ?? 0)) === (int) $employee['id']) ? 'selected' : '' ?>>
-						<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</label>
-
-		<label>Leave Type
-			<select name="leave_type_id" required>
-				<option value="">Select</option>
-				<?php foreach (($leaveTypes ?? []) as $leaveType): ?>
-					<option value="<?= (int) $leaveType['id'] ?>" <?= ((int) (($old['leave_type_id'] ?? 0)) === (int) $leaveType['id']) ? 'selected' : '' ?>><?= e((string) $leaveType['type_name']) ?></option>
-				<?php endforeach; ?>
-			</select>
-		</label>
-
-		<label>Start Date<input type="date" name="start_date" value="<?= e((string) ($old['start_date'] ?? '')) ?>" required></label>
-		<label>End Date<input type="date" name="end_date" value="<?= e((string) ($old['end_date'] ?? '')) ?>" required></label>
-		<label>Total Days<input type="number" step="0.5" name="total_days" value="<?= e((string) ($old['total_days'] ?? '')) ?>" required></label>
-		<label class="full-width">Reason<textarea name="reason" rows="2"><?= e((string) ($old['reason'] ?? '')) ?></textarea></label>
-
-		<div class="full-width">
-			<button class="btn btn-primary" type="submit">Submit Leave Request</button>
+	<section class="leave-card">
+		<div class="leave-section-head">
+			<h3>Submit Leave Request</h3>
+			<p>Create a leave request by selecting employee, type, and date range.</p>
 		</div>
-	</form>
 
-	<form class="inline-actions" method="get" action="/leave">
-		<input type="text" name="q" value="<?= e((string) ($query ?? '')) ?>" placeholder="Search employee or leave type">
-		<select name="status">
-			<option value="">All statuses</option>
-			<?php foreach (($statusOptions ?? []) as $item): ?>
-				<option value="<?= e((string) $item) ?>" <?= (($status ?? '') === $item) ? 'selected' : '' ?>><?= e((string) $item) ?></option>
-			<?php endforeach; ?>
-		</select>
-		<button class="btn" type="submit">Filter</button>
-	</form>
+		<form class="leave-form-grid" method="post" action="/leave/request">
+			<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
 
-	<div class="table-wrap">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Employee</th>
-					<th>Type</th>
-					<th>Dates</th>
-					<th>Days</th>
-					<th>Status</th>
-					<th>Reason</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php if (empty($requests)): ?>
-					<tr><td colspan="7">No leave requests found.</td></tr>
-				<?php else: ?>
-					<?php foreach ($requests as $request): ?>
+			<div class="leave-field">
+				<label for="employee_id">Employee</label>
+				<select id="employee_id" name="employee_id" required>
+					<option value="">Select</option>
+					<?php foreach ($employeeOptions as $employee): ?>
+						<option value="<?= (int) $employee['id'] ?>" <?= ((int) ($oldInput['employee_id'] ?? 0) === (int) $employee['id']) ? 'selected' : '' ?>>
+							<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="leave-field">
+				<label for="leave_type_id">Leave Type</label>
+				<select id="leave_type_id" name="leave_type_id" required>
+					<option value="">Select</option>
+					<?php foreach ($typeOptions as $leaveType): ?>
+						<option value="<?= (int) $leaveType['id'] ?>" <?= ((int) ($oldInput['leave_type_id'] ?? 0) === (int) $leaveType['id']) ? 'selected' : '' ?>>
+							<?= e((string) $leaveType['type_name']) ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="leave-field">
+				<label for="start_date">Start Date</label>
+				<input id="start_date" type="date" name="start_date" value="<?= e((string) ($oldInput['start_date'] ?? '')) ?>" required>
+			</div>
+
+			<div class="leave-field">
+				<label for="end_date">End Date</label>
+				<input id="end_date" type="date" name="end_date" value="<?= e((string) ($oldInput['end_date'] ?? '')) ?>" required>
+			</div>
+
+			<div class="leave-field">
+				<label for="total_days">Total Days</label>
+				<input id="total_days" type="number" step="0.5" name="total_days" value="<?= e((string) ($oldInput['total_days'] ?? '')) ?>" required>
+			</div>
+
+			<div class="leave-field full">
+				<label for="reason">Reason</label>
+				<textarea id="reason" name="reason" rows="2"><?= e((string) ($oldInput['reason'] ?? '')) ?></textarea>
+			</div>
+
+			<div class="leave-field full leave-form-actions">
+				<p class="leave-form-hint">Overlapping pending/approved requests are blocked automatically.</p>
+				<button class="leave-btn-primary" type="submit">Submit request</button>
+			</div>
+		</form>
+	</section>
+
+	<section class="leave-card leave-toolbar">
+		<div class="leave-section-head">
+			<h3>Request Queue</h3>
+			<p>Filter by employee or leave status, then approve or reject pending items.</p>
+		</div>
+
+		<form class="leave-filter-form" method="get" action="/leave">
+			<label class="leave-filter-field">
+				<span>Search</span>
+				<input type="text" name="q" value="<?= e($currentQuery) ?>" placeholder="Employee code, name, or leave type">
+			</label>
+
+			<label class="leave-filter-field">
+				<span>Status</span>
+				<select name="status">
+					<option value="">All statuses</option>
+					<?php foreach ($statusList as $item): ?>
+						<option value="<?= e((string) $item) ?>" <?= ($currentStatus === $item) ? 'selected' : '' ?>><?= e((string) $item) ?></option>
+					<?php endforeach; ?>
+				</select>
+			</label>
+
+			<button class="leave-filter-btn" type="submit">Apply filters</button>
+		</form>
+
+		<div class="leave-table-wrap">
+			<table class="leave-table">
+				<thead>
+					<tr>
+						<th>Employee</th>
+						<th>Type</th>
+						<th>Dates</th>
+						<th>Days</th>
+						<th>Status</th>
+						<th>Reason</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php if ($leaveRequests === []): ?>
 						<tr>
-							<td><?= e((string) ($request['employee_code'] . ' - ' . $request['first_name'] . ' ' . $request['last_name'])) ?></td>
-							<td><?= e((string) $request['type_name']) ?></td>
-							<td><?= e((string) ($request['start_date'] . ' to ' . $request['end_date'])) ?></td>
-							<td><?= e((string) $request['total_days']) ?></td>
-							<td><span class="badge"><?= e((string) $request['status']) ?></span></td>
-							<td><?= e((string) ($request['reason'] ?? '-')) ?></td>
-							<td class="actions-cell">
-								<?php if (($request['status'] ?? '') === 'Pending'): ?>
-									<form method="post" action="/leave/<?= (int) $request['id'] ?>/approve">
-										<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-										<input type="hidden" name="review_remarks" value="Approved">
-										<button class="btn-link" type="submit">Approve</button>
-									</form>
-									<form method="post" action="/leave/<?= (int) $request['id'] ?>/reject">
-										<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-										<input type="hidden" name="review_remarks" value="Rejected">
-										<button class="btn-link danger" type="submit">Reject</button>
-									</form>
-								<?php else: ?>
-									<span>-</span>
-								<?php endif; ?>
+							<td colspan="7">
+								<p class="leave-empty">No leave requests found for the current filters.</p>
 							</td>
 						</tr>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</tbody>
-		</table>
-	</div>
+					<?php else: ?>
+						<?php foreach ($leaveRequests as $request): ?>
+							<?php
+							$statusValue = (string) ($request['status'] ?? 'Unknown');
+							$statusKey = strtolower(str_replace([' ', '-'], '_', $statusValue));
+							$statusClass = $statusClassMap[$statusKey] ?? 'leave-badge-default';
+							?>
+							<tr>
+								<td>
+									<div class="leave-name">
+										<strong><?= e((string) (($request['first_name'] ?? '') . ' ' . ($request['last_name'] ?? ''))) ?></strong>
+										<span><?= e((string) ($request['employee_code'] ?? '-')) ?></span>
+									</div>
+								</td>
+								<td><?= e((string) ($request['type_name'] ?? '-')) ?></td>
+								<td><?= e((string) (($request['start_date'] ?? '-') . ' to ' . ($request['end_date'] ?? '-'))) ?></td>
+								<td><?= e((string) ($request['total_days'] ?? '-')) ?></td>
+								<td><span class="leave-badge <?= e($statusClass) ?>"><?= e($statusValue) ?></span></td>
+								<td><?= e((string) ($request['reason'] ?? '-')) ?></td>
+								<td>
+									<div class="leave-actions">
+										<?php if ($statusValue === 'Pending'): ?>
+											<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/approve">
+												<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+												<input type="hidden" name="review_remarks" value="Approved">
+												<button class="leave-action-btn approve" type="submit">Approve</button>
+											</form>
+											<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/reject">
+												<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+												<input type="hidden" name="review_remarks" value="Rejected">
+												<button class="leave-action-btn reject" type="submit">Reject</button>
+											</form>
+										<?php else: ?>
+											<span>-</span>
+										<?php endif; ?>
+									</div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</tbody>
+			</table>
+		</div>
 
-	<?php if (($totalPages ?? 1) > 1): ?>
-		<?php $base = '/leave?q=' . urlencode((string) ($query ?? '')) . '&status=' . urlencode((string) ($status ?? '')) . '&page='; ?>
-		<nav class="pagination">
-			<?php for ($i = 1; $i <= (int) $totalPages; $i++): ?>
-				<a class="page-link <?= ((int) ($page ?? 1) === $i) ? 'is-active' : '' ?>" href="<?= e($base . $i) ?>"><?= $i ?></a>
-			<?php endfor; ?>
-		</nav>
-	<?php endif; ?>
+		<?php if ($pageCount > 1): ?>
+			<?php $base = '/leave?q=' . urlencode($currentQuery) . '&status=' . urlencode($currentStatus) . '&page='; ?>
+			<nav class="leave-pagination">
+				<?php for ($i = 1; $i <= $pageCount; $i++): ?>
+					<a class="leave-page-link <?= $currentPage === $i ? 'is-active' : '' ?>" href="<?= e($base . $i) ?>"><?= $i ?></a>
+				<?php endfor; ?>
+			</nav>
+		<?php endif; ?>
+	</section>
 </section>

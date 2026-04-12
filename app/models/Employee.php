@@ -8,6 +8,13 @@ use App\Core\Model;
 
 final class Employee extends Model
 {
+    public function countAll(): int
+    {
+        $row = $this->fetchOne('SELECT COUNT(*) AS total FROM hris_employees');
+
+        return (int) ($row['total'] ?? 0);
+    }
+
     public function search(string $query = '', string $status = '', int $page = 1, int $perPage = 10): array
     {
         $offset = max(0, ($page - 1) * $perPage);

@@ -8,6 +8,47 @@ use App\Core\Model;
 
 final class Attendance extends Model
 {
+    public function countPresentByDate(string $date): int
+    {
+        $row = $this->fetchOne(
+            'SELECT COUNT(*) AS total
+             FROM hris_attendance
+             WHERE date = :date
+               AND status IN (\'Present\', \'Late\', \'Half-Day\')',
+            ['date' => $date]
+        );
+
+        return (int) ($row['total'] ?? 0);
+    }
+
+    public function presentTrendByRange(string $startDate, string $endDate): array
+    {
+        $rows = $this->fetchAll(
+            'SELECT date, COUNT(*) AS total
+             FROM hris_attendance
+             WHERE date BETWEEN :start_date AND :end_date
+               AND status IN (\'Present\', \'Late\', \'Half-Day\')
+             GROUP BY date
+             ORDER BY date ASC',
+            [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]
+        );
+
+        $trend = [];
+        foreach ($rows as $row) {
+            $date = (string) ($row['date'] ?? '');
+            if ($date === '') {
+                continue;
+            }
+
+            $trend[$date] = (int) ($row['total'] ?? 0);
+        }
+
+        return $trend;
+    }
+
     public function listFiltered(string $date, string $query = '', string $status = '', int $page = 1, int $perPage = 10): array
     {
         $offset = max(0, ($page - 1) * $perPage);

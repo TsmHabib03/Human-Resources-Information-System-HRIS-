@@ -8,6 +8,18 @@ use App\Core\Model;
 
 final class LeaveRequest extends Model
 {
+    public function countByStatus(string $status): int
+    {
+        $row = $this->fetchOne(
+            'SELECT COUNT(*) AS total
+             FROM hris_leave_requests
+             WHERE status = :status',
+            ['status' => $status]
+        );
+
+        return (int) ($row['total'] ?? 0);
+    }
+
     public function listFiltered(string $status = '', string $query = '', int $page = 1, int $perPage = 10): array
     {
         $offset = max(0, ($page - 1) * $perPage);
