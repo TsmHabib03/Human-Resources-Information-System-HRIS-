@@ -14,7 +14,7 @@ final class AuthController extends Controller
     public function showLogin(): void
     {
         if (Auth::check()) {
-            $this->redirect('/');
+            $this->redirect(role_landing_path(Auth::user()));
         }
 
         $this->view('auth/login', [
@@ -45,7 +45,7 @@ final class AuthController extends Controller
             $this->redirect('/login');
         }
 
-        $this->redirect('/');
+        $this->redirect(role_landing_path(Auth::user()));
     }
 
     public function logout(): void

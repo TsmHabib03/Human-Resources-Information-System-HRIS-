@@ -2,12 +2,12 @@
 $currentPath = (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
 
 $navItems = [
-    ['path' => '/', 'label' => 'Dashboard'],
-    ['path' => '/employees', 'label' => 'Employees'],
-    ['path' => '/attendance', 'label' => 'Attendance'],
-    ['path' => '/leave', 'label' => 'Leave'],
-    ['path' => '/payroll', 'label' => 'Payroll'],
-    ['path' => '/settings', 'label' => 'Settings'],
+    ['path' => '/', 'label' => 'Dashboard', 'permission' => 'dashboard.view'],
+    ['path' => '/employees', 'label' => 'Employees', 'permission' => 'employees.view'],
+    ['path' => '/attendance', 'label' => 'Attendance', 'permission' => 'attendance.view'],
+    ['path' => '/leave', 'label' => 'Leave', 'permission' => 'leave.view'],
+    ['path' => '/payroll', 'label' => 'Payroll', 'permission' => 'payroll.view'],
+    ['path' => '/settings', 'label' => 'Settings', 'permission' => 'settings.manage'],
 ];
 ?>
 
@@ -24,6 +24,9 @@ $navItems = [
 
     <nav class="sidebar-nav">
         <?php foreach ($navItems as $item): ?>
+            <?php if (!can((string) ($item['permission'] ?? ''))): ?>
+                <?php continue; ?>
+            <?php endif; ?>
             <?php
             $isRoot = $item['path'] === '/';
             $isActive = $isRoot ? $currentPath === '/' : str_starts_with($currentPath, $item['path']);

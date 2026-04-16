@@ -11,6 +11,7 @@ $statusClassMap = [
 	'terminated' => 'emp-badge-terminated',
 ];
 $statusClass = $statusClassMap[$statusKey] ?? 'emp-badge-default';
+$canUpdateEmployee = can('employees.update');
 ?>
 
 <section class="emp-page">
@@ -26,7 +27,9 @@ $statusClass = $statusClassMap[$statusKey] ?? 'emp-badge-default';
 
 		<div class="emp-hero-actions">
 			<a class="emp-action-link" href="/employees">Back to list</a>
-			<a class="emp-action-primary" href="/employees/<?= (int) ($employee['id'] ?? 0) ?>/edit">Edit profile</a>
+			<?php if ($canUpdateEmployee): ?>
+				<a class="emp-action-primary" href="/employees/<?= (int) ($employee['id'] ?? 0) ?>/edit">Edit profile</a>
+			<?php endif; ?>
 		</div>
 	</header>
 

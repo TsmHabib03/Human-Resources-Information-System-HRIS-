@@ -32,7 +32,25 @@ final class LeaveController extends Controller
         $query = trim((string) ($_GET['q'] ?? ''));
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $total = $this->leaveRequests->countFiltered($status, $query);
+        $employeeScopeId = $this->employeeScopeId();
+        $scopeFilterId = $employeeScopeId;
+        $employeeOptions = $this->employees->listSimple();
+        $currentEmployee = null;
+        $isSelfService = $employeeScopeId !== null;
+
+        if ($isSelfService) {
+            $query = '';
+
+            if (($employeeScopeId ?? 0) > 0) {
+                $currentEmployee = $this->employees->find((int) $employeeScopeId);
+                $employeeOptions = $currentEmployee ? [$currentEmployee] : [];
+            } else {
+                $scopeFilterId = -1;
+                $employeeOptions = [];
+            }
+        }
+
+        $total = $this->leaveRequests->countFiltered($status, $query, $scopeFilterId);
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
 
         if ($page > $totalPages) {
@@ -42,10 +60,12 @@ final class LeaveController extends Controller
         $this->view('leave/index', [
             'title' => 'Leave Management',
             'csrf' => CSRF::token(),
-            'requests' => $this->leaveRequests->listFiltered($status, $query, $page, self::PER_PAGE),
+            'requests' => $this->leaveRequests->listFiltered($status, $query, $page, self::PER_PAGE, $scopeFilterId),
             'leaveTypes' => $this->leaveRequests->leaveTypes(),
             'statusOptions' => $this->leaveRequests->statuses(),
-            'employees' => $this->employees->listSimple(),
+            'employees' => $employeeOptions,
+            'currentEmployee' => $currentEmployee,
+            'isSelfService' => $isSelfService,
             'query' => $query,
             'status' => $status,
             'page' => $page,
@@ -68,6 +88,16 @@ final class LeaveController extends Controller
             'total_days' => trim((string) ($_POST['total_days'] ?? '')),
             'reason' => trim((string) ($_POST['reason'] ?? '')),
         ];
+
+        $employeeScopeId = $this->employeeScopeId();
+        if ($employeeScopeId !== null) {
+            if ($employeeScopeId <= 0) {
+                Session::flash('error', 'Your account is not linked to an employee profile. Contact an administrator.');
+                $this->redirect('/leave');
+            }
+
+            $data['employee_id'] = (string) $employeeScopeId;
+        }
 
         $errors = Validator::required($data, ['employee_id', 'leave_type_id', 'start_date', 'end_date', 'total_days']);
         $errors = array_merge($errors, Validator::validDate($data, 'start_date'));
@@ -146,5 +176,15 @@ final class LeaveController extends Controller
 
         Session::flash('success', 'Leave request rejected.');
         $this->redirect('/leave');
+    }
+
+    private function employeeScopeId(): ?int
+    {
+        $user = Auth::user();
+        if (!is_employee_role($user)) {
+            return null;
+        }
+
+        return isset($user['employee_id']) ? (int) $user['employee_id'] : 0;
     }
 }

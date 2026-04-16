@@ -10,6 +10,7 @@ $currentStatus = (string) ($status ?? '');
 $currentPage = (int) ($page ?? 1);
 $pageCount = (int) ($totalPages ?? 1);
 $totalCount = (int) ($total ?? 0);
+$canManageAttendance = can('attendance.manage');
 
 $presentCount = 0;
 $lateCount = 0;
@@ -67,72 +68,74 @@ $statusClassMap = [
 
 	<?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-	<section class="att-card">
-		<div class="att-section-head">
-			<h3>Record Attendance</h3>
-			<p>Submit clock details and status for an employee on a specific date.</p>
-		</div>
-
-		<form class="att-form-grid" method="post" action="/attendance">
-			<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-
-			<div class="att-field">
-				<label for="employee_id">Employee</label>
-				<select id="employee_id" name="employee_id" required>
-					<option value="">Select</option>
-					<?php foreach ($employeeOptions as $employee): ?>
-						<option value="<?= (int) $employee['id'] ?>" <?= ((int) ($oldInput['employee_id'] ?? 0) === (int) $employee['id']) ? 'selected' : '' ?>>
-							<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
+	<?php if ($canManageAttendance): ?>
+		<section class="att-card">
+			<div class="att-section-head">
+				<h3>Record Attendance</h3>
+				<p>Submit clock details and status for an employee on a specific date.</p>
 			</div>
 
-			<div class="att-field">
-				<label for="date">Date</label>
-				<input id="date" type="date" name="date" value="<?= e((string) ($oldInput['date'] ?? $currentDate)) ?>" required>
-			</div>
+			<form class="att-form-grid" method="post" action="/attendance">
+				<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
 
-			<div class="att-field">
-				<label for="status">Status</label>
-				<select id="status" name="status" required>
-					<?php foreach ($statusList as $item): ?>
-						<option value="<?= e((string) $item) ?>" <?= (($oldInput['status'] ?? 'Present') === $item) ? 'selected' : '' ?>><?= e((string) $item) ?></option>
-					<?php endforeach; ?>
-				</select>
-			</div>
+				<div class="att-field">
+					<label for="employee_id">Employee</label>
+					<select id="employee_id" name="employee_id" required>
+						<option value="">Select</option>
+						<?php foreach ($employeeOptions as $employee): ?>
+							<option value="<?= (int) $employee['id'] ?>" <?= ((int) ($oldInput['employee_id'] ?? 0) === (int) $employee['id']) ? 'selected' : '' ?>>
+								<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
 
-			<div class="att-field">
-				<label for="clock_in">Clock In</label>
-				<input id="clock_in" type="datetime-local" name="clock_in" value="<?= e(str_replace(' ', 'T', (string) ($oldInput['clock_in'] ?? ''))) ?>">
-			</div>
+				<div class="att-field">
+					<label for="date">Date</label>
+					<input id="date" type="date" name="date" value="<?= e((string) ($oldInput['date'] ?? $currentDate)) ?>" required>
+				</div>
 
-			<div class="att-field">
-				<label for="clock_out">Clock Out</label>
-				<input id="clock_out" type="datetime-local" name="clock_out" value="<?= e(str_replace(' ', 'T', (string) ($oldInput['clock_out'] ?? ''))) ?>">
-			</div>
+				<div class="att-field">
+					<label for="status">Status</label>
+					<select id="status" name="status" required>
+						<?php foreach ($statusList as $item): ?>
+							<option value="<?= e((string) $item) ?>" <?= (($oldInput['status'] ?? 'Present') === $item) ? 'selected' : '' ?>><?= e((string) $item) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
 
-			<div class="att-field">
-				<label for="hours_worked">Hours Worked</label>
-				<input id="hours_worked" type="number" step="0.01" name="hours_worked" value="<?= e((string) ($oldInput['hours_worked'] ?? '')) ?>">
-			</div>
+				<div class="att-field">
+					<label for="clock_in">Clock In</label>
+					<input id="clock_in" type="datetime-local" name="clock_in" value="<?= e(str_replace(' ', 'T', (string) ($oldInput['clock_in'] ?? ''))) ?>">
+				</div>
 
-			<div class="att-field">
-				<label for="overtime_hrs">Overtime Hours</label>
-				<input id="overtime_hrs" type="number" step="0.01" name="overtime_hrs" value="<?= e((string) ($oldInput['overtime_hrs'] ?? '0')) ?>">
-			</div>
+				<div class="att-field">
+					<label for="clock_out">Clock Out</label>
+					<input id="clock_out" type="datetime-local" name="clock_out" value="<?= e(str_replace(' ', 'T', (string) ($oldInput['clock_out'] ?? ''))) ?>">
+				</div>
 
-			<div class="att-field full">
-				<label for="remarks">Remarks</label>
-				<textarea id="remarks" name="remarks" rows="2"><?= e((string) ($oldInput['remarks'] ?? '')) ?></textarea>
-			</div>
+				<div class="att-field">
+					<label for="hours_worked">Hours Worked</label>
+					<input id="hours_worked" type="number" step="0.01" name="hours_worked" value="<?= e((string) ($oldInput['hours_worked'] ?? '')) ?>">
+				</div>
 
-			<div class="att-field full att-form-actions">
-				<p class="att-form-hint">Leave hours blank to auto-calculate from clock in/out.</p>
-				<button class="att-btn-primary" type="submit">Save attendance</button>
-			</div>
-		</form>
-	</section>
+				<div class="att-field">
+					<label for="overtime_hrs">Overtime Hours</label>
+					<input id="overtime_hrs" type="number" step="0.01" name="overtime_hrs" value="<?= e((string) ($oldInput['overtime_hrs'] ?? '0')) ?>">
+				</div>
+
+				<div class="att-field full">
+					<label for="remarks">Remarks</label>
+					<textarea id="remarks" name="remarks" rows="2"><?= e((string) ($oldInput['remarks'] ?? '')) ?></textarea>
+				</div>
+
+				<div class="att-field full att-form-actions">
+					<p class="att-form-hint">Leave hours blank to auto-calculate from clock in/out.</p>
+					<button class="att-btn-primary" type="submit">Save attendance</button>
+				</div>
+			</form>
+		</section>
+	<?php endif; ?>
 
 	<section class="att-card att-toolbar">
 		<div class="att-section-head">

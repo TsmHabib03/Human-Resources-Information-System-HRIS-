@@ -114,7 +114,7 @@ final class App
             }
 
             if ($middleware === 'guest' && Auth::check()) {
-                header('Location: /');
+                header('Location: ' . role_landing_path(Auth::user()));
                 return false;
             }
 
@@ -132,8 +132,25 @@ final class App
                 $permission = substr($middleware, strlen('permission:'));
 
                 if (!is_string($permission) || $permission === '' || !Auth::can($permission)) {
-                    http_response_code(403);
-                    echo '403 Forbidden';
+                    Session::flash('error', 'You are not authorized to access that page.');
+
+                    $currentPath = (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
+                    $currentPath = rtrim($currentPath, '/') ?: '/';
+
+                    $redirectPath = role_landing_path(Auth::user());
+                    $redirectPath = rtrim($redirectPath, '/') ?: '/';
+
+                    if ($redirectPath === $currentPath) {
+                        $redirectPath = '/';
+                    }
+
+                    if ($redirectPath === $currentPath) {
+                        http_response_code(403);
+                        echo '403 Forbidden';
+                        return false;
+                    }
+
+                    header('Location: ' . $redirectPath);
                     return false;
                 }
             }

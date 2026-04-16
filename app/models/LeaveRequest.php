@@ -20,11 +20,16 @@ final class LeaveRequest extends Model
         return (int) ($row['total'] ?? 0);
     }
 
-    public function listFiltered(string $status = '', string $query = '', int $page = 1, int $perPage = 10): array
+    public function listFiltered(string $status = '', string $query = '', int $page = 1, int $perPage = 10, ?int $employeeId = null): array
     {
         $offset = max(0, ($page - 1) * $perPage);
         $params = [];
         $where = [];
+
+        if ($employeeId !== null) {
+            $where[] = 'lr.employee_id = :employee_id';
+            $params['employee_id'] = $employeeId;
+        }
 
         if ($status !== '') {
             $where[] = 'lr.status = :status';
@@ -53,10 +58,15 @@ final class LeaveRequest extends Model
         );
     }
 
-    public function countFiltered(string $status = '', string $query = ''): int
+    public function countFiltered(string $status = '', string $query = '', ?int $employeeId = null): int
     {
         $params = [];
         $where = [];
+
+        if ($employeeId !== null) {
+            $where[] = 'lr.employee_id = :employee_id';
+            $params['employee_id'] = $employeeId;
+        }
 
         if ($status !== '') {
             $where[] = 'lr.status = :status';

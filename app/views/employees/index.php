@@ -6,6 +6,9 @@ $statusList = is_array($statusOptions ?? null) ? $statusOptions : [];
 $currentPage = (int) ($page ?? 1);
 $pageCount = (int) ($totalPages ?? 1);
 $totalCount = (int) ($total ?? 0);
+$canCreateEmployee = can('employees.create');
+$canUpdateEmployee = can('employees.update');
+$canDeleteEmployee = can('employees.delete');
 
 $statusClassMap = [
 	'active' => 'emp-badge-active',
@@ -36,7 +39,9 @@ $statusClassMap = [
 			</div>
 			<div class="emp-hero-actions">
 				<a class="emp-action-link" href="/employees">Refresh list</a>
-				<a class="emp-action-primary" href="/employees/create">Add employee</a>
+				<?php if ($canCreateEmployee): ?>
+					<a class="emp-action-primary" href="/employees/create">Add employee</a>
+				<?php endif; ?>
 			</div>
 		</div>
 	</header>
@@ -106,11 +111,15 @@ $statusClassMap = [
 								<td>
 									<div class="emp-row-actions">
 										<a href="/employees/<?= (int) ($employee['id'] ?? 0) ?>">View</a>
-										<a href="/employees/<?= (int) ($employee['id'] ?? 0) ?>/edit">Edit</a>
-										<form method="post" action="/employees/<?= (int) ($employee['id'] ?? 0) ?>/delete" onsubmit="return confirm('Delete this employee?');">
-											<input type="hidden" name="_csrf" value="<?= e(App\Core\CSRF::token()) ?>">
-											<button type="submit" class="btn-link danger">Delete</button>
-										</form>
+										<?php if ($canUpdateEmployee): ?>
+											<a href="/employees/<?= (int) ($employee['id'] ?? 0) ?>/edit">Edit</a>
+										<?php endif; ?>
+										<?php if ($canDeleteEmployee): ?>
+											<form method="post" action="/employees/<?= (int) ($employee['id'] ?? 0) ?>/delete" onsubmit="return confirm('Delete this employee?');">
+												<input type="hidden" name="_csrf" value="<?= e(App\Core\CSRF::token()) ?>">
+												<button type="submit" class="btn-link danger">Delete</button>
+											</form>
+										<?php endif; ?>
 									</div>
 								</td>
 							</tr>

@@ -81,10 +81,22 @@ if ($trendJson === false) {
                     </div>
                 </div>
                 <div class="quick-links">
-                    <a href="/employees">Manage employees</a>
-                    <a href="/attendance">Record attendance</a>
-                    <a href="/leave">Review leave requests</a>
-                    <a href="/payroll">Open payroll module</a>
+                    <?php if (can('employees.view')): ?>
+                        <a href="/employees">Manage employees</a>
+                    <?php endif; ?>
+                    <?php if (can('attendance.manage')): ?>
+                        <a href="/attendance">Record attendance</a>
+                    <?php elseif (can('attendance.view')): ?>
+                        <a href="/attendance">View attendance</a>
+                    <?php endif; ?>
+                    <?php if (can('leave.approve')): ?>
+                        <a href="/leave">Review leave requests</a>
+                    <?php elseif (can('leave.view')): ?>
+                        <a href="/leave">View leave requests</a>
+                    <?php endif; ?>
+                    <?php if (can('payroll.view')): ?>
+                        <a href="/payroll">Open payroll module</a>
+                    <?php endif; ?>
                 </div>
             </article>
 

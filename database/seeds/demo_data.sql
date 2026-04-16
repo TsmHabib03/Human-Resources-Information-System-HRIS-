@@ -90,6 +90,24 @@ WHERE NOT EXISTS (
 
 SET @admin_employee_id = (SELECT MIN(id) FROM hris_employees WHERE employee_code = 'EMP-0001');
 SET @super_admin_role_id = (SELECT MIN(id) FROM hris_roles WHERE role_name = 'Super Admin');
+SET @manager_role_id = (SELECT MIN(id) FROM hris_roles WHERE role_name = 'Manager');
+SET @employee_role_id = (SELECT MIN(id) FROM hris_roles WHERE role_name = 'Employee');
+SET @operations_dept_id = COALESCE((SELECT MIN(id) FROM hris_departments WHERE department_name = 'Operations'), @hr_dept_id);
+
+INSERT INTO hris_designations (designation_name, description)
+SELECT 'Department Manager', 'Manages department operations and approvals'
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_designations WHERE designation_name = 'Department Manager'
+);
+
+INSERT INTO hris_designations (designation_name, description)
+SELECT 'Staff Employee', 'General employee role for self-service modules'
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_designations WHERE designation_name = 'Staff Employee'
+);
+
+SET @manager_designation_id = (SELECT MIN(id) FROM hris_designations WHERE designation_name = 'Department Manager');
+SET @employee_designation_id = (SELECT MIN(id) FROM hris_designations WHERE designation_name = 'Staff Employee');
 
 INSERT INTO hris_users (
     username, email, password_hash, role_id, employee_id, is_active, failed_attempts
@@ -104,6 +122,72 @@ SELECT
     0
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_users WHERE username = 'superadmin' OR email = 'admin@hris.local'
+);
+
+-- Manager test credentials:
+-- Username: manager1
+-- Email: manager@hris.local
+-- Password: Admin@123
+
+INSERT INTO hris_employees (
+    employee_code, first_name, last_name, gender, date_of_birth,
+    department_id, designation_id, employment_type, employment_status, date_hired, email
+)
+SELECT
+    'EMP-0002', 'Mark', 'Manager', 'Male', '1992-05-12',
+    @operations_dept_id, @manager_designation_id, 'Full-Time', 'Active', CURRENT_DATE, 'manager@hris.local'
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_employees WHERE employee_code = 'EMP-0002'
+);
+
+SET @manager_employee_id = (SELECT MIN(id) FROM hris_employees WHERE employee_code = 'EMP-0002');
+
+INSERT INTO hris_users (
+    username, email, password_hash, role_id, employee_id, is_active, failed_attempts
+)
+SELECT
+    'manager1',
+    'manager@hris.local',
+    '$2y$12$VevcIIsG56vvKpem0eRI1ORK.W3EuA/WD29H3qrEyqVgiwU3vFI6e',
+    @manager_role_id,
+    @manager_employee_id,
+    1,
+    0
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_users WHERE username = 'manager1' OR email = 'manager@hris.local'
+);
+
+-- Employee test credentials:
+-- Username: employee1
+-- Email: employee@hris.local
+-- Password: Admin@123
+
+INSERT INTO hris_employees (
+    employee_code, first_name, last_name, gender, date_of_birth,
+    department_id, designation_id, employment_type, employment_status, date_hired, email, supervisor_id
+)
+SELECT
+    'EMP-0003', 'Ella', 'Employee', 'Female', '1998-09-21',
+    @operations_dept_id, @employee_designation_id, 'Full-Time', 'Active', CURRENT_DATE, 'employee@hris.local', @manager_employee_id
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_employees WHERE employee_code = 'EMP-0003'
+);
+
+SET @employee_employee_id = (SELECT MIN(id) FROM hris_employees WHERE employee_code = 'EMP-0003');
+
+INSERT INTO hris_users (
+    username, email, password_hash, role_id, employee_id, is_active, failed_attempts
+)
+SELECT
+    'employee1',
+    'employee@hris.local',
+    '$2y$12$VevcIIsG56vvKpem0eRI1ORK.W3EuA/WD29H3qrEyqVgiwU3vFI6e',
+    @employee_role_id,
+    @employee_employee_id,
+    1,
+    0
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_users WHERE username = 'employee1' OR email = 'employee@hris.local'
 );
 
 UPDATE hris_departments

@@ -17,9 +17,12 @@ Custom Human Resources Information System foundation with PHP MVC, MySQL, and a 
 6. Run database/seeds/demo_data.sql.
 7. Point Apache vhost to project root and open app URL.
 
-## Seeded Admin
-- Username: superadmin
-- Password: Admin@123
+## Seeded Accounts
+- Super Admin: superadmin / Admin@123
+- Manager: manager1 / Admin@123
+- Employee: employee1 / Admin@123
+
+Manager and Employee records are seeded from database/seeds/demo_data.sql and are safe to re-run because inserts are idempotent.
 
 ## Current Status
 - Phase 1 schema and seeds created.

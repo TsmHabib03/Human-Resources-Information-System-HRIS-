@@ -32,7 +32,7 @@ final class Auth
         $db = Database::connection();
 
         $stmt = $db->prepare(
-            'SELECT u.id, u.username, u.email, u.password_hash, u.role_id, u.is_active, u.failed_attempts, u.locked_until, r.role_name
+            'SELECT u.id, u.username, u.email, u.password_hash, u.role_id, u.employee_id, u.is_active, u.failed_attempts, u.locked_until, r.role_name
              FROM hris_users u
              INNER JOIN hris_roles r ON r.id = u.role_id
              WHERE u.username = :username OR u.email = :email
@@ -69,6 +69,7 @@ final class Auth
             'username' => (string) $user['username'],
             'email' => (string) $user['email'],
             'role_id' => (int) $user['role_id'],
+            'employee_id' => isset($user['employee_id']) && $user['employee_id'] !== null ? (int) $user['employee_id'] : null,
             'role_name' => (string) $user['role_name'],
         ]);
 

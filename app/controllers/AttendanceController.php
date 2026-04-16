@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Audit;
+use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\CSRF;
 use App\Core\Session;
@@ -32,7 +33,21 @@ final class AttendanceController extends Controller
         $status = trim((string) ($_GET['status'] ?? ''));
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $total = $this->attendance->countFiltered($date, $query, $status);
+        $employeeScopeId = $this->employeeScopeId();
+        $scopeFilterId = $employeeScopeId;
+        $employeeOptions = [];
+
+        if ($employeeScopeId !== null) {
+            $query = '';
+
+            if ($employeeScopeId <= 0) {
+                $scopeFilterId = -1;
+            }
+        } else {
+            $employeeOptions = $this->employees->listSimple();
+        }
+
+        $total = $this->attendance->countFiltered($date, $query, $status, $scopeFilterId);
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
 
         if ($page > $totalPages) {
@@ -46,8 +61,8 @@ final class AttendanceController extends Controller
             'query' => $query,
             'status' => $status,
             'statusOptions' => $this->attendance->statuses(),
-            'employees' => $this->employees->listSimple(),
-            'records' => $this->attendance->listFiltered($date, $query, $status, $page, self::PER_PAGE),
+            'employees' => $employeeOptions,
+            'records' => $this->attendance->listFiltered($date, $query, $status, $page, self::PER_PAGE, $scopeFilterId),
             'page' => $page,
             'totalPages' => $totalPages,
             'total' => $total,
@@ -121,5 +136,15 @@ final class AttendanceController extends Controller
         }
 
         return $normalized;
+    }
+
+    private function employeeScopeId(): ?int
+    {
+        $user = Auth::user();
+        if (!is_employee_role($user)) {
+            return null;
+        }
+
+        return isset($user['employee_id']) ? (int) $user['employee_id'] : 0;
     }
 }

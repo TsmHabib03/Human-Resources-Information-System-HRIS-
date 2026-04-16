@@ -4,12 +4,19 @@ $employeeOptions = is_array($employees ?? null) ? $employees : [];
 $typeOptions = is_array($leaveTypes ?? null) ? $leaveTypes : [];
 $statusList = is_array($statusOptions ?? null) ? $statusOptions : [];
 $oldInput = is_array($old ?? null) ? $old : [];
+$currentEmployeeRecord = is_array($currentEmployee ?? null) ? $currentEmployee : [];
+$isSelfServiceUser = (bool) ($isSelfService ?? false);
+$canRequestLeave = can('leave.request');
+$canApproveLeave = can('leave.approve');
 
 $currentQuery = (string) ($query ?? '');
 $currentStatus = (string) ($status ?? '');
 $currentPage = (int) ($page ?? 1);
 $pageCount = (int) ($totalPages ?? 1);
 $totalCount = (int) ($total ?? 0);
+$selectedEmployeeId = $isSelfServiceUser
+	? (int) ($currentEmployeeRecord['id'] ?? 0)
+	: (int) ($oldInput['employee_id'] ?? 0);
 
 $pendingCount = 0;
 $approvedCount = 0;
@@ -65,70 +72,91 @@ $statusClassMap = [
 
 	<?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-	<section class="leave-card">
-		<div class="leave-section-head">
-			<h3>Submit Leave Request</h3>
-			<p>Create a leave request by selecting employee, type, and date range.</p>
-		</div>
-
-		<form class="leave-form-grid" method="post" action="/leave/request">
-			<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-
-			<div class="leave-field">
-				<label for="employee_id">Employee</label>
-				<select id="employee_id" name="employee_id" required>
-					<option value="">Select</option>
-					<?php foreach ($employeeOptions as $employee): ?>
-						<option value="<?= (int) $employee['id'] ?>" <?= ((int) ($oldInput['employee_id'] ?? 0) === (int) $employee['id']) ? 'selected' : '' ?>>
-							<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
+	<?php if ($canRequestLeave): ?>
+		<section class="leave-card">
+			<div class="leave-section-head">
+				<h3>Submit Leave Request</h3>
+				<p>Create a leave request by selecting employee, type, and date range.</p>
 			</div>
 
-			<div class="leave-field">
-				<label for="leave_type_id">Leave Type</label>
-				<select id="leave_type_id" name="leave_type_id" required>
-					<option value="">Select</option>
-					<?php foreach ($typeOptions as $leaveType): ?>
-						<option value="<?= (int) $leaveType['id'] ?>" <?= ((int) ($oldInput['leave_type_id'] ?? 0) === (int) $leaveType['id']) ? 'selected' : '' ?>>
-							<?= e((string) $leaveType['type_name']) ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-			</div>
+			<form class="leave-form-grid" method="post" action="/leave/request">
+				<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
 
-			<div class="leave-field">
-				<label for="start_date">Start Date</label>
-				<input id="start_date" type="date" name="start_date" value="<?= e((string) ($oldInput['start_date'] ?? '')) ?>" required>
-			</div>
+				<?php if ($isSelfServiceUser): ?>
+					<?php if ($selectedEmployeeId > 0): ?>
+						<input type="hidden" name="employee_id" value="<?= $selectedEmployeeId ?>">
+						<div class="leave-field full">
+							<label>Employee</label>
+							<p class="leave-form-hint">
+								<?= e((string) (($currentEmployeeRecord['employee_code'] ?? '-') . ' - ' . ($currentEmployeeRecord['first_name'] ?? '') . ' ' . ($currentEmployeeRecord['last_name'] ?? ''))) ?>
+							</p>
+						</div>
+					<?php else: ?>
+						<div class="leave-field full">
+							<label>Employee</label>
+							<p class="leave-form-hint">Your account is not linked to an employee profile.</p>
+						</div>
+					<?php endif; ?>
+				<?php else: ?>
+					<div class="leave-field">
+						<label for="employee_id">Employee</label>
+						<select id="employee_id" name="employee_id" required>
+							<option value="">Select</option>
+							<?php foreach ($employeeOptions as $employee): ?>
+								<option value="<?= (int) $employee['id'] ?>" <?= ((int) ($oldInput['employee_id'] ?? 0) === (int) $employee['id']) ? 'selected' : '' ?>>
+									<?= e((string) ($employee['employee_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name'])) ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+				<?php endif; ?>
 
-			<div class="leave-field">
-				<label for="end_date">End Date</label>
-				<input id="end_date" type="date" name="end_date" value="<?= e((string) ($oldInput['end_date'] ?? '')) ?>" required>
-			</div>
+				<div class="leave-field">
+					<label for="leave_type_id">Leave Type</label>
+					<select id="leave_type_id" name="leave_type_id" required>
+						<option value="">Select</option>
+						<?php foreach ($typeOptions as $leaveType): ?>
+							<option value="<?= (int) $leaveType['id'] ?>" <?= ((int) ($oldInput['leave_type_id'] ?? 0) === (int) $leaveType['id']) ? 'selected' : '' ?>>
+								<?= e((string) $leaveType['type_name']) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
 
-			<div class="leave-field">
-				<label for="total_days">Total Days</label>
-				<input id="total_days" type="number" step="0.5" name="total_days" value="<?= e((string) ($oldInput['total_days'] ?? '')) ?>" required>
-			</div>
+				<div class="leave-field">
+					<label for="start_date">Start Date</label>
+					<input id="start_date" type="date" name="start_date" value="<?= e((string) ($oldInput['start_date'] ?? '')) ?>" required>
+				</div>
 
-			<div class="leave-field full">
-				<label for="reason">Reason</label>
-				<textarea id="reason" name="reason" rows="2"><?= e((string) ($oldInput['reason'] ?? '')) ?></textarea>
-			</div>
+				<div class="leave-field">
+					<label for="end_date">End Date</label>
+					<input id="end_date" type="date" name="end_date" value="<?= e((string) ($oldInput['end_date'] ?? '')) ?>" required>
+				</div>
 
-			<div class="leave-field full leave-form-actions">
-				<p class="leave-form-hint">Overlapping pending/approved requests are blocked automatically.</p>
-				<button class="leave-btn-primary" type="submit">Submit request</button>
-			</div>
-		</form>
-	</section>
+				<div class="leave-field">
+					<label for="total_days">Total Days</label>
+					<input id="total_days" type="number" step="0.5" name="total_days" value="<?= e((string) ($oldInput['total_days'] ?? '')) ?>" required>
+				</div>
+
+				<div class="leave-field full">
+					<label for="reason">Reason</label>
+					<textarea id="reason" name="reason" rows="2"><?= e((string) ($oldInput['reason'] ?? '')) ?></textarea>
+				</div>
+
+				<?php if (!$isSelfServiceUser || $selectedEmployeeId > 0): ?>
+					<div class="leave-field full leave-form-actions">
+						<p class="leave-form-hint">Overlapping pending/approved requests are blocked automatically.</p>
+						<button class="leave-btn-primary" type="submit">Submit request</button>
+					</div>
+				<?php endif; ?>
+			</form>
+		</section>
+	<?php endif; ?>
 
 	<section class="leave-card leave-toolbar">
 		<div class="leave-section-head">
 			<h3>Request Queue</h3>
-			<p>Filter by employee or leave status, then approve or reject pending items.</p>
+			<p><?= $canApproveLeave ? 'Filter by employee or leave status, then approve or reject pending items.' : 'Filter by leave status and review request progress.' ?></p>
 		</div>
 
 		<form class="leave-filter-form" method="get" action="/leave">
@@ -192,16 +220,20 @@ $statusClassMap = [
 								<td>
 									<div class="leave-actions">
 										<?php if ($statusValue === 'Pending'): ?>
-											<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/approve">
-												<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-												<input type="hidden" name="review_remarks" value="Approved">
-												<button class="leave-action-btn approve" type="submit">Approve</button>
-											</form>
-											<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/reject">
-												<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-												<input type="hidden" name="review_remarks" value="Rejected">
-												<button class="leave-action-btn reject" type="submit">Reject</button>
-											</form>
+											<?php if ($canApproveLeave): ?>
+												<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/approve">
+													<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+													<input type="hidden" name="review_remarks" value="Approved">
+													<button class="leave-action-btn approve" type="submit">Approve</button>
+												</form>
+												<form method="post" action="/leave/<?= (int) ($request['id'] ?? 0) ?>/reject">
+													<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+													<input type="hidden" name="review_remarks" value="Rejected">
+													<button class="leave-action-btn reject" type="submit">Reject</button>
+												</form>
+											<?php else: ?>
+												<span>-</span>
+											<?php endif; ?>
 										<?php else: ?>
 											<span>-</span>
 										<?php endif; ?>

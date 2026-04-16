@@ -49,11 +49,16 @@ final class Attendance extends Model
         return $trend;
     }
 
-    public function listFiltered(string $date, string $query = '', string $status = '', int $page = 1, int $perPage = 10): array
+    public function listFiltered(string $date, string $query = '', string $status = '', int $page = 1, int $perPage = 10, ?int $employeeId = null): array
     {
         $offset = max(0, ($page - 1) * $perPage);
         $params = ['date' => $date];
         $where = 'WHERE a.date = :date';
+
+        if ($employeeId !== null) {
+            $where .= ' AND a.employee_id = :employee_id';
+            $params['employee_id'] = $employeeId;
+        }
 
         if ($query !== '') {
             $where .= ' AND (e.employee_code LIKE :query OR e.first_name LIKE :query OR e.last_name LIKE :query)';
@@ -77,10 +82,15 @@ final class Attendance extends Model
         );
     }
 
-    public function countFiltered(string $date, string $query = '', string $status = ''): int
+    public function countFiltered(string $date, string $query = '', string $status = '', ?int $employeeId = null): int
     {
         $params = ['date' => $date];
         $where = 'WHERE a.date = :date';
+
+        if ($employeeId !== null) {
+            $where .= ' AND a.employee_id = :employee_id';
+            $params['employee_id'] = $employeeId;
+        }
 
         if ($query !== '') {
             $where .= ' AND (e.employee_code LIKE :query OR e.first_name LIKE :query OR e.last_name LIKE :query)';
