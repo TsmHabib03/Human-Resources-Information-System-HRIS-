@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 $app = config('app');
+$lockModalEnabled = subscription_lock_modal_enabled();
 $assetVersion = (string) max(
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/base.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/layout.css') ?: 1),
@@ -13,9 +14,11 @@ $assetVersion = (string) max(
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/payroll.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/settings.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/billing.css') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/css/lock-modal.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/responsive.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/employees.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/js/app.js') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/js/lock-modal.js') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/js/dashboard.js') ?: 1)
 );
 ?>
@@ -85,6 +88,9 @@ $assetVersion = (string) max(
     <link rel="stylesheet" href="<?= e(asset_url('/assets/css/payroll.css') . '?v=' . rawurlencode($assetVersion)) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/assets/css/settings.css') . '?v=' . rawurlencode($assetVersion)) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/assets/css/billing.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <?php if ($lockModalEnabled): ?>
+        <link rel="stylesheet" href="<?= e(asset_url('/assets/css/lock-modal.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <?php endif; ?>
     <link rel="stylesheet" href="<?= e(asset_url('/assets/css/employees.css') . '?v=' . rawurlencode($assetVersion)) ?>">
     <link rel="stylesheet" href="<?= e(asset_url('/assets/css/responsive.css') . '?v=' . rawurlencode($assetVersion)) ?>">
 </head>
@@ -97,12 +103,36 @@ $assetVersion = (string) max(
             <section class="app-content">
                 <?php require $contentView; ?>
             </section>
+
+            <?php if ($lockModalEnabled): ?>
+                <div class="lock-modal-overlay" id="featureLockModal" hidden>
+                    <div class="lock-modal" role="dialog" aria-modal="true" aria-labelledby="lockModalTitle" aria-describedby="lockModalMessage" data-lock-dialog>
+                        <button class="lock-modal-close" type="button" data-lock-close aria-label="Close lock dialog">&times;</button>
+
+                        <p class="lock-modal-kicker">Feature Lock</p>
+                        <h2 id="lockModalTitle" class="lock-modal-title font-display">Upgrade required for this module</h2>
+
+                        <p class="lock-modal-feature" data-lock-feature>Module access is locked.</p>
+                        <p id="lockModalMessage" class="lock-modal-message" data-lock-message>Upgrade your plan in Billing to unlock this module.</p>
+                        <p class="lock-modal-plan">Current plan: <strong data-lock-plan><?= e(normal_plan_name() . ' (' . normal_plan_source_name() . ')') ?></strong></p>
+
+                        <div class="lock-modal-actions">
+                            <a class="lock-modal-btn lock-modal-btn-primary" href="/billing">Open Billing and Upgrade</a>
+                            <button class="lock-modal-btn lock-modal-btn-muted" type="button" data-lock-close>Close</button>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <?php require __DIR__ . '/../partials/footer.php'; ?>
         </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="<?= e(asset_url('/assets/js/app.js') . '?v=' . rawurlencode($assetVersion)) ?>"></script>
+    <?php if ($lockModalEnabled): ?>
+        <script src="<?= e(asset_url('/assets/js/lock-modal.js') . '?v=' . rawurlencode($assetVersion)) ?>"></script>
+    <?php endif; ?>
     <script src="<?= e(asset_url('/assets/js/dashboard.js') . '?v=' . rawurlencode($assetVersion)) ?>"></script>
 </body>
 </html>

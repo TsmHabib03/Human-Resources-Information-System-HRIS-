@@ -2,6 +2,13 @@
 $company = is_array($company ?? null) ? $company : [];
 $system = is_array($system ?? null) ? $system : [];
 $roleRows = is_array($roles ?? null) ? $roles : [];
+$superAdminOnlyMode = super_admin_only_mode_enabled();
+
+if ($superAdminOnlyMode) {
+    $roleRows = array_values(array_filter($roleRows, static function (array $role): bool {
+        return (string) ($role['role_name'] ?? '') === 'Super Admin';
+    }));
+}
 
 $activeRoles = 0;
 $inactiveRoles = 0;
@@ -110,7 +117,11 @@ foreach ($roleRows as $role) {
         <article class="set-card">
             <div class="set-section-head">
                 <h3>Roles</h3>
-                <p>Review permission counts and toggle role availability.</p>
+                <p>
+                    <?= $superAdminOnlyMode
+                        ? 'Super Admin-only mode is enabled. Other actor roles are hidden and cannot be reactivated from this panel.'
+                        : 'Review permission counts and toggle role availability.' ?>
+                </p>
             </div>
 
             <div class="set-table-wrap">
@@ -146,10 +157,14 @@ foreach ($roleRows as $role) {
                                         </span>
                                     </td>
                                     <td>
-                                        <form method="post" action="/settings/roles/<?= (int) ($role['id'] ?? 0) ?>/toggle">
-                                            <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-                                            <button class="set-toggle-btn" type="submit">Toggle status</button>
-                                        </form>
+                                        <?php if ($superAdminOnlyMode): ?>
+                                            <span class="set-badge set-badge-inactive">Locked by mode</span>
+                                        <?php else: ?>
+                                            <form method="post" action="/settings/roles/<?= (int) ($role['id'] ?? 0) ?>/toggle">
+                                                <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+                                                <button class="set-toggle-btn" type="submit">Toggle status</button>
+                                            </form>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -52,6 +52,7 @@ final class BillingController extends Controller
             'selectedCycle' => $selectedCycle,
             'canManageBilling' => can('billing.manage'),
             'continuePath' => role_landing_path($user),
+            'isTestingMode' => is_subscription_testing_mode(),
             'success' => Session::pullFlash('success'),
             'error' => Session::pullFlash('error'),
             'errors' => Session::pullFlash('errors', []),
@@ -147,12 +148,20 @@ final class BillingController extends Controller
         }
 
         if ($checkoutResult === 'pending') {
-            Session::flash('error', (string) ($result['message'] ?? 'Checkout is pending. Please complete payment.'));
+            if (is_subscription_testing_mode()) {
+                Session::flash('success', 'Checkout simulation is pending. Testing access continues based on your selected plan.');
+            } else {
+                Session::flash('error', (string) ($result['message'] ?? 'Checkout is pending. Please complete payment.'));
+            }
             $this->redirect('/billing');
         }
 
         if ($checkoutResult === 'failed') {
-            Session::flash('error', (string) ($result['message'] ?? 'Checkout failed. Retry with another test mode.'));
+            if (is_subscription_testing_mode()) {
+                Session::flash('error', 'Checkout simulation failed. Testing access still follows your selected plan, and you can retry anytime.');
+            } else {
+                Session::flash('error', (string) ($result['message'] ?? 'Checkout failed. Retry with another test mode.'));
+            }
             $this->redirect('/billing');
         }
 
@@ -207,6 +216,10 @@ final class BillingController extends Controller
 
         if ($user === null) {
             $this->redirect('/login');
+        }
+
+        if (is_subscription_testing_mode()) {
+            $this->redirect(role_landing_path($user));
         }
 
         $companyId = $this->subscriptions->resolveCompanyIdForUser((int) $user['id']);

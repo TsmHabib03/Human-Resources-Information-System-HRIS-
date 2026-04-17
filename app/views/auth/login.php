@@ -61,11 +61,11 @@
             </form>
 
             <div class="panel-foot">
-                <p class="seed-note"><strong>Seeded account:</strong> superadmin / Admin@123</p>
+                <p class="seed-note"><strong>Seeded Super Admin account:</strong> superadmin / Admin@123</p>
                 <div class="panel-meta">
                     <span>Encrypted session</span>
                     <span>CSRF protected form</span>
-                    <span>Role-based access control</span>
+                    <span>Super Admin-only access mode</span>
                 </div>
             </div>
         </article>

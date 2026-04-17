@@ -7,27 +7,27 @@ WHERE NOT EXISTS (
 );
 
 INSERT INTO hris_roles (role_name, description, is_active)
-SELECT 'HR Admin', 'HR module administration', 1
+SELECT 'HR Admin', 'HR module administration', 0
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_roles WHERE role_name = 'HR Admin'
 );
 
 INSERT INTO hris_roles (role_name, description, is_active)
-SELECT 'Manager', 'Department and team approvals', 1
+SELECT 'Manager', 'Department and team approvals', 0
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_roles WHERE role_name = 'Manager'
 );
 
 INSERT INTO hris_roles (role_name, description, is_active)
-SELECT 'Employee', 'Self-service access', 1
+SELECT 'Employee', 'Self-service access', 0
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_roles WHERE role_name = 'Employee'
 );
 
 UPDATE hris_roles SET description = 'Full system access', is_active = 1 WHERE role_name = 'Super Admin';
-UPDATE hris_roles SET description = 'HR module administration', is_active = 1 WHERE role_name = 'HR Admin';
-UPDATE hris_roles SET description = 'Department and team approvals', is_active = 1 WHERE role_name = 'Manager';
-UPDATE hris_roles SET description = 'Self-service access', is_active = 1 WHERE role_name = 'Employee';
+UPDATE hris_roles SET description = 'HR module administration', is_active = 0 WHERE role_name = 'HR Admin';
+UPDATE hris_roles SET description = 'Department and team approvals', is_active = 0 WHERE role_name = 'Manager';
+UPDATE hris_roles SET description = 'Self-service access', is_active = 0 WHERE role_name = 'Employee';
 
 INSERT INTO hris_permissions (permission_key, module, description)
 SELECT 'dashboard.view', 'dashboard', 'View dashboard and widgets'

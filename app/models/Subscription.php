@@ -9,6 +9,23 @@ use DateTimeImmutable;
 
 final class Subscription extends Model
 {
+    private const FEATURE_ROUTE_MAP = [
+        '/employees' => 'employees',
+        '/attendance' => 'attendance',
+        '/leave' => 'leave',
+        '/payroll' => 'payroll',
+        '/settings' => 'settings',
+    ];
+
+    private const FEATURE_LABELS = [
+        'employees' => 'Employee management',
+        'attendance' => 'Attendance tracking',
+        'leave' => 'Leave workflows',
+        'payroll' => 'Payroll setup',
+        'settings' => 'Settings administration',
+        'priority_support' => 'Priority support',
+    ];
+
     public function publicPlans(): array
     {
         $plans = $this->fetchAll(
@@ -46,6 +63,19 @@ final class Subscription extends Model
         );
     }
 
+    public function defaultTestingPlan(): ?array
+    {
+        $plans = $this->publicPlans();
+
+        foreach ($plans as $plan) {
+            if ((int) ($plan['is_contact_only'] ?? 0) === 0) {
+                return $plan;
+            }
+        }
+
+        return $plans[0] ?? null;
+    }
+
     public function resolveCompanyIdForUser(int $userId): ?int
     {
         $row = $this->fetchOne(
@@ -71,7 +101,7 @@ final class Subscription extends Model
     public function currentSubscriptionForCompany(int $companyId): ?array
     {
         return $this->fetchOne(
-            'SELECT s.*, p.plan_name, p.plan_code, p.price_amount, p.currency, p.employee_limit, p.is_contact_only
+            'SELECT s.*, p.plan_name, p.plan_code, p.price_amount, p.currency, p.employee_limit, p.is_contact_only, p.feature_flags
              FROM hris_company_subscriptions s
              INNER JOIN hris_subscription_plans p ON p.id = s.plan_id
              WHERE s.company_id = :company_id
@@ -88,6 +118,59 @@ final class Subscription extends Model
              LIMIT 1',
             ['company_id' => $companyId]
         );
+    }
+
+    public function featureKeyForPath(string $path): ?string
+    {
+        $normalizedPath = rtrim($path, '/');
+
+        if ($normalizedPath === '') {
+            $normalizedPath = '/';
+        }
+
+        foreach (self::FEATURE_ROUTE_MAP as $prefix => $featureKey) {
+            if ($normalizedPath === $prefix || str_starts_with($normalizedPath, $prefix . '/')) {
+                return $featureKey;
+            }
+        }
+
+        return null;
+    }
+
+    public function featureLabel(string $featureKey): string
+    {
+        if (isset(self::FEATURE_LABELS[$featureKey])) {
+            return self::FEATURE_LABELS[$featureKey];
+        }
+
+        return ucwords(str_replace('_', ' ', $featureKey));
+    }
+
+    /**
+     * @return array{allowed: bool, feature_key: ?string, feature_label: ?string, plan_name: ?string}
+     */
+    public function accessDecisionForPath(string $path, ?int $companyId, ?int $fallbackPlanId = null): array
+    {
+        $featureKey = $this->featureKeyForPath($path);
+
+        if ($featureKey === null) {
+            return [
+                'allowed' => true,
+                'feature_key' => null,
+                'feature_label' => null,
+                'plan_name' => null,
+            ];
+        }
+
+        $plan = $this->entitlementPlanForCompany($companyId, $fallbackPlanId);
+        $featureFlags = $this->featureFlagsFromPlan($plan);
+
+        return [
+            'allowed' => in_array($featureKey, $featureFlags, true),
+            'feature_key' => $featureKey,
+            'feature_label' => $this->featureLabel($featureKey),
+            'plan_name' => is_array($plan) ? (string) ($plan['plan_name'] ?? '') : null,
+        ];
     }
 
     public function subscriptionHistoryForCompany(int $companyId, int $limit = 10): array
@@ -129,6 +212,54 @@ final class Subscription extends Model
         }
 
         return $this->isSubscriptionCurrentlyValid($subscription);
+    }
+
+    private function entitlementPlanForCompany(?int $companyId, ?int $fallbackPlanId = null): ?array
+    {
+        if ($companyId !== null) {
+            $current = $this->currentSubscriptionForCompany($companyId);
+
+            if (is_array($current)) {
+                return $current;
+            }
+        }
+
+        if ($fallbackPlanId !== null && $fallbackPlanId > 0) {
+            return $this->findPlanById($fallbackPlanId);
+        }
+
+        return $this->defaultTestingPlan();
+    }
+
+    private function featureFlagsFromPlan(?array $plan): array
+    {
+        if (!is_array($plan)) {
+            return [];
+        }
+
+        $decoded = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
+
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $features = [];
+
+        foreach ($decoded as $feature) {
+            if (!is_string($feature)) {
+                continue;
+            }
+
+            $value = trim($feature);
+
+            if ($value === '') {
+                continue;
+            }
+
+            $features[] = strtolower($value);
+        }
+
+        return array_values(array_unique($features));
     }
 
     public function statusSummary(?array $subscription): array

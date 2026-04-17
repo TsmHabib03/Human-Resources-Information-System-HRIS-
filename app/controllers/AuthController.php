@@ -14,6 +14,12 @@ final class AuthController extends Controller
     public function showLogin(): void
     {
         if (Auth::check()) {
+            if (super_admin_only_mode_enabled() && !is_super_admin_user(Auth::user())) {
+                Auth::logout();
+                Session::flash('error', 'Only the Super Admin account can access this environment right now.');
+                $this->redirect('/login');
+            }
+
             $this->redirect(post_auth_entry_path(Auth::user()));
         }
 
@@ -45,7 +51,15 @@ final class AuthController extends Controller
             $this->redirect('/login');
         }
 
-        $this->redirect(post_auth_entry_path(Auth::user()));
+        $user = Auth::user();
+
+        if (super_admin_only_mode_enabled() && !is_super_admin_user($user)) {
+            Auth::logout();
+            Session::flash('error', 'Only the Super Admin account can access this environment right now.');
+            $this->redirect('/login');
+        }
+
+        $this->redirect(post_auth_entry_path($user));
     }
 
     public function logout(): void

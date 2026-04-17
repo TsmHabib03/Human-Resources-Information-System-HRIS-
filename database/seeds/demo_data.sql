@@ -124,7 +124,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM hris_users WHERE username = 'superadmin' OR email = 'admin@hris.local'
 );
 
--- Manager test credentials:
+-- Manager test credentials (created for data relationships, inactive in Super Admin-only mode):
 -- Username: manager1
 -- Email: manager@hris.local
 -- Password: Admin@123
@@ -157,7 +157,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM hris_users WHERE username = 'manager1' OR email = 'manager@hris.local'
 );
 
--- Employee test credentials:
+-- Employee test credentials (created for data relationships, inactive in Super Admin-only mode):
 -- Username: employee1
 -- Email: employee@hris.local
 -- Password: Admin@123
@@ -368,3 +368,11 @@ SELECT
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_subscription_transactions WHERE reference_code = 'TXN-TEST-FAIL'
 );
+
+-- Super Admin-only mode: keep additional actors for data relationships but disable their sign-in
+UPDATE hris_users u
+INNER JOIN hris_roles r ON r.id = u.role_id
+SET u.is_active = CASE WHEN r.role_name = 'Super Admin' THEN 1 ELSE 0 END,
+    u.failed_attempts = 0,
+    u.locked_until = NULL
+WHERE u.username IN ('superadmin', 'manager1', 'employee1', 'hradmin1');

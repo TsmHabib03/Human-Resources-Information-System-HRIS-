@@ -3,6 +3,13 @@ $statsData = is_array($stats ?? null) ? $stats : [];
 $trendData = is_array($trend ?? null) ? $trend : ['labels' => [], 'values' => []];
 $todayLabel = date('M d, Y', strtotime((string) ($today ?? date('Y-m-d'))));
 $trendJson = json_encode($trendData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+$roleLabel = (string) (($user['role_name'] ?? 'N/A'));
+
+if (super_admin_only_mode_enabled()) {
+    $roleLabel = is_super_admin_user($user)
+        ? 'Super Admin (Single Actor Mode)'
+        : 'Blocked Actor';
+}
 
 if ($trendJson === false) {
     $trendJson = '{"labels":[],"values":[]}';
@@ -24,7 +31,7 @@ if ($trendJson === false) {
         <aside class="dash-hero-side">
             <p class="side-label">Signed in as</p>
             <p class="side-value"><?= e((string) (($user['username'] ?? 'Unknown'))) ?></p>
-            <p class="side-meta">Role: <?= e((string) (($user['role_name'] ?? 'N/A'))) ?></p>
+            <p class="side-meta">Role: <?= e($roleLabel) ?></p>
         </aside>
     </header>
 
@@ -103,7 +110,7 @@ if ($trendJson === false) {
             <article class="panel account-panel">
                 <p class="account-kicker">Account Context</p>
                 <p class="account-line">User: <strong><?= e((string) (($user['username'] ?? 'Unknown'))) ?></strong></p>
-                <p class="account-line">Role: <?= e((string) (($user['role_name'] ?? 'N/A'))) ?></p>
+                <p class="account-line">Role: <?= e($roleLabel) ?></p>
                 <p class="account-line">Last refresh: <?= e($todayLabel) ?></p>
             </article>
         </aside>

@@ -90,6 +90,11 @@ final class SettingsController extends Controller
 
     public function toggleRole(string $id): void
     {
+        if (super_admin_only_mode_enabled()) {
+            Session::flash('error', 'Role updates are disabled while Super Admin-only mode is enabled.');
+            $this->redirect('/settings');
+        }
+
         $roleId = (int) $id;
         $before = $this->settings->findRole($roleId);
 

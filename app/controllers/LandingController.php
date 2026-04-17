@@ -28,7 +28,7 @@ final class LandingController extends Controller
         }
 
         $this->view('public/landing', [
-            'title' => 'HRIS Subscription Platform',
+            'title' => 'HRIS Platform',
             'csrf' => CSRF::token(),
             'plans' => $this->subscriptions->publicPlans(),
             'success' => Session::pullFlash('success'),
@@ -44,7 +44,7 @@ final class LandingController extends Controller
         }
 
         $this->view('public/pricing', [
-            'title' => 'Quarterly Plans',
+            'title' => 'Plans and Feature Access',
             'csrf' => CSRF::token(),
             'plans' => $this->subscriptions->publicPlans(),
             'success' => Session::pullFlash('success'),
@@ -125,13 +125,17 @@ final class LandingController extends Controller
         ]);
 
         if ((int) ($plan['is_contact_only'] ?? 0) === 1) {
-            Session::flash('success', 'Enterprise plan selected. Sign in and contact-sales flow will be available in billing.');
+            Session::flash('success', 'Enterprise plan selected. Continue to Billing for assisted onboarding steps.');
         } else {
-            Session::flash('success', 'Plan selected. Sign in to complete quarterly subscription checkout.');
+            if (is_subscription_testing_mode()) {
+                Session::flash('success', 'Plan selected. Testing access profile is now active for included modules. Checkout simulation is optional.');
+            } else {
+                Session::flash('success', 'Plan selected. Sign in to complete quarterly subscription checkout.');
+            }
         }
 
         if (Auth::check()) {
-            $this->redirect('/billing');
+            $this->redirect(post_auth_entry_path(Auth::user()));
         }
 
         $this->redirect('/login');

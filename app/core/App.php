@@ -108,12 +108,28 @@ final class App
     private function handleMiddleware(array $middlewares): bool
     {
         foreach ($middlewares as $middleware) {
-            if ($middleware === 'auth' && !Auth::check()) {
-                header('Location: /login');
-                return false;
+            if ($middleware === 'auth') {
+                if (!Auth::check()) {
+                    header('Location: /login');
+                    return false;
+                }
+
+                if (super_admin_only_mode_enabled() && !is_super_admin_user(Auth::user())) {
+                    Auth::logout();
+                    Session::flash('error', 'Only the Super Admin account can access this environment right now.');
+                    header('Location: /login');
+                    return false;
+                }
             }
 
             if ($middleware === 'guest' && Auth::check()) {
+                if (super_admin_only_mode_enabled() && !is_super_admin_user(Auth::user())) {
+                    Auth::logout();
+                    Session::flash('error', 'Only the Super Admin account can access this environment right now.');
+                    header('Location: /login');
+                    return false;
+                }
+
                 header('Location: ' . post_auth_entry_path(Auth::user()));
                 return false;
             }

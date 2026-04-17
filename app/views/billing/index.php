@@ -15,17 +15,32 @@ $statusTone = (string) ($status['tone'] ?? 'danger');
 $selectedId = (int) ($selectedPlanId ?? 0);
 $selectedCycleValue = (string) ($selectedCycle ?? 'quarterly');
 $canManage = (bool) ($canManageBilling ?? false);
+$isTestingMode = (bool) ($isTestingMode ?? is_subscription_testing_mode());
+
+if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
+    $status = [
+        'label' => 'Testing Access Mode',
+        'is_valid' => true,
+        'tone' => 'warning',
+        'message' => 'Payment enforcement is disabled in testing mode. Module access follows role permissions and selected plan feature locks.',
+    ];
+    $statusTone = 'warning';
+}
 ?>
 
 <section class="bill-page">
     <header class="bill-hero">
         <div>
             <p class="bill-kicker">Billing</p>
-            <h2 class="bill-title font-display">Subscription control center</h2>
-            <p class="bill-subtitle">Select your quarterly plan, run checkout simulation, and keep module access in sync with subscription state.</p>
+            <h2 class="bill-title font-display"><?= $isTestingMode ? 'Access and billing control center' : 'Subscription control center' ?></h2>
+            <p class="bill-subtitle">
+                <?= $isTestingMode
+                    ? 'Select a plan to control feature locks. Checkout simulation is available but not required for testing access.'
+                    : 'Select your quarterly plan, run checkout simulation, and keep module access in sync with subscription state.' ?>
+            </p>
         </div>
         <div class="bill-hero-actions">
-            <?php if ((bool) ($status['is_valid'] ?? false)): ?>
+            <?php if ($isTestingMode || (bool) ($status['is_valid'] ?? false)): ?>
                 <a class="bill-btn bill-btn-primary" href="<?= e((string) ($continuePath ?? '/dashboard')) ?>">Continue to workspace</a>
             <?php endif; ?>
             <a class="bill-btn bill-btn-muted" href="/pricing">View public pricing</a>
@@ -36,7 +51,7 @@ $canManage = (bool) ($canManageBilling ?? false);
 
     <section class="bill-grid">
         <article class="bill-card bill-status bill-status-<?= e($statusTone) ?>">
-            <p class="bill-status-label">Current Subscription Status</p>
+            <p class="bill-status-label"><?= $isTestingMode ? 'Current Access Mode' : 'Current Subscription Status' ?></p>
             <h3><?= e((string) ($status['label'] ?? 'Unavailable')) ?></h3>
             <p><?= e((string) ($status['message'] ?? '')) ?></p>
 
@@ -64,8 +79,12 @@ $canManage = (bool) ($canManageBilling ?? false);
 
         <article class="bill-card">
             <div class="bill-head">
-                <h3>Select plan and run test checkout</h3>
-                <p>Quarterly billing is fixed for this release.</p>
+                <h3><?= $isTestingMode ? 'Select a testing plan and optionally run checkout simulation' : 'Select plan and run test checkout' ?></h3>
+                <p>
+                    <?= $isTestingMode
+                        ? 'Your selected plan controls feature-locked modules immediately. Billing simulation is optional in this mode.'
+                        : 'Quarterly billing is fixed for this release.' ?>
+                </p>
             </div>
 
             <?php if (!$hasPlans): ?>
@@ -78,6 +97,7 @@ $canManage = (bool) ($canManageBilling ?? false);
                         <?php foreach ($planRows as $index => $plan): ?>
                             <?php
                             $planId = (int) ($plan['id'] ?? 0);
+                            $planDisplayName = display_plan_name_for_access((string) ($plan['plan_name'] ?? 'Plan'));
                             $isChecked = $selectedId === $planId || ($selectedId === 0 && (int) ($plan['is_contact_only'] ?? 0) === 0);
                             $features = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
                             $featureItems = is_array($features) ? $features : [];
@@ -98,7 +118,7 @@ $canManage = (bool) ($canManageBilling ?? false);
                             <label
                                 class="bill-plan-card <?= e($tierClass) ?> <?= $isChecked ? 'is-selected' : '' ?>"
                                 data-plan-card
-                                data-plan-name="<?= e((string) ($plan['plan_name'] ?? 'Plan')) ?>"
+                                data-plan-name="<?= e($planDisplayName) ?>"
                             >
                                 <input
                                     class="bill-plan-input"
@@ -112,7 +132,7 @@ $canManage = (bool) ($canManageBilling ?? false);
                                 <span class="bill-plan-tag <?= e($tierClass) ?>"><?= e($tierTag) ?></span>
 
                                 <div class="bill-plan-top">
-                                    <span class="bill-plan-name font-display"><?= e((string) ($plan['plan_name'] ?? 'Plan')) ?></span>
+                                    <span class="bill-plan-name font-display"><?= e($planDisplayName) ?></span>
                                     <span class="bill-plan-price">
                                         <?php if ($isContactOnly): ?>
                                             Contact Sales
@@ -155,10 +175,10 @@ $canManage = (bool) ($canManageBilling ?? false);
                     <button
                         class="bill-btn bill-btn-primary"
                         type="submit"
-                        data-submit-label="Run Test Checkout"
+                        data-submit-label="<?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>"
                         data-loading-label="Processing checkout..."
                     >
-                        Run Test Checkout
+                        <?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>
                     </button>
                 </form>
             <?php endif; ?>
