@@ -885,3 +885,319 @@
         opacity: 1 !important;
     }
 }
+
+.mk-shell-landing {
+    gap: 22px;
+}
+
+.mk-lp-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+    gap: 16px;
+}
+
+.mk-lp-copy,
+.mk-lp-panel,
+.mk-lp-orbit-card,
+.mk-lp-final {
+    border: 1px solid var(--mk-border);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--mk-shadow-soft);
+}
+
+.mk-lp-copy {
+    padding: 30px;
+    display: grid;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 85% 0%, rgba(23, 70, 160, 0.16) 0%, rgba(23, 70, 160, 0) 44%),
+        linear-gradient(168deg, rgba(255, 255, 255, 0.94) 0%, rgba(242, 249, 255, 0.9) 100%);
+}
+
+.mk-lp-copy::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    right: -84px;
+    bottom: -96px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(13, 111, 102, 0.2) 0%, rgba(13, 111, 102, 0) 70%);
+    pointer-events: none;
+}
+
+.mk-lp-copy h1 {
+    margin: 0;
+    font-size: clamp(2.15rem, 4.2vw, 3.4rem);
+    line-height: 1.03;
+    letter-spacing: -0.015em;
+    max-width: 17ch;
+}
+
+.mk-lp-summary {
+    margin: 0;
+    max-width: 68ch;
+    color: var(--mk-text-soft);
+    font-size: 0.98rem;
+}
+
+.mk-lp-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mk-lp-kpis {
+    margin: 4px 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mk-lp-kpis div {
+    border: 1px solid var(--mk-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.74);
+    padding: 10px;
+    display: grid;
+    gap: 3px;
+}
+
+.mk-lp-kpis dt {
+    font-size: 0.69rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mk-text-soft);
+    font-weight: 800;
+}
+
+.mk-lp-kpis dd {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.mk-lp-panel {
+    padding: 18px;
+    display: grid;
+    gap: 10px;
+    background:
+        radial-gradient(circle at 100% 100%, rgba(153, 86, 26, 0.14) 0%, rgba(153, 86, 26, 0) 48%),
+        linear-gradient(165deg, rgba(255, 255, 255, 0.95) 0%, rgba(246, 251, 255, 0.9) 100%);
+}
+
+.mk-lp-panel-kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mk-text-soft);
+    font-weight: 800;
+}
+
+.mk-lp-panel-card {
+    border: 1px solid var(--mk-border);
+    border-left: 3px solid transparent;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.78);
+    padding: 12px;
+    display: grid;
+    gap: 4px;
+}
+
+.mk-lp-panel-card:nth-of-type(1) {
+    border-left-color: #1746a0;
+}
+
+.mk-lp-panel-card:nth-of-type(2) {
+    border-left-color: #0d6f66;
+}
+
+.mk-lp-panel-card:nth-of-type(3) {
+    border-left-color: #99561a;
+}
+
+.mk-lp-panel-card h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.mk-lp-panel-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--mk-text-soft);
+}
+
+.mk-lp-strip {
+    border-top: 1px solid var(--mk-border);
+    border-bottom: 1px solid var(--mk-border);
+    padding: 13px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mk-lp-strip-items {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.mk-lp-strip-items span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    border: 1px solid var(--mk-border);
+    border-radius: 999px;
+    padding: 0 10px;
+    font-size: 0.79rem;
+    color: var(--mk-text-soft);
+    background: rgba(255, 255, 255, 0.68);
+    font-weight: 700;
+}
+
+.mk-lp-orbit {
+    display: grid;
+    gap: 12px;
+}
+
+.mk-lp-orbit-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mk-lp-orbit-card {
+    grid-column: span 4;
+    padding: 14px;
+    display: grid;
+    gap: 8px;
+}
+
+.mk-lp-orbit-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.mk-lp-orbit-card p {
+    margin: 0;
+    color: var(--mk-text-soft);
+    font-size: 0.9rem;
+}
+
+.mk-lp-orbit-index {
+    margin: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid var(--mk-border-strong);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--mk-accent);
+    background: rgba(255, 255, 255, 0.84);
+}
+
+.mk-lp-plan-section {
+    gap: 14px;
+}
+
+.mk-lp-plan-cards {
+    gap: 16px;
+}
+
+.mk-lp-plan-card {
+    border-radius: 20px;
+}
+
+.mk-lp-compare .mk-compare-table-wrap {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.mk-lp-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.88fr);
+    gap: 14px;
+}
+
+.mk-lp-faq {
+    padding: 20px;
+}
+
+.mk-lp-final {
+    padding: 20px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(23, 70, 160, 0.12) 0%, rgba(23, 70, 160, 0) 44%),
+        linear-gradient(170deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 250, 245, 0.9) 100%);
+}
+
+.mk-lp-final h2 {
+    margin: 0;
+    font-size: 1.74rem;
+    line-height: 1.11;
+}
+
+.mk-lp-final p {
+    margin: 0;
+    color: var(--mk-text-soft);
+}
+
+@media (max-width: 1180px) {
+    .mk-lp-hero,
+    .mk-lp-bottom {
+        grid-template-columns: 1fr;
+    }
+
+    .mk-lp-orbit-card {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width: 900px) {
+    .mk-lp-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .mk-lp-hero-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mk-lp-hero-actions .mk-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .mk-lp-copy,
+    .mk-lp-panel,
+    .mk-lp-faq,
+    .mk-lp-final,
+    .mk-lp-orbit-card,
+    .mk-lp-plan-card {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .mk-lp-copy h1 {
+        font-size: clamp(1.9rem, 8vw, 2.35rem);
+    }
+
+    .mk-lp-strip {
+        padding: 10px 0;
+    }
+}
