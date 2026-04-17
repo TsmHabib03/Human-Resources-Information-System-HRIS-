@@ -1,45 +1,69 @@
 (function () {
-    var sidebar = document.getElementById('sidebar');
-    var toggle = document.getElementById('sidebarToggle');
-
-    if (!sidebar || !toggle) {
-        return;
+    if (document.body && window.requestAnimationFrame) {
+        window.requestAnimationFrame(function () {
+            document.body.classList.add('mk-ready');
+        });
+    } else if (document.body) {
+        document.body.classList.add('mk-ready');
     }
 
-    toggle.addEventListener('click', function () {
-        sidebar.classList.toggle('is-open');
-    });
-})();
-
-(function () {
     var planPickers = document.querySelectorAll('[data-plan-picker]');
     if (!planPickers || planPickers.length === 0) {
         return;
     }
 
     planPickers.forEach(function (picker) {
-        var cards = picker.querySelectorAll('[data-plan-card]');
+        var cards = Array.prototype.slice.call(picker.querySelectorAll('[data-plan-card]'));
         if (!cards || cards.length === 0) {
             return;
         }
 
-        var liveRegion = picker.querySelector('.bill-live-region, .mk-live-region');
+        var liveRegion = picker.querySelector('.mk-live-region, .bill-live-region');
+        var summaryPlan = picker.querySelector('[data-selection-plan]');
+        var submitButton = picker.querySelector('button[type="submit"]');
         var isSubmitting = false;
+
+        var cardRadio = function (card) {
+            return card.querySelector('input[type="radio"][name="plan_id"]');
+        };
+
+        var selectCardByIndex = function (index, moveFocus) {
+            if (!cards[index]) {
+                return;
+            }
+
+            var radio = cardRadio(cards[index]);
+            if (!radio) {
+                return;
+            }
+
+            radio.checked = true;
+            setSelectedState(true);
+
+            if (moveFocus) {
+                cards[index].focus();
+            }
+        };
 
         var setSelectedState = function (announceSelection) {
             var selectedPlanName = '';
 
             cards.forEach(function (card) {
-                var radio = card.querySelector('input[type="radio"][name="plan_id"]');
+                var radio = cardRadio(card);
                 var selected = !!radio && radio.checked;
 
                 card.classList.toggle('is-selected', selected);
                 card.setAttribute('data-selected', selected ? 'true' : 'false');
+                card.setAttribute('aria-checked', selected ? 'true' : 'false');
 
                 if (selected) {
                     selectedPlanName = card.getAttribute('data-plan-name') || '';
                 }
             });
+
+            if (summaryPlan) {
+                summaryPlan.textContent = selectedPlanName || 'No plan selected';
+            }
 
             if (announceSelection && liveRegion) {
                 liveRegion.textContent = selectedPlanName
@@ -48,13 +72,14 @@
             }
         };
 
-        cards.forEach(function (card) {
-            var radio = card.querySelector('input[type="radio"][name="plan_id"]');
+        cards.forEach(function (card, index) {
+            var radio = cardRadio(card);
             if (!radio) {
                 return;
             }
 
             card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'radio');
 
             card.addEventListener('click', function () {
                 if (!radio.checked) {
@@ -69,6 +94,18 @@
                     event.preventDefault();
                     radio.checked = true;
                     setSelectedState(true);
+                    return;
+                }
+
+                if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    selectCardByIndex((index + 1) % cards.length, true);
+                    return;
+                }
+
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    selectCardByIndex((index - 1 + cards.length) % cards.length, true);
                 }
             });
 
@@ -93,12 +130,7 @@
                 }
             }
 
-            if (!selected) {
-                return;
-            }
-
-            var submitButton = picker.querySelector('button[type="submit"]');
-            if (!submitButton) {
+            if (!selected || !submitButton) {
                 return;
             }
 
@@ -106,6 +138,10 @@
             submitButton.disabled = true;
             submitButton.textContent = submitButton.getAttribute('data-loading-label') || 'Processing...';
         });
+
+        if (submitButton && submitButton.getAttribute('data-submit-label')) {
+            submitButton.textContent = submitButton.getAttribute('data-submit-label');
+        }
 
         setSelectedState(false);
     });

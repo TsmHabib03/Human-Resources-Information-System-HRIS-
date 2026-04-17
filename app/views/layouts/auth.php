@@ -61,9 +61,9 @@ $assetVersion = (string) (filemtime(__DIR__ . '/../../../public/assets/css/base.
         };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/css/variables.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/base.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/components.css?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/variables.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/base.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/components.css') . '?v=' . rawurlencode($assetVersion)) ?>">
 </head>
 <body class="auth-page font-sans bg-slate-50 text-slate-900">
     <main class="auth-shell">

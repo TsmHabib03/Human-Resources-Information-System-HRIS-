@@ -49,6 +49,39 @@ if (!function_exists('e')) {
     }
 }
 
+if (!function_exists('app_base_path')) {
+    function app_base_path(): string
+    {
+        static $basePath = null;
+
+        if (is_string($basePath)) {
+            return $basePath;
+        }
+
+        $configuredUrl = (string) (config('app')['url'] ?? '');
+        $parsedPath = (string) (parse_url($configuredUrl, PHP_URL_PATH) ?? '');
+        $parsedPath = trim($parsedPath);
+
+        if ($parsedPath === '' || $parsedPath === '/') {
+            $basePath = '';
+            return $basePath;
+        }
+
+        $basePath = '/' . trim($parsedPath, '/');
+
+        return $basePath;
+    }
+}
+
+if (!function_exists('asset_url')) {
+    function asset_url(string $path): string
+    {
+        $normalizedPath = '/' . ltrim($path, '/');
+
+        return app_base_path() . $normalizedPath;
+    }
+}
+
 if (!function_exists('auth_user')) {
     function auth_user(): ?array
     {
@@ -101,6 +134,7 @@ if (!function_exists('permission_for_path')) {
         }
 
         return match ($normalized) {
+            '/dashboard' => 'dashboard.view',
             '/employees' => 'employees.view',
             '/attendance' => 'attendance.view',
             '/leave' => 'leave.view',
@@ -127,12 +161,29 @@ if (!function_exists('can_access_path')) {
             return false;
         }
 
+        if ($normalized === '/billing' || str_starts_with($normalized, '/billing/')) {
+            return true;
+        }
+
         $permission = permission_for_path($normalized);
         if ($permission === null) {
-            return $normalized === '/';
+            return false;
         }
 
         return can($permission);
+    }
+}
+
+if (!function_exists('post_auth_entry_path')) {
+    function post_auth_entry_path(?array $user = null): string
+    {
+        $resolvedUser = is_array($user) ? $user : auth_user();
+
+        if ($resolvedUser === null) {
+            return '/login';
+        }
+
+        return '/billing';
     }
 }
 
@@ -156,13 +207,13 @@ if (!function_exists('role_landing_path')) {
             return $preferredPath;
         }
 
-        $fallbackPaths = ['/', '/employees', '/attendance', '/leave', '/payroll', '/settings'];
+        $fallbackPaths = ['/dashboard', '/employees', '/attendance', '/leave', '/payroll', '/settings', '/billing'];
         foreach ($fallbackPaths as $path) {
             if (can_access_path($path)) {
                 return $path;
             }
         }
 
-        return '/';
+        return '/billing';
     }
 }

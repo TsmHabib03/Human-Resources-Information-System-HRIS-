@@ -102,6 +102,18 @@ WHERE NOT EXISTS (
 );
 
 INSERT INTO hris_permissions (permission_key, module, description)
+SELECT 'billing.view', 'billing', 'View billing status and plan catalog'
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_permissions WHERE permission_key = 'billing.view'
+);
+
+INSERT INTO hris_permissions (permission_key, module, description)
+SELECT 'billing.manage', 'billing', 'Manage subscriptions and billing actions'
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_permissions WHERE permission_key = 'billing.manage'
+);
+
+INSERT INTO hris_permissions (permission_key, module, description)
 SELECT 'users.manage', 'auth', 'Manage user accounts and access'
 WHERE NOT EXISTS (
     SELECT 1 FROM hris_permissions WHERE permission_key = 'users.manage'
@@ -119,6 +131,8 @@ UPDATE hris_permissions SET module = 'leave', description = 'Request leave' WHER
 UPDATE hris_permissions SET module = 'leave', description = 'Approve or reject leave requests' WHERE permission_key = 'leave.approve';
 UPDATE hris_permissions SET module = 'payroll', description = 'View payroll structures and records' WHERE permission_key = 'payroll.view';
 UPDATE hris_permissions SET module = 'settings', description = 'Manage global system settings' WHERE permission_key = 'settings.manage';
+UPDATE hris_permissions SET module = 'billing', description = 'View billing status and plan catalog' WHERE permission_key = 'billing.view';
+UPDATE hris_permissions SET module = 'billing', description = 'Manage subscriptions and billing actions' WHERE permission_key = 'billing.manage';
 UPDATE hris_permissions SET module = 'auth', description = 'Manage user accounts and access' WHERE permission_key = 'users.manage';
 
 INSERT INTO hris_role_permissions (role_id, permission_id)
@@ -140,7 +154,8 @@ JOIN hris_permissions p ON p.permission_key IN (
     'employees.view', 'employees.create', 'employees.update',
     'attendance.view', 'attendance.manage',
     'leave.view', 'leave.approve',
-    'payroll.view'
+    'payroll.view',
+    'billing.view'
 )
 WHERE r.role_name = 'HR Admin'
   AND NOT EXISTS (

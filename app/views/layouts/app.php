@@ -12,6 +12,7 @@ $assetVersion = (string) max(
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/leave.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/payroll.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/settings.css') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/css/billing.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/responsive.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/employees.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/js/app.js') ?: 1),
@@ -74,17 +75,18 @@ $assetVersion = (string) max(
         };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/css/variables.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/base.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/layout.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/components.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/dashboard.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/attendance.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/leave.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/payroll.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/settings.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/employees.css?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="/assets/css/responsive.css?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/variables.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/base.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/layout.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/components.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/dashboard.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/attendance.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/leave.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/payroll.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/settings.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/billing.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/employees.css') . '?v=' . rawurlencode($assetVersion)) ?>">
+    <link rel="stylesheet" href="<?= e(asset_url('/assets/css/responsive.css') . '?v=' . rawurlencode($assetVersion)) ?>">
 </head>
 <body class="font-sans bg-slate-50 text-slate-900">
     <div class="app-shell">
@@ -100,7 +102,7 @@ $assetVersion = (string) max(
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script src="/assets/js/app.js?v=<?= e($assetVersion) ?>"></script>
-    <script src="/assets/js/dashboard.js?v=<?= e($assetVersion) ?>"></script>
+    <script src="<?= e(asset_url('/assets/js/app.js') . '?v=' . rawurlencode($assetVersion)) ?>"></script>
+    <script src="<?= e(asset_url('/assets/js/dashboard.js') . '?v=' . rawurlencode($assetVersion)) ?>"></script>
 </body>
 </html>

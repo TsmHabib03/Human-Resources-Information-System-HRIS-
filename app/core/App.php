@@ -114,8 +114,14 @@ final class App
             }
 
             if ($middleware === 'guest' && Auth::check()) {
-                header('Location: ' . role_landing_path(Auth::user()));
+                header('Location: ' . post_auth_entry_path(Auth::user()));
                 return false;
+            }
+
+            if ($middleware === 'subscription' && Auth::check()) {
+                if (!\App\Middleware\SubscriptionMiddleware::handle()) {
+                    return false;
+                }
             }
 
             if ($middleware === 'csrf' && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {

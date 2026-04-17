@@ -94,3 +94,48 @@
         max-width: none;
     }
 }
+
+@media (max-width: 740px) {
+    .mk-shell {
+        width: min(94vw, 100%);
+        gap: 16px;
+    }
+
+    .mk-plan-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .mk-selection-summary,
+    .mk-pricing-side,
+    .mk-final-cta,
+    .mk-faq,
+    .mk-hero-main,
+    .mk-hero-aside,
+    .mk-plan-card {
+        border-radius: 14px;
+    }
+
+    .mk-hero-main h1,
+    .mk-pricing-hero h1 {
+        font-size: clamp(1.8rem, 7.2vw, 2.2rem);
+    }
+}
+
+@media (max-width: 390px) {
+    .mk-btn {
+        min-height: 46px;
+        font-size: 0.86rem;
+    }
+
+    .mk-plan-name {
+        font-size: 1.14rem;
+    }
+
+    .mk-plan-price {
+        font-size: 1.08rem;
+    }
+
+    .mk-compare-table {
+        min-width: 560px;
+    }
+}

@@ -193,3 +193,178 @@ WHERE NOT EXISTS (
 UPDATE hris_departments
 SET head_employee_id = @admin_employee_id
 WHERE id = @hr_dept_id;
+
+-- Quarterly subscription plans for testing
+INSERT INTO hris_subscription_plans (
+    plan_code, plan_name, description, billing_cycle, interval_months,
+    price_amount, currency, employee_limit, is_contact_only, feature_flags, is_active, sort_order
+)
+SELECT
+    'STARTER-Q', 'Starter', 'Core HR workflow for small teams', 'quarterly', 3,
+    2999.00, 'PHP', 25, 0,
+    JSON_ARRAY('employees', 'attendance', 'leave'), 1, 10
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_plans WHERE plan_code = 'STARTER-Q'
+);
+
+INSERT INTO hris_subscription_plans (
+    plan_code, plan_name, description, billing_cycle, interval_months,
+    price_amount, currency, employee_limit, is_contact_only, feature_flags, is_active, sort_order
+)
+SELECT
+    'GROWTH-Q', 'Growth', 'Expanded HR operations with payroll and admin controls', 'quarterly', 3,
+    6999.00, 'PHP', 200, 0,
+    JSON_ARRAY('employees', 'attendance', 'leave', 'payroll', 'settings'), 1, 20
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_plans WHERE plan_code = 'GROWTH-Q'
+);
+
+INSERT INTO hris_subscription_plans (
+    plan_code, plan_name, description, billing_cycle, interval_months,
+    price_amount, currency, employee_limit, is_contact_only, feature_flags, is_active, sort_order
+)
+SELECT
+    'ENTERPRISE-Q', 'Enterprise', 'Custom enterprise setup with dedicated support', 'quarterly', 3,
+    19999.00, 'PHP', NULL, 1,
+    JSON_ARRAY('employees', 'attendance', 'leave', 'payroll', 'settings', 'priority_support'), 1, 30
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_plans WHERE plan_code = 'ENTERPRISE-Q'
+);
+
+UPDATE hris_subscription_plans
+SET plan_name = 'Starter',
+    description = 'Core HR workflow for small teams',
+    billing_cycle = 'quarterly',
+    interval_months = 3,
+    price_amount = 2999.00,
+    currency = 'PHP',
+    employee_limit = 25,
+    is_contact_only = 0,
+    feature_flags = JSON_ARRAY('employees', 'attendance', 'leave'),
+    is_active = 1,
+    sort_order = 10
+WHERE plan_code = 'STARTER-Q';
+
+UPDATE hris_subscription_plans
+SET plan_name = 'Growth',
+    description = 'Expanded HR operations with payroll and admin controls',
+    billing_cycle = 'quarterly',
+    interval_months = 3,
+    price_amount = 6999.00,
+    currency = 'PHP',
+    employee_limit = 200,
+    is_contact_only = 0,
+    feature_flags = JSON_ARRAY('employees', 'attendance', 'leave', 'payroll', 'settings'),
+    is_active = 1,
+    sort_order = 20
+WHERE plan_code = 'GROWTH-Q';
+
+UPDATE hris_subscription_plans
+SET plan_name = 'Enterprise',
+    description = 'Custom enterprise setup with dedicated support',
+    billing_cycle = 'quarterly',
+    interval_months = 3,
+    price_amount = 19999.00,
+    currency = 'PHP',
+    employee_limit = NULL,
+    is_contact_only = 1,
+    feature_flags = JSON_ARRAY('employees', 'attendance', 'leave', 'payroll', 'settings', 'priority_support'),
+    is_active = 1,
+    sort_order = 30
+WHERE plan_code = 'ENTERPRISE-Q';
+
+SET @starter_plan_id = (SELECT MIN(id) FROM hris_subscription_plans WHERE plan_code = 'STARTER-Q');
+SET @growth_plan_id = (SELECT MIN(id) FROM hris_subscription_plans WHERE plan_code = 'GROWTH-Q');
+
+INSERT INTO hris_company_subscriptions (
+    company_id, plan_id, billing_cycle, status,
+    starts_at, ends_at, trial_ends_at, activated_at, metadata
+)
+SELECT
+    @company_id,
+    @starter_plan_id,
+    'quarterly',
+    'trialing',
+    CURRENT_DATE,
+    DATE_ADD(CURRENT_DATE, INTERVAL 3 MONTH),
+    DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY),
+    NULL,
+    JSON_OBJECT('source', 'demo_seed', 'note', 'initial trial subscription')
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM hris_company_subscriptions
+    WHERE company_id = @company_id
+      AND status IN ('trialing', 'active')
+);
+
+SET @company_subscription_id = (
+    SELECT id
+    FROM hris_company_subscriptions
+    WHERE company_id = @company_id
+      AND status IN ('trialing', 'active')
+    ORDER BY id DESC
+    LIMIT 1
+);
+
+INSERT INTO hris_subscription_transactions (
+    company_subscription_id, company_id, plan_id, provider, test_mode, status,
+    amount, currency, reference_code, notes, payload, processed_at
+)
+SELECT
+    @company_subscription_id,
+    @company_id,
+    @starter_plan_id,
+    'test',
+    'test_success',
+    'success',
+    2999.00,
+    'PHP',
+    'TXN-TEST-SUCCESS',
+    'Seeded successful test checkout',
+    JSON_OBJECT('seed', true, 'result', 'success'),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_transactions WHERE reference_code = 'TXN-TEST-SUCCESS'
+);
+
+INSERT INTO hris_subscription_transactions (
+    company_subscription_id, company_id, plan_id, provider, test_mode, status,
+    amount, currency, reference_code, notes, payload, processed_at
+)
+SELECT
+    @company_subscription_id,
+    @company_id,
+    @growth_plan_id,
+    'test',
+    'test_pending',
+    'pending',
+    6999.00,
+    'PHP',
+    'TXN-TEST-PENDING',
+    'Seeded pending test checkout',
+    JSON_OBJECT('seed', true, 'result', 'pending'),
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_transactions WHERE reference_code = 'TXN-TEST-PENDING'
+);
+
+INSERT INTO hris_subscription_transactions (
+    company_subscription_id, company_id, plan_id, provider, test_mode, status,
+    amount, currency, reference_code, notes, payload, processed_at
+)
+SELECT
+    @company_subscription_id,
+    @company_id,
+    @growth_plan_id,
+    'test',
+    'test_fail',
+    'failed',
+    6999.00,
+    'PHP',
+    'TXN-TEST-FAIL',
+    'Seeded failed test checkout',
+    JSON_OBJECT('seed', true, 'result', 'failed'),
+    NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM hris_subscription_transactions WHERE reference_code = 'TXN-TEST-FAIL'
+);

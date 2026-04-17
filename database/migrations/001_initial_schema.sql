@@ -6,6 +6,9 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS hris_subscription_transactions;
+DROP TABLE IF EXISTS hris_company_subscriptions;
+DROP TABLE IF EXISTS hris_subscription_plans;
 DROP TABLE IF EXISTS hris_audit_log;
 DROP TABLE IF EXISTS hris_announcements;
 DROP TABLE IF EXISTS hris_deductions;
@@ -66,6 +69,75 @@ CREATE TABLE hris_companies (
     logo_path    VARCHAR(255) DEFAULT NULL,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE hris_subscription_plans (
+    id                INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    plan_code         VARCHAR(40) NOT NULL UNIQUE,
+    plan_name         VARCHAR(80) NOT NULL,
+    description       VARCHAR(255) DEFAULT NULL,
+    billing_cycle     ENUM('monthly','quarterly','yearly') NOT NULL DEFAULT 'quarterly',
+    interval_months   TINYINT UNSIGNED NOT NULL DEFAULT 3,
+    price_amount      DECIMAL(12,2) NOT NULL,
+    currency          CHAR(3) NOT NULL DEFAULT 'PHP',
+    employee_limit    INT UNSIGNED DEFAULT NULL,
+    is_contact_only   TINYINT(1) NOT NULL DEFAULT 0,
+    feature_flags     JSON DEFAULT NULL,
+    is_active         TINYINT(1) NOT NULL DEFAULT 1,
+    sort_order        TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_plan_active_cycle (is_active, billing_cycle)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE hris_company_subscriptions (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    company_id      INT UNSIGNED NOT NULL,
+    plan_id         INT UNSIGNED NOT NULL,
+    billing_cycle   ENUM('monthly','quarterly','yearly') NOT NULL DEFAULT 'quarterly',
+    status          ENUM('trialing','active','past_due','canceled','expired') NOT NULL DEFAULT 'trialing',
+    starts_at       DATE DEFAULT NULL,
+    ends_at         DATE DEFAULT NULL,
+    trial_ends_at   DATE DEFAULT NULL,
+    activated_at    DATETIME DEFAULT NULL,
+    canceled_at     DATETIME DEFAULT NULL,
+    cancel_reason   VARCHAR(255) DEFAULT NULL,
+    metadata        JSON DEFAULT NULL,
+    active_guard    TINYINT(1) GENERATED ALWAYS AS (
+        CASE
+            WHEN status IN ('trialing', 'active') THEN 1
+            ELSE NULL
+        END
+    ) STORED,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES hris_companies(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES hris_subscription_plans(id) ON DELETE RESTRICT,
+    UNIQUE KEY uq_subscription_active_guard (company_id, active_guard),
+    INDEX idx_subscription_status (status),
+    INDEX idx_subscription_period_end (ends_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE hris_subscription_transactions (
+    id                       BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    company_subscription_id  INT UNSIGNED DEFAULT NULL,
+    company_id               INT UNSIGNED NOT NULL,
+    plan_id                  INT UNSIGNED NOT NULL,
+    provider                 VARCHAR(30) NOT NULL DEFAULT 'test',
+    test_mode                ENUM('test_success','test_pending','test_fail') NOT NULL DEFAULT 'test_pending',
+    status                   ENUM('pending','success','failed') NOT NULL DEFAULT 'pending',
+    amount                   DECIMAL(12,2) NOT NULL,
+    currency                 CHAR(3) NOT NULL DEFAULT 'PHP',
+    reference_code           VARCHAR(80) DEFAULT NULL UNIQUE,
+    notes                    VARCHAR(255) DEFAULT NULL,
+    payload                  JSON DEFAULT NULL,
+    processed_at             DATETIME DEFAULT NULL,
+    created_at               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_subscription_id) REFERENCES hris_company_subscriptions(id) ON DELETE SET NULL,
+    FOREIGN KEY (company_id) REFERENCES hris_companies(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES hris_subscription_plans(id) ON DELETE RESTRICT,
+    INDEX idx_transaction_company_status (company_id, status),
+    INDEX idx_transaction_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE hris_branches (
