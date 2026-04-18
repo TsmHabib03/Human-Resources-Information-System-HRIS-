@@ -5,34 +5,38 @@ $historyRows = is_array($history ?? null) ? $history : [];
 $currentSubscription = is_array($current ?? null) ? $current : null;
 $hasPlans = $planRows !== [];
 $status = is_array($statusSummary ?? null) ? $statusSummary : [
-    'label' => 'Unavailable',
+    'label'    => 'Unavailable',
     'is_valid' => false,
-    'tone' => 'danger',
-    'message' => 'Subscription details are not available.',
+    'tone'     => 'danger',
+    'message'  => 'Subscription details are not available.',
 ];
 
-$statusTone = (string) ($status['tone'] ?? 'danger');
-$selectedId = (int) ($selectedPlanId ?? 0);
+$statusTone         = (string) ($status['tone'] ?? 'danger');
+$selectedId         = (int) ($selectedPlanId ?? 0);
 $selectedCycleValue = (string) ($selectedCycle ?? 'quarterly');
-$canManage = (bool) ($canManageBilling ?? false);
-$isTestingMode = (bool) ($isTestingMode ?? is_subscription_testing_mode());
+$canManage          = (bool) ($canManageBilling ?? false);
+$isTestingMode      = (bool) ($isTestingMode ?? is_subscription_testing_mode());
 
 if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
     $status = [
-        'label' => 'Testing Access Mode',
+        'label'    => 'Testing Access Mode',
         'is_valid' => true,
-        'tone' => 'warning',
-        'message' => 'Payment enforcement is disabled in testing mode. Module access follows role permissions and selected plan feature locks.',
+        'tone'     => 'warning',
+        'message'  => 'Payment enforcement is disabled in testing mode. Module access follows role permissions and selected plan feature locks.',
     ];
     $statusTone = 'warning';
 }
 ?>
 
 <section class="bill-page">
+
+    <!-- ── Hero ──────────────────────────────────────────── -->
     <header class="bill-hero">
         <div>
             <p class="bill-kicker">Billing</p>
-            <h2 class="bill-title font-display"><?= $isTestingMode ? 'Access and billing control center' : 'Subscription control center' ?></h2>
+            <h2 class="bill-title font-display">
+                <?= $isTestingMode ? 'Access and billing control center' : 'Subscription control center' ?>
+            </h2>
             <p class="bill-subtitle">
                 <?= $isTestingMode
                     ? 'Select a plan to control feature locks. Checkout simulation is available but not required for testing access.'
@@ -41,7 +45,9 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
         </div>
         <div class="bill-hero-actions">
             <?php if ($isTestingMode || (bool) ($status['is_valid'] ?? false)): ?>
-                <a class="bill-btn bill-btn-primary" href="<?= e((string) ($continuePath ?? '/dashboard')) ?>">Continue to workspace</a>
+                <a class="bill-btn bill-btn-primary" href="<?= e((string) ($continuePath ?? '/dashboard')) ?>">
+                    Continue to workspace
+                </a>
             <?php endif; ?>
             <a class="bill-btn bill-btn-muted" href="/pricing">View public pricing</a>
         </div>
@@ -49,37 +55,67 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
 
     <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-    <section class="bill-grid">
-        <article class="bill-card bill-status bill-status-<?= e($statusTone) ?>">
-            <p class="bill-status-label"><?= $isTestingMode ? 'Current Access Mode' : 'Current Subscription Status' ?></p>
-            <h3><?= e((string) ($status['label'] ?? 'Unavailable')) ?></h3>
-            <p><?= e((string) ($status['message'] ?? '')) ?></p>
+    <!-- ── Tabbed panel ──────────────────────────────────── -->
+    <div class="bill-tabs-wrap">
 
-            <?php if ($currentSubscription !== null): ?>
-                <dl class="bill-status-meta">
-                    <div>
-                        <dt>Plan</dt>
-                        <dd><?= e((string) ($currentSubscription['plan_name'] ?? '-')) ?></dd>
-                    </div>
-                    <div>
-                        <dt>Cycle</dt>
-                        <dd><?= e((string) ($currentSubscription['billing_cycle'] ?? '-')) ?></dd>
-                    </div>
-                    <div>
-                        <dt>Ends at</dt>
-                        <dd><?= e((string) ($currentSubscription['ends_at'] ?? '-')) ?></dd>
-                    </div>
-                    <div>
-                        <dt>Trial ends</dt>
-                        <dd><?= e((string) ($currentSubscription['trial_ends_at'] ?? '-')) ?></dd>
-                    </div>
-                </dl>
-            <?php endif; ?>
-        </article>
+        <nav class="bill-tabs-nav" role="tablist" aria-label="Billing sections">
+            <button
+                class="bill-tab-btn is-active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="bill-panel-plans"
+                id="bill-tab-plans"
+                onclick="billSwitchTab('plans')"
+            >
+                <?= $isTestingMode ? 'Plan selection' : 'Plan selection' ?>
+                <small>Choose &amp; checkout</small>
+            </button>
+            <button
+                class="bill-tab-btn"
+                role="tab"
+                aria-selected="false"
+                aria-controls="bill-panel-status"
+                id="bill-tab-status"
+                onclick="billSwitchTab('status')"
+            >
+                Subscription status
+                <small>Current state</small>
+            </button>
+            <button
+                class="bill-tab-btn"
+                role="tab"
+                aria-selected="false"
+                aria-controls="bill-panel-transactions"
+                id="bill-tab-transactions"
+                onclick="billSwitchTab('transactions')"
+            >
+                Transactions
+                <small>Checkout history</small>
+            </button>
+            <button
+                class="bill-tab-btn"
+                role="tab"
+                aria-selected="false"
+                aria-controls="bill-panel-history"
+                id="bill-tab-history"
+                onclick="billSwitchTab('history')"
+            >
+                Subscription history
+                <small>Lifecycle records</small>
+            </button>
+        </nav>
 
-        <article class="bill-card">
-            <div class="bill-head">
-                <h3><?= $isTestingMode ? 'Select a testing plan and optionally run checkout simulation' : 'Select plan and run test checkout' ?></h3>
+        <!-- ── Panel: Plan selection ─────────────────────── -->
+        <div
+            id="bill-panel-plans"
+            class="bill-tab-panel is-active"
+            role="tabpanel"
+            aria-labelledby="bill-tab-plans"
+        >
+            <div class="bill-head" style="margin-bottom:4px;">
+                <h3><?= $isTestingMode
+                    ? 'Select a testing plan and optionally run checkout simulation'
+                    : 'Select plan and run test checkout' ?></h3>
                 <p>
                     <?= $isTestingMode
                         ? 'Your selected plan controls feature-locked modules immediately. Billing simulation is optional in this mode.'
@@ -88,7 +124,9 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
             </div>
 
             <?php if (!$hasPlans): ?>
-                <div class="alert alert-danger">No active plans are available. Seed plans in the current database and refresh this page.</div>
+                <div class="alert alert-danger">
+                    No active plans are available. Seed plans in the current database and refresh this page.
+                </div>
             <?php else: ?>
                 <form method="post" action="/billing/checkout" data-plan-picker>
                     <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
@@ -96,23 +134,23 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
                     <div class="bill-plan-grid">
                         <?php foreach ($planRows as $index => $plan): ?>
                             <?php
-                            $planId = (int) ($plan['id'] ?? 0);
+                            $planId          = (int) ($plan['id'] ?? 0);
                             $planDisplayName = display_plan_name_for_access((string) ($plan['plan_name'] ?? 'Plan'));
-                            $isChecked = $selectedId === $planId || ($selectedId === 0 && (int) ($plan['is_contact_only'] ?? 0) === 0);
-                            $features = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
-                            $featureItems = is_array($features) ? $features : [];
-                            $isContactOnly = (int) ($plan['is_contact_only'] ?? 0) === 1;
-                            $planCode = strtoupper((string) ($plan['plan_code'] ?? ''));
+                            $isChecked       = $selectedId === $planId || ($selectedId === 0 && (int) ($plan['is_contact_only'] ?? 0) === 0);
+                            $features        = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
+                            $featureItems    = is_array($features) ? $features : [];
+                            $isContactOnly   = (int) ($plan['is_contact_only'] ?? 0) === 1;
+                            $planCode        = strtoupper((string) ($plan['plan_code'] ?? ''));
 
                             $tierClass = 'is-starter';
-                            $tierTag = 'Starter tier';
+                            $tierTag   = 'Starter tier';
 
                             if (str_contains($planCode, 'GROWTH')) {
                                 $tierClass = 'is-recommended';
-                                $tierTag = 'Recommended';
+                                $tierTag   = 'Recommended';
                             } elseif (str_contains($planCode, 'ENTERPRISE')) {
                                 $tierClass = 'is-enterprise';
-                                $tierTag = 'Contact sales';
+                                $tierTag   = 'Contact sales';
                             }
                             ?>
                             <label
@@ -155,14 +193,16 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
                     </div>
 
                     <div class="bill-form-row">
-                        <label for="billing_cycle">Billing Cycle</label>
+                        <label for="billing_cycle">Billing cycle</label>
                         <select id="billing_cycle" name="billing_cycle">
-                            <option value="quarterly" <?= $selectedCycleValue === 'quarterly' ? 'selected' : '' ?>>Quarterly</option>
+                            <option value="quarterly" <?= $selectedCycleValue === 'quarterly' ? 'selected' : '' ?>>
+                                Quarterly
+                            </option>
                         </select>
                     </div>
 
-                    <div class="bill-form-row">
-                        <label for="test_mode">Checkout Test Mode</label>
+                    <div class="bill-form-row" style="margin-top:8px;">
+                        <label for="test_mode">Checkout test mode</label>
                         <select id="test_mode" name="test_mode">
                             <option value="test_success">test_success (activate)</option>
                             <option value="test_pending">test_pending (awaiting payment)</option>
@@ -172,174 +212,217 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
 
                     <p class="bill-live-region" aria-live="polite"></p>
 
-                    <button
-                        class="bill-btn bill-btn-primary"
-                        type="submit"
-                        data-submit-label="<?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>"
-                        data-loading-label="Processing checkout..."
-                    >
-                        <?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>
-                    </button>
+                    <div style="margin-top:14px;">
+                        <button
+                            class="bill-btn bill-btn-primary"
+                            type="submit"
+                            data-submit-label="<?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>"
+                            data-loading-label="Processing checkout..."
+                        >
+                            <?= $isTestingMode ? 'Apply Plan and Simulate Checkout' : 'Run Test Checkout' ?>
+                        </button>
+                    </div>
                 </form>
             <?php endif; ?>
-        </article>
-    </section>
+        </div>
 
-    <?php if ($canManage && $currentSubscription !== null && in_array((string) ($currentSubscription['status'] ?? ''), ['trialing', 'active', 'past_due'], true)): ?>
-        <section class="bill-card bill-card-manage">
-            <div class="bill-head">
-                <h3>Admin billing actions</h3>
-                <p>Cancel current subscription if needed.</p>
-            </div>
-            <form method="post" action="/billing/cancel" class="bill-manage-form">
-                <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-                <label for="cancel_reason">Cancellation reason (optional)</label>
-                <input id="cancel_reason" type="text" name="cancel_reason" placeholder="Reason for cancellation">
-                <button class="bill-btn bill-btn-danger" type="submit">Cancel Current Subscription</button>
-            </form>
-        </section>
-    <?php endif; ?>
+        <!-- ── Panel: Subscription status ───────────────── -->
+        <div
+            id="bill-panel-status"
+            class="bill-tab-panel"
+            role="tabpanel"
+            aria-labelledby="bill-tab-status"
+        >
+            <article class="bill-card bill-status bill-status-<?= e($statusTone) ?>" style="margin-bottom:16px;">
+                <p class="bill-status-label">
+                    <?= $isTestingMode ? 'Current Access Mode' : 'Current Subscription Status' ?>
+                </p>
+                <h3><?= e((string) ($status['label'] ?? 'Unavailable')) ?></h3>
+                <p><?= e((string) ($status['message'] ?? '')) ?></p>
 
-    <section class="bill-grid bill-grid-secondary">
-        <article class="bill-card">
-            <div class="bill-head">
+                <?php if ($currentSubscription !== null): ?>
+                    <dl class="bill-status-meta">
+                        <div>
+                            <dt>Plan</dt>
+                            <dd><?= e((string) ($currentSubscription['plan_name'] ?? '-')) ?></dd>
+                        </div>
+                        <div>
+                            <dt>Cycle</dt>
+                            <dd><?= e((string) ($currentSubscription['billing_cycle'] ?? '-')) ?></dd>
+                        </div>
+                        <div>
+                            <dt>Ends at</dt>
+                            <dd><?= e((string) ($currentSubscription['ends_at'] ?? '-')) ?></dd>
+                        </div>
+                        <div>
+                            <dt>Trial ends</dt>
+                            <dd><?= e((string) ($currentSubscription['trial_ends_at'] ?? '-')) ?></dd>
+                        </div>
+                    </dl>
+                <?php endif; ?>
+            </article>
+
+            <?php if ($canManage && $currentSubscription !== null && in_array(
+                (string) ($currentSubscription['status'] ?? ''),
+                ['trialing', 'active', 'past_due'],
+                true
+            )): ?>
+                <article class="bill-card">
+                    <div class="bill-head">
+                        <h3>Admin billing actions</h3>
+                        <p>Cancel the current subscription if needed.</p>
+                    </div>
+                    <form method="post" action="/billing/cancel" class="bill-manage-form">
+                        <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+                        <label for="cancel_reason">Cancellation reason (optional)</label>
+                        <input
+                            id="cancel_reason"
+                            type="text"
+                            name="cancel_reason"
+                            placeholder="Reason for cancellation"
+                        >
+                        <div>
+                            <button class="bill-btn bill-btn-danger" type="submit">
+                                Cancel Current Subscription
+                            </button>
+                        </div>
+                    </form>
+                </article>
+            <?php endif; ?>
+        </div>
+
+        <!-- ── Panel: Transactions ───────────────────────── -->
+        <div
+            id="bill-panel-transactions"
+            class="bill-tab-panel"
+            role="tabpanel"
+            aria-labelledby="bill-tab-transactions"
+        >
+            <div class="bill-head" style="margin-bottom:12px;">
                 <h3>Recent checkout transactions</h3>
                 <p>Latest simulated checkout attempts and outcomes.</p>
             </div>
-            <button 
-                class="bill-btn bill-btn-primary"
-                onclick="openModal('transactions')"
-            >
-                View Transactions
-            </button>
-        </article>
+            <div class="bill-table-wrap">
+                <table class="bill-table">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Plan</th>
+                            <th>Mode</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($transactionRows === []): ?>
+                            <tr>
+                                <td colspan="5" class="bill-empty">No checkout transactions yet.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($transactionRows as $row): ?>
+                                <tr>
+                                    <td><?= e((string) ($row['reference_code'] ?? '-')) ?></td>
+                                    <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
+                                    <td><?= e((string) ($row['test_mode'] ?? '-')) ?></td>
+                                    <td>
+                                        <span class="bill-pill bill-pill-<?= e((string) ($row['status'] ?? 'pending')) ?>">
+                                            <?= e(strtoupper((string) ($row['status'] ?? 'pending'))) ?>
+                                        </span>
+                                    </td>
+                                    <td><?= e((string) ($row['created_at'] ?? '-')) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        <article class="bill-card">
-            <div class="bill-head">
+        <!-- ── Panel: Subscription history ──────────────── -->
+        <div
+            id="bill-panel-history"
+            class="bill-tab-panel"
+            role="tabpanel"
+            aria-labelledby="bill-tab-history"
+        >
+            <div class="bill-head" style="margin-bottom:12px;">
                 <h3>Subscription history</h3>
                 <p>Recent lifecycle records for this company.</p>
             </div>
-            <button 
-                class="bill-btn bill-btn-primary"
-                onclick="openModal('history')"
-            >
-                View History
-            </button>
-        </article>
-    </section>
-
-    <!-- Modal -->
-    <div id="billModal" class="bill-modal-overlay" onclick="closeModal()">
-        <div class="bill-modal-content" onclick="event.stopPropagation()">
-            <button class="bill-modal-close" onclick="closeModal()">&times;</button>
-            
-            <!-- Transactions Modal Content -->
-            <div id="transactionsModal" class="bill-modal-body" style="display: none;">
-                <h2 class="bill-modal-title">Recent Checkout Transactions</h2>
-                <div class="bill-modal-table-wrap">
-                    <table class="bill-table">
-                        <thead>
+            <div class="bill-table-wrap">
+                <table class="bill-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($historyRows === []): ?>
                             <tr>
-                                <th>Reference</th>
-                                <th>Plan</th>
-                                <th>Mode</th>
-                                <th>Status</th>
-                                <th>Created</th>
+                                <td colspan="4" class="bill-empty">No subscription history yet.</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($transactionRows === []): ?>
+                        <?php else: ?>
+                            <?php foreach ($historyRows as $row): ?>
                                 <tr>
-                                    <td colspan="5" class="bill-empty">No checkout transactions yet.</td>
+                                    <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
+                                    <td>
+                                        <span class="bill-pill bill-pill-<?= e((string) ($row['status'] ?? 'pending')) ?>">
+                                            <?= e(strtoupper((string) ($row['status'] ?? '-'))) ?>
+                                        </span>
+                                    </td>
+                                    <td><?= e((string) ($row['starts_at'] ?? '-')) ?></td>
+                                    <td><?= e((string) ($row['ends_at'] ?? '-')) ?></td>
                                 </tr>
-                            <?php else: ?>
-                                <?php foreach ($transactionRows as $row): ?>
-                                    <tr>
-                                        <td><?= e((string) ($row['reference_code'] ?? '-')) ?></td>
-                                        <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
-                                        <td><?= e((string) ($row['test_mode'] ?? '-')) ?></td>
-                                        <td>
-                                            <span class="bill-pill bill-pill-<?= e((string) ($row['status'] ?? 'pending')) ?>">
-                                                <?= e((string) strtoupper((string) ($row['status'] ?? 'pending'))) ?>
-                                            </span>
-                                        </td>
-                                        <td><?= e((string) ($row['created_at'] ?? '-')) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- History Modal Content -->
-            <div id="historyModal" class="bill-modal-body" style="display: none;">
-                <h2 class="bill-modal-title">Subscription History</h2>
-                <div class="bill-modal-table-wrap">
-                    <table class="bill-table">
-                        <thead>
-                            <tr>
-                                <th>Plan</th>
-                                <th>Status</th>
-                                <th>Start</th>
-                                <th>End</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($historyRows === []): ?>
-                                <tr>
-                                    <td colspan="4" class="bill-empty">No subscription history yet.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($historyRows as $row): ?>
-                                    <tr>
-                                        <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
-                                        <td><?= e((string) ($row['status'] ?? '-')) ?></td>
-                                        <td><?= e((string) ($row['starts_at'] ?? '-')) ?></td>
-                                        <td><?= e((string) ($row['ends_at'] ?? '-')) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
 
+    </div><!-- /.bill-tabs-wrap -->
+
+    <!-- ── Tab switching JS ──────────────────────────────── -->
     <script>
-        // Modal functionality
-        const billModal = document.getElementById('billModal');
-        const transactionsModal = document.getElementById('transactionsModal');
-        const historyModal = document.getElementById('historyModal');
+    function billSwitchTab(name) {
+        var tabs   = document.querySelectorAll('.bill-tab-btn');
+        var panels = document.querySelectorAll('.bill-tab-panel');
+        var order  = ['plans', 'status', 'transactions', 'history'];
 
-        function openModal(type) {
-            // Hide all modal bodies
-            transactionsModal.style.display = 'none';
-            historyModal.style.display = 'none';
-
-            // Show the requested modal body
-            if (type === 'transactions') {
-                transactionsModal.style.display = 'block';
-            } else if (type === 'history') {
-                historyModal.style.display = 'block';
-            }
-
-            // Show the modal overlay
-            billModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            billModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal when pressing Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
+        tabs.forEach(function (btn, i) {
+            var active = order[i] === name;
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-selected', active ? 'true' : 'false');
         });
+
+        panels.forEach(function (panel) {
+            panel.classList.toggle('is-active', panel.id === 'bill-panel-' + name);
+        });
+    }
+
+    // Highlight selected plan card on radio change
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.name === 'plan_id') {
+            document.querySelectorAll('[data-plan-card]').forEach(function (card) {
+                card.classList.toggle('is-selected', card.contains(e.target));
+            });
+        }
+    });
+
+    // Loading state on checkout submit
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form.hasAttribute('data-plan-picker')) return;
+        var btn = form.querySelector('[data-submit-label]');
+        if (!btn) return;
+        btn.disabled = true;
+        btn.textContent = btn.dataset.loadingLabel || 'Processing…';
+        var region = form.querySelector('.bill-live-region');
+        if (region) region.textContent = 'Processing checkout, please wait.';
+    });
     </script>
+
 </section>

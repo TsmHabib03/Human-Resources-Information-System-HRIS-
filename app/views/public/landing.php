@@ -1,11 +1,95 @@
 <?php
-$planRows = is_array($plans ?? null) ? $plans : [];
-$hasPlans = $planRows !== [];
+$planRows      = is_array($plans ?? null) ? $plans : [];
+$hasPlans      = $planRows !== [];
 $isTestingMode = is_subscription_testing_mode();
+$planCount     = max(1, count($planRows));
+
+/* ── Data ──────────────────────────────────────────────────── */
+
+$featureDefinitions = [
+    [
+        'name'         => 'Attendance tracking',
+        'desc'         => 'Real-time clock-in and clock-out logging per employee with shift scheduling, overtime detection, and daily reconciliation against approved schedules.',
+        'category'     => 'Attendance',
+        'badge'        => 'mk-badge-attendance',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Leave management',
+        'desc'         => 'Multi-type leave request workflow covering filing, manager approval, HR override, balance computation, and calendar blocking with automatic payroll deduction triggers.',
+        'category'     => 'Leave',
+        'badge'        => 'mk-badge-leave',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Payroll computation',
+        'desc'         => 'End-to-end payroll run engine that calculates gross pay, statutory deductions (SSS, PhilHealth, Pag-IBIG, BIR), net pay, and generates per-employee payslips per cutoff.',
+        'category'     => 'Payroll',
+        'badge'        => 'mk-badge-payroll',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Employee records',
+        'desc'         => 'Centralized employee profile database storing personal info, employment history, department assignments, job levels, salary grades, and document attachments.',
+        'category'     => 'Core HR',
+        'badge'        => 'mk-badge-core',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Onboarding workflow',
+        'desc'         => 'Structured new-hire checklist that sequences document submission, credential provisioning, orientation scheduling, and probation tracking under HR and direct manager oversight.',
+        'category'     => 'Core HR',
+        'badge'        => 'mk-badge-core',
+        'status'       => 'Beta',
+        'status_badge' => 'mk-badge-beta',
+    ],
+    [
+        'name'         => 'Role-based access',
+        'desc'         => 'Permission layer that controls which modules, records, and actions each user can see or perform — enforced across every view based on assigned role and subscription plan coverage.',
+        'category'     => 'Admin',
+        'badge'        => 'mk-badge-admin',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Approval routing',
+        'desc'         => 'Configurable multi-level approval chains for leave, overtime, reimbursements, and schedule changes — with escalation rules, deadline reminders, and full audit trails.',
+        'category'     => 'Admin',
+        'badge'        => 'mk-badge-admin',
+        'status'       => 'Live',
+        'status_badge' => 'mk-badge-live',
+    ],
+    [
+        'name'         => 'Reporting and analytics',
+        'desc'         => 'Pre-built and custom report builder covering headcount, attendance summaries, leave utilization, payroll cost breakdown, and compliance output for government filings.',
+        'category'     => 'Admin',
+        'badge'        => 'mk-badge-admin',
+        'status'       => 'Planned',
+        'status_badge' => 'mk-badge-planned',
+    ],
+];
+
+$moduleMatrix = [
+    ['module' => 'Attendance tracking',  'starter' => true,  'growth' => true,  'enterprise' => true],
+    ['module' => 'Leave management',     'starter' => true,  'growth' => true,  'enterprise' => true],
+    ['module' => 'Payroll computation',  'starter' => false, 'growth' => true,  'enterprise' => true],
+    ['module' => 'Employee records',     'starter' => true,  'growth' => true,  'enterprise' => true],
+    ['module' => 'Onboarding workflow',  'starter' => false, 'growth' => true,  'enterprise' => true],
+    ['module' => 'Role-based access',    'starter' => true,  'growth' => true,  'enterprise' => true],
+    ['module' => 'Approval routing',     'starter' => false, 'growth' => true,  'enterprise' => true],
+    ['module' => 'Reporting / analytics','starter' => false, 'growth' => false, 'enterprise' => true],
+];
 ?>
 
 <div class="mk-shell mk-shell-landing">
+
+    <!-- ── Top bar ──────────────────────────────────────────── -->
     <header class="mk-topbar" data-reveal style="--mk-delay: 0s;">
+
         <a class="mk-brand" href="/">
             <span class="mk-brand-dot" aria-hidden="true"></span>
             <span>
@@ -15,19 +99,32 @@ $isTestingMode = is_subscription_testing_mode();
         </a>
 
         <nav class="mk-nav" aria-label="Main navigation">
-            <a href="#plans">Plans</a>
+            <a href="#features">Features</a>
+            <a href="#modules">Modules</a>
             <a href="/pricing">Pricing</a>
             <a href="/login">Sign in</a>
             <a href="/pricing" class="mk-nav-cta">Start free</a>
         </nav>
+
     </header>
 
     <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-    <section class="mk-hero-panel" aria-labelledby="mk-hero-title" data-reveal style="--mk-delay: .05s;">
+    <!-- ── Hero ─────────────────────────────────────────────── -->
+    <section
+        class="mk-hero-panel"
+        aria-labelledby="mk-hero-title"
+        data-reveal
+        style="--mk-delay: .05s;"
+    >
         <div class="mk-hero-main">
+
             <p class="mk-kicker">Daily Command Center</p>
-            <h1 id="mk-hero-title" class="font-display">Run your HR operations from one dashboard-ready workspace.</h1>
+
+            <h1 id="mk-hero-title" class="font-display">
+                Run your HR operations from one dashboard-ready workspace.
+            </h1>
+
             <p class="mk-hero-summary">
                 <?= $isTestingMode
                     ? 'Select a plan, unlock modules by feature entitlement, and validate attendance, leave, and payroll flow in testing mode.'
@@ -36,7 +133,7 @@ $isTestingMode = is_subscription_testing_mode();
 
             <div class="mk-hero-actions">
                 <a href="/pricing" class="mk-btn mk-btn-primary">Start your plan</a>
-                <a href="/login" class="mk-btn mk-btn-muted">Open workspace</a>
+                <a href="/login"   class="mk-btn mk-btn-muted">Open workspace</a>
             </div>
 
             <div class="mk-hero-tags" aria-label="Highlights">
@@ -44,11 +141,13 @@ $isTestingMode = is_subscription_testing_mode();
                 <span class="mk-hero-tag is-teal">Leave Workflow</span>
                 <span class="mk-hero-tag is-coral">Payroll Queue</span>
             </div>
+
         </div>
 
         <aside class="mk-hero-side" aria-label="Platform summary">
+
             <p class="mk-side-label">Active plan tiers</p>
-            <p class="mk-side-value"><?= e((string) max(1, count($planRows))) ?></p>
+            <p class="mk-side-value"><?= e((string) $planCount) ?></p>
             <p class="mk-side-meta">Choose a tier and continue to sign-in to activate your access path.</p>
 
             <dl class="mk-hero-stats">
@@ -65,166 +164,135 @@ $isTestingMode = is_subscription_testing_mode();
                     <dd>Quarterly</dd>
                 </div>
             </dl>
+
         </aside>
     </section>
 
-    <section class="mk-plan-section" id="plans" aria-labelledby="mk-plan-title" data-reveal style="--mk-delay: .1s;">
+    <!-- ── Feature definitions ──────────────────────────────── -->
+    <section
+        id="features"
+        class="mk-feature-section"
+        aria-labelledby="mk-feature-title"
+        data-reveal
+        style="--mk-delay: .08s;"
+    >
         <div class="mk-section-head">
-            <p class="mk-kicker">Subscription Cards</p>
-            <h2 id="mk-plan-title" class="font-display">Choose the plan that matches your rollout stage.</h2>
-            <p>
-                <?= $isTestingMode
-                    ? 'In testing mode, module access is unlocked instantly by selected feature coverage.'
-                    : 'In production mode, valid subscription state and plan feature coverage both control access.' ?>
-            </p>
+            <p class="mk-kicker">Platform definitions</p>
+            <h2 id="mk-feature-title" class="font-display">What each part of the platform does</h2>
+            <p>Every core workflow — defined clearly so your team knows what they're activating.</p>
         </div>
 
-        <?php if (!$hasPlans): ?>
-            <div class="alert alert-danger">No active plans are available yet. Reload after seeding plan data.</div>
-        <?php else: ?>
-            <div class="mk-plan-cards">
-                <?php foreach ($planRows as $index => $plan): ?>
-                    <?php
-                    $planCode = strtoupper((string) ($plan['plan_code'] ?? ''));
-                    $planDisplayName = display_plan_name_for_access((string) ($plan['plan_name'] ?? 'Plan'));
-                    $features = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
-                    $featureItems = is_array($features) ? $features : [];
-                    $featureCount = count($featureItems);
-                    $isContactOnly = (int) ($plan['is_contact_only'] ?? 0) === 1;
-                    $employeeLimit = $plan['employee_limit'] ?? null;
-                    $planHook = 'Reliable entry tier for launching attendance and core HR workflows.';
-                    $confidence = 86;
-                    $cardDelay = number_format(0.14 + ($index * 0.05), 2, '.', '');
-
-                    $tierClass = 'is-starter';
-                    $tierTag = 'Starter';
-
-                    if (str_contains($planCode, 'GROWTH')) {
-                        $tierClass = 'is-recommended';
-                        $tierTag = 'Recommended';
-                        $planHook = 'Most selected by teams running full daily operations.';
-                        $confidence = 94;
-                    } elseif (str_contains($planCode, 'ENTERPRISE')) {
-                        $tierClass = 'is-enterprise';
-                        $tierTag = 'Contact sales';
-                        $planHook = 'Built for organizations with advanced governance and support needs.';
-                        $confidence = 98;
-                    }
-
-                    $modalPrice = $isContactOnly
-                        ? 'Contact Sales'
-                        : 'PHP ' . number_format((float) ($plan['price_amount'] ?? 0), 2) . ' / quarter';
-                    ?>
-                    <article class="mk-plan-card <?= e($tierClass) ?>" data-reveal style="--mk-delay: <?= e($cardDelay) ?>s;">
-                        <header class="mk-plan-head">
-                            <span class="mk-plan-tag"><?= e($tierTag) ?></span>
-                            <p class="mk-plan-name font-display"><?= e($planDisplayName) ?></p>
-                            <p class="mk-plan-price">
-                                <?= $isContactOnly ? 'Contact Sales' : 'PHP ' . e(number_format((float) ($plan['price_amount'] ?? 0), 2)) ?>
-                                <span><?= $isContactOnly ? '' : '/ quarter' ?></span>
-                            </p>
-                            <div class="mk-plan-meta">
-                                <span><strong><?= e((string) max(1, $featureCount)) ?></strong> modules</span>
-                                <span><?= $isContactOnly ? 'Guided onboarding' : 'Self-serve rollout' ?></span>
-                            </div>
-                        </header>
-
-                        <p class="mk-plan-desc"><?= e((string) ($plan['description'] ?? '')) ?></p>
-
-                        <div class="mk-plan-psych">
-                            <p class="mk-plan-social <?= e($tierClass) ?>"><?= e($planHook) ?></p>
-                            <?php if (!$isContactOnly): ?>
-                                <p class="mk-plan-anchor">Equivalent to <?= e('PHP ' . number_format(((float) ($plan['price_amount'] ?? 0)) / 3, 2)) ?>/month billed quarterly.</p>
-                                <div class="mk-plan-confidence" aria-label="Plan confidence score">
-                                    <div class="mk-plan-confidence-head">
-                                        <span>Adoption confidence</span>
-                                        <strong><?= e((string) $confidence) ?>%</strong>
-                                    </div>
-                                    <span class="mk-plan-meter" aria-hidden="true"><span style="width: <?= e((string) $confidence) ?>%"></span></span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <ul class="mk-plan-list">
-                            <?php foreach (array_slice($featureItems, 0, 5) as $feature): ?>
-                                <li><?= e(ucwords(str_replace('_', ' ', (string) $feature))) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-
-                        <div class="mk-plan-bottom">
-                            <?php if (!$isContactOnly && $employeeLimit !== null): ?>
-                                <p class="mk-plan-cap">Up to <?= e((string) (int) $employeeLimit) ?> employees included</p>
-                            <?php else: ?>
-                                <p class="mk-plan-cap">Custom capacity, assisted onboarding, and dedicated support</p>
-                            <?php endif; ?>
-
-                            <form
-                                method="post"
-                                action="/subscribe"
-                                class="mk-plan-actions"
-                                data-plan-modal-form
-                                data-plan-name="<?= e($planDisplayName) ?>"
-                                data-plan-price="<?= e($modalPrice) ?>"
-                                data-plan-hook="<?= e($planHook) ?>"
-                            >
-                                <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
-                                <input type="hidden" name="plan_id" value="<?= (int) ($plan['id'] ?? 0) ?>">
-                                <input type="hidden" name="billing_cycle" value="quarterly">
-                                <button class="mk-btn <?= $isContactOnly ? 'mk-btn-muted' : 'mk-btn-primary' ?>" type="submit">
-                                    <?= $isContactOnly ? 'Talk to sales' : 'Start with ' . e($planDisplayName) ?>
-                                </button>
-                            </form>
-                        </div>
-                    </article>
+        <table class="mk-full-table" aria-label="Feature definitions">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Feature area</th>
+                    <th style="width: 48%;">Definition</th>
+                    <th style="width: 18%;">Category</th>
+                    <th style="width: 12%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($featureDefinitions as $def): ?>
+                    <tr>
+                        <td>
+                            <p class="mk-def-name"><?= e($def['name']) ?></p>
+                        </td>
+                        <td>
+                            <p class="mk-def-desc"><?= e($def['desc']) ?></p>
+                        </td>
+                        <td>
+                            <span class="mk-badge <?= e($def['badge']) ?>"><?= e($def['category']) ?></span>
+                        </td>
+                        <td>
+                            <span class="mk-badge <?= e($def['status_badge']) ?>"><?= e($def['status']) ?></span>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+            </tbody>
+        </table>
 
-        <p class="mk-footnote">Need detailed comparison? <a href="/pricing">Open full pricing and module matrix.</a></p>
     </section>
 
-    <section class="mk-final-cta-panel" data-reveal style="--mk-delay: .15s;">
-        <p class="mk-kicker">Launch Fast</p>
-        <h2 class="font-display">Move from disconnected tracking to one execution-ready HR workspace.</h2>
-        <p>
-            <?= $isTestingMode
-                ? 'Pick your plan, sign in, and validate feature-lock behavior before production cutover.'
-                : 'Pick your plan, sign in, and continue through production-ready subscription controls.' ?>
+    <!-- ── Module access matrix ─────────────────────────────── -->
+    <section
+        id="modules"
+        class="mk-module-section"
+        aria-labelledby="mk-module-title"
+        data-reveal
+        style="--mk-delay: .11s;"
+    >
+        <div class="mk-section-head">
+            <p class="mk-kicker">Module access matrix</p>
+            <h2 id="mk-module-title" class="font-display">Which modules are included per plan</h2>
+            <p>Feature availability by subscription tier — choose the coverage that fits your rollout.</p>
+        </div>
+
+        <table class="mk-full-table" aria-label="Module access by plan">
+            <thead>
+                <tr>
+                    <th style="width: 34%;">Module</th>
+                    <th style="width: 22%;">Starter</th>
+                    <th style="width: 22%;">Growth</th>
+                    <th style="width: 22%;">Enterprise</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($moduleMatrix as $row): ?>
+                    <tr>
+                        <td style="font-weight: 700;"><?= e($row['module']) ?></td>
+                        <?php foreach (['starter', 'growth', 'enterprise'] as $tier): ?>
+                            <td>
+                                <?php if ($row[$tier]): ?>
+                                    <span class="mk-check-icon" aria-label="Included" role="img">
+                                        <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                                            <polyline
+                                                points="2,5 4.5,7.5 8,2.5"
+                                                stroke="#085041"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                        </svg>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="mk-dash-icon" aria-label="Not included" role="img">
+                                        <span aria-hidden="true"></span>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <p class="mk-footnote">
+            Need detailed comparison? <a href="/pricing">Open full pricing and module matrix.</a>
         </p>
 
-        <div class="mk-hero-actions">
+    </section>
+
+    <!-- ── Final CTA ────────────────────────────────────────── -->
+    <section
+        class="mk-final-cta-panel"
+        data-reveal
+        style="--mk-delay: .14s;"
+    >
+        <div class="mk-cta-text">
+            <p class="mk-kicker">Launch Fast</p>
+            <h2 class="font-display">
+                Move from disconnected tracking to one execution-ready HR workspace.
+            </h2>
+            <p>
+                <?= $isTestingMode
+                    ? 'Pick your plan, sign in, and validate feature-lock behavior before production cutover.'
+                    : 'Pick your plan, sign in, and continue through production-ready subscription controls.' ?>
+            </p>
+        </div>
+        <div class="mk-cta-actions">
             <a class="mk-btn mk-btn-primary" href="/pricing">Choose a plan</a>
-            <a class="mk-btn mk-btn-muted" href="/login">Go to sign in</a>
+            <a class="mk-btn mk-btn-muted"   href="/login">Go to sign in</a>
         </div>
     </section>
 
-    <div class="mk-plan-modal-backdrop" id="planDecisionModal" hidden>
-        <div class="mk-plan-modal" role="dialog" aria-modal="true" aria-labelledby="mk-plan-modal-title" aria-describedby="mk-plan-modal-copy">
-            <button class="mk-plan-modal-close" type="button" data-plan-modal-close aria-label="Close plan modal">&times;</button>
-            <p class="mk-kicker">Plan decision</p>
-            <h2 id="mk-plan-modal-title" class="font-display">Confirm your plan before continuing</h2>
-            <p class="mk-plan-modal-name" data-plan-modal-name>Selected plan</p>
-            <p class="mk-plan-modal-price" data-plan-modal-price>Pricing</p>
-            <p id="mk-plan-modal-copy" class="mk-plan-modal-copy" data-plan-modal-hook>Plan recommendation</p>
-
-            <ul class="mk-plan-modal-points">
-                <li>Feature access remains aligned with selected subscription coverage.</li>
-                <li>Role-based permissions continue to apply across every module.</li>
-                <li>You can switch plans later from billing controls.</li>
-            </ul>
-
-            <div class="mk-plan-modal-actions">
-                <button class="mk-btn mk-btn-primary" type="button" data-plan-modal-confirm>Continue with this plan</button>
-                <button class="mk-btn mk-btn-muted" type="button" data-plan-modal-close>Review again</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="mk-loading-overlay" id="planLoadingOverlay" hidden aria-live="polite">
-        <div class="mk-loading-card" role="status">
-            <span class="mk-loading-spinner" aria-hidden="true"></span>
-            <p class="mk-loading-title">Applying your plan selection...</p>
-            <p class="mk-loading-copy">Preparing access logic and routing your next step.</p>
-        </div>
-    </div>
 </div>
