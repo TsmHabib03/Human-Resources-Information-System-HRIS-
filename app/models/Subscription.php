@@ -107,11 +107,11 @@ final class Subscription extends Model
              WHERE s.company_id = :company_id
              ORDER BY
                 CASE s.status
-                    WHEN \"active\" THEN 1
-                    WHEN \"trialing\" THEN 2
-                    WHEN \"past_due\" THEN 3
-                    WHEN \"canceled\" THEN 4
-                    WHEN \"expired\" THEN 5
+                    WHEN \'active\' THEN 1
+                    WHEN \'trialing\' THEN 2
+                    WHEN \'past_due\' THEN 3
+                    WHEN \'canceled\' THEN 4
+                    WHEN \'expired\' THEN 5
                     ELSE 6
                 END,
                 s.id DESC
