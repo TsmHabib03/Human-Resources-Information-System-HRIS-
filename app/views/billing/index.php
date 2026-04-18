@@ -206,41 +206,12 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
                 <h3>Recent checkout transactions</h3>
                 <p>Latest simulated checkout attempts and outcomes.</p>
             </div>
-
-            <div class="bill-table-wrap">
-                <table class="bill-table">
-                    <thead>
-                        <tr>
-                            <th>Reference</th>
-                            <th>Plan</th>
-                            <th>Mode</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($transactionRows === []): ?>
-                            <tr>
-                                <td colspan="5" class="bill-empty">No checkout transactions yet.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($transactionRows as $row): ?>
-                                <tr>
-                                    <td><?= e((string) ($row['reference_code'] ?? '-')) ?></td>
-                                    <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
-                                    <td><?= e((string) ($row['test_mode'] ?? '-')) ?></td>
-                                    <td>
-                                        <span class="bill-pill bill-pill-<?= e((string) ($row['status'] ?? 'pending')) ?>">
-                                            <?= e((string) strtoupper((string) ($row['status'] ?? 'pending'))) ?>
-                                        </span>
-                                    </td>
-                                    <td><?= e((string) ($row['created_at'] ?? '-')) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+            <button 
+                class="bill-btn bill-btn-primary"
+                onclick="openModal('transactions')"
+            >
+                View Transactions
+            </button>
         </article>
 
         <article class="bill-card">
@@ -248,35 +219,127 @@ if ($isTestingMode && !(bool) ($status['is_valid'] ?? false)) {
                 <h3>Subscription history</h3>
                 <p>Recent lifecycle records for this company.</p>
             </div>
-
-            <div class="bill-table-wrap">
-                <table class="bill-table">
-                    <thead>
-                        <tr>
-                            <th>Plan</th>
-                            <th>Status</th>
-                            <th>Start</th>
-                            <th>End</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($historyRows === []): ?>
-                            <tr>
-                                <td colspan="4" class="bill-empty">No subscription history yet.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($historyRows as $row): ?>
-                                <tr>
-                                    <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
-                                    <td><?= e((string) ($row['status'] ?? '-')) ?></td>
-                                    <td><?= e((string) ($row['starts_at'] ?? '-')) ?></td>
-                                    <td><?= e((string) ($row['ends_at'] ?? '-')) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+            <button 
+                class="bill-btn bill-btn-primary"
+                onclick="openModal('history')"
+            >
+                View History
+            </button>
         </article>
     </section>
+
+    <!-- Modal -->
+    <div id="billModal" class="bill-modal-overlay" onclick="closeModal()">
+        <div class="bill-modal-content" onclick="event.stopPropagation()">
+            <button class="bill-modal-close" onclick="closeModal()">&times;</button>
+            
+            <!-- Transactions Modal Content -->
+            <div id="transactionsModal" class="bill-modal-body" style="display: none;">
+                <h2 class="bill-modal-title">Recent Checkout Transactions</h2>
+                <div class="bill-modal-table-wrap">
+                    <table class="bill-table">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Plan</th>
+                                <th>Mode</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($transactionRows === []): ?>
+                                <tr>
+                                    <td colspan="5" class="bill-empty">No checkout transactions yet.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($transactionRows as $row): ?>
+                                    <tr>
+                                        <td><?= e((string) ($row['reference_code'] ?? '-')) ?></td>
+                                        <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
+                                        <td><?= e((string) ($row['test_mode'] ?? '-')) ?></td>
+                                        <td>
+                                            <span class="bill-pill bill-pill-<?= e((string) ($row['status'] ?? 'pending')) ?>">
+                                                <?= e((string) strtoupper((string) ($row['status'] ?? 'pending'))) ?>
+                                            </span>
+                                        </td>
+                                        <td><?= e((string) ($row['created_at'] ?? '-')) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History Modal Content -->
+            <div id="historyModal" class="bill-modal-body" style="display: none;">
+                <h2 class="bill-modal-title">Subscription History</h2>
+                <div class="bill-modal-table-wrap">
+                    <table class="bill-table">
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Start</th>
+                                <th>End</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($historyRows === []): ?>
+                                <tr>
+                                    <td colspan="4" class="bill-empty">No subscription history yet.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($historyRows as $row): ?>
+                                    <tr>
+                                        <td><?= e((string) ($row['plan_name'] ?? '-')) ?></td>
+                                        <td><?= e((string) ($row['status'] ?? '-')) ?></td>
+                                        <td><?= e((string) ($row['starts_at'] ?? '-')) ?></td>
+                                        <td><?= e((string) ($row['ends_at'] ?? '-')) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const billModal = document.getElementById('billModal');
+        const transactionsModal = document.getElementById('transactionsModal');
+        const historyModal = document.getElementById('historyModal');
+
+        function openModal(type) {
+            // Hide all modal bodies
+            transactionsModal.style.display = 'none';
+            historyModal.style.display = 'none';
+
+            // Show the requested modal body
+            if (type === 'transactions') {
+                transactionsModal.style.display = 'block';
+            } else if (type === 'history') {
+                historyModal.style.display = 'block';
+            }
+
+            // Show the modal overlay
+            billModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            billModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
 </section>
