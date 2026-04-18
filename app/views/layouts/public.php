@@ -20,7 +20,7 @@ $assetVersion = (string) max(
     <title><?= e(($title ?? 'HRIS') . ' | ' . $app['name']) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         (function () {
             var root = document.documentElement;
@@ -37,8 +37,8 @@ $assetVersion = (string) max(
                 theme: {
                     extend: {
                         fontFamily: {
-                            sans: ['Sora', 'Segoe UI', 'Tahoma', 'sans-serif'],
-                            display: ['DM Serif Display', 'Georgia', 'serif']
+                            sans: ['Manrope', 'Segoe UI', 'Tahoma', 'sans-serif'],
+                            display: ['Plus Jakarta Sans', 'Manrope', 'sans-serif']
                         }
                     }
                 }

@@ -46,14 +46,16 @@ foreach ($planRows as $plan) {
         </a>
 
         <nav class="mk-nav" aria-label="Pricing navigation">
-            <a href="/">Landing</a>
-            <a href="/login" class="mk-login-link">Sign in</a>
+            <a href="/">Home</a>
+            <a href="#pricing-plans">Plans</a>
+            <a href="#pricing-compare">Compare</a>
+            <a href="/login" class="mk-nav-cta">Sign in</a>
         </nav>
     </header>
 
     <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-    <section class="mk-pricing-hero" aria-labelledby="mk-pricing-title" data-reveal style="--mk-delay: .06s;">
+    <section class="mk-pricing-hero" aria-labelledby="mk-pricing-title" data-reveal style="--mk-delay: .05s;">
         <div class="mk-pricing-hero-main">
             <p class="mk-kicker">Pricing and Access</p>
             <h1 id="mk-pricing-title" class="font-display">
@@ -63,13 +65,18 @@ foreach ($planRows as $plan) {
             </h1>
             <p>
                 <?= $isTestingMode
-                    ? 'Your selected plan applies feature locks immediately. Checkout simulation remains optional for validating billing states.'
-                    : 'Select your plan, then continue through billing controls to activate production access.' ?>
+                    ? 'Your selected plan applies feature locks immediately. Checkout simulation remains optional for billing-state validation.'
+                    : 'Choose a plan, then continue through billing controls to activate production access.' ?>
             </p>
+            <div class="mk-hero-tags" aria-label="Pricing highlights">
+                <span class="mk-hero-tag is-blue">Quarterly Billing</span>
+                <span class="mk-hero-tag is-teal">Role-Aware Access</span>
+                <span class="mk-hero-tag is-coral">Feature Entitlement</span>
+            </div>
         </div>
 
         <aside class="mk-pricing-hero-side" aria-label="Mode guidance">
-            <p class="mk-kicker">Mode</p>
+            <p class="mk-side-label">Mode</p>
             <p class="mk-pricing-mode"><?= $isTestingMode ? 'Testing Access Mode' : 'Production Billing Mode' ?></p>
             <p class="mk-pricing-mode-note">
                 <?= $isTestingMode
@@ -80,14 +87,14 @@ foreach ($planRows as $plan) {
     </section>
 
     <?php if (!$hasPlans): ?>
-        <section class="mk-pricing-form" data-reveal style="--mk-delay: .12s;">
+        <section class="mk-pricing-form" data-reveal style="--mk-delay: .1s;">
             <div class="alert alert-danger">No active plans were found. Run roles and demo seed files, then refresh this page.</div>
             <div class="mk-pricing-actions">
                 <a class="mk-btn mk-btn-muted" href="/">Return to landing</a>
             </div>
         </section>
     <?php else: ?>
-        <form class="mk-pricing-form" method="post" action="/subscribe" data-plan-picker data-plan-modal-form data-reveal style="--mk-delay: .12s;">
+        <form class="mk-pricing-form" method="post" action="/subscribe" data-plan-picker data-plan-modal-form data-reveal style="--mk-delay: .1s;">
             <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
             <input type="hidden" name="billing_cycle" value="quarterly">
 
@@ -99,22 +106,24 @@ foreach ($planRows as $plan) {
                         ? 'Selected plan immediately controls testing module access. Simulated checkout is optional.'
                         : 'Quarterly billing remains fixed in this release. Enterprise follows contact-sales onboarding.' ?>
                 </p>
-                <p class="mk-selection-social">Most teams begin with <?= e(normal_plan_name()) ?> and move to Growth when payroll and settings become daily needs.</p>
+                <p class="mk-selection-social">Most teams begin with <?= e(normal_plan_name()) ?> and move to Growth once payroll and settings become core daily workflows.</p>
             </div>
 
             <div class="mk-pricing-layout">
-                <div class="mk-plan-cards mk-plan-cards-pricing" aria-label="Plan options">
+                <div class="mk-plan-cards mk-plan-cards-pricing" id="pricing-plans" aria-label="Plan options">
                     <?php foreach ($planRows as $index => $plan): ?>
                         <?php
                         $planId = (int) ($plan['id'] ?? 0);
                         $planDisplayName = display_plan_name_for_access((string) ($plan['plan_name'] ?? 'Plan'));
                         $features = json_decode((string) ($plan['feature_flags'] ?? '[]'), true);
                         $featureItems = is_array($features) ? $features : [];
+                        $featureCount = count($featureItems);
                         $isContactOnly = (int) ($plan['is_contact_only'] ?? 0) === 1;
                         $isChecked = $defaultPlanId === $planId;
                         $planCode = strtoupper((string) ($plan['plan_code'] ?? ''));
                         $planHook = 'Reliable entry point for launching core HR workflows.';
                         $confidence = 86;
+                        $cardDelay = number_format(0.14 + ($index * 0.05), 2, '.', '');
 
                         $tierClass = 'is-starter';
                         $tierTag = 'Starter';
@@ -141,6 +150,8 @@ foreach ($planRows as $plan) {
                             data-plan-name="<?= e($planDisplayName) ?>"
                             data-plan-price="<?= e($modalPrice) ?>"
                             data-plan-hook="<?= e($planHook) ?>"
+                            data-reveal
+                            style="--mk-delay: <?= e($cardDelay) ?>s;"
                         >
                             <input
                                 type="radio"
@@ -159,6 +170,10 @@ foreach ($planRows as $plan) {
                                     <?= $isContactOnly ? 'Contact Sales' : 'PHP ' . e(number_format((float) ($plan['price_amount'] ?? 0), 2)) ?>
                                     <span><?= $isContactOnly ? '' : '/ quarter' ?></span>
                                 </p>
+                                <div class="mk-plan-meta">
+                                    <span><strong><?= e((string) max(1, $featureCount)) ?></strong> modules</span>
+                                    <span><?= $isContactOnly ? 'Guided onboarding' : 'Self-serve rollout' ?></span>
+                                </div>
                             </div>
 
                             <p class="mk-plan-desc"><?= e((string) ($plan['description'] ?? '')) ?></p>
@@ -183,11 +198,14 @@ foreach ($planRows as $plan) {
                                 <?php endforeach; ?>
                             </ul>
 
-                            <?php if ($isContactOnly): ?>
-                                <span class="mk-pill">Contact-sales flow</span>
-                            <?php else: ?>
-                                <span class="mk-pill">Selectable tier</span>
-                            <?php endif; ?>
+                            <div class="mk-plan-foot">
+                                <?php if ($isContactOnly): ?>
+                                    <span class="mk-pill">Contact-sales flow</span>
+                                <?php else: ?>
+                                    <span class="mk-pill">Selectable tier</span>
+                                <?php endif; ?>
+                                <span class="mk-plan-foot-score">Suitability <?= e((string) $confidence) ?>%</span>
+                            </div>
                         </label>
                     <?php endforeach; ?>
                 </div>
@@ -207,7 +225,7 @@ foreach ($planRows as $plan) {
 
                     <div class="mk-side-block">
                         <h3>3. Validate billing behavior</h3>
-                        <p><?= $isTestingMode ? 'Run checkout simulation only when you need to test billing outcomes.' : 'Complete billing flow to activate production access.' ?></p>
+                        <p><?= $isTestingMode ? 'Run checkout simulation only when you need billing outcome tests.' : 'Complete billing flow to activate production access.' ?></p>
                     </div>
                 </aside>
             </div>
@@ -229,7 +247,7 @@ foreach ($planRows as $plan) {
     <?php endif; ?>
 
     <?php if ($hasPlans): ?>
-        <section class="mk-compare-section" aria-labelledby="mk-compare-title" data-reveal style="--mk-delay: .18s;">
+        <section class="mk-compare-section" id="pricing-compare" aria-labelledby="mk-compare-title" data-reveal style="--mk-delay: .16s;">
             <div class="mk-section-head">
                 <p class="mk-kicker">Detailed Comparison</p>
                 <h2 id="mk-compare-title" class="font-display">Review plan coverage before rollout.</h2>
@@ -264,7 +282,7 @@ foreach ($planRows as $plan) {
         </section>
     <?php endif; ?>
 
-    <section class="mk-pricing-bottom" data-reveal style="--mk-delay: .24s;">
+    <section class="mk-pricing-bottom" data-reveal style="--mk-delay: .2s;">
         <div class="mk-faq" aria-labelledby="mk-faq-title">
             <h2 id="mk-faq-title" class="font-display">FAQ</h2>
             <article>
@@ -287,11 +305,11 @@ foreach ($planRows as $plan) {
 
         <aside class="mk-final-cta" aria-label="Pricing call to action">
             <p class="mk-kicker">Start rollout</p>
-            <h2 class="font-display">Pick a tier and ship your modern HRIS experience with confidence.</h2>
+            <h2 class="font-display">Pick a tier and launch your modern HRIS workspace with confidence.</h2>
             <p>Align plan coverage with role permissions, then validate workflow and billing behavior in one controlled environment.</p>
             <div class="mk-pricing-actions">
-                <a class="mk-btn mk-btn-primary" href="/login">Sign In</a>
-                <a class="mk-btn mk-btn-muted" href="/">Back to Landing</a>
+                <a class="mk-btn mk-btn-primary" href="/login">Sign in</a>
+                <a class="mk-btn mk-btn-muted" href="/">Back to landing</a>
             </div>
         </aside>
     </section>
