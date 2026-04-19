@@ -168,115 +168,104 @@ $moduleMatrix = [
         </aside>
     </section>
 
-    <!-- ── Feature definitions ──────────────────────────────── -->
+    <!-- ── Platform definitions table ────────────────────────── -->
     <section
         id="features"
-        class="mk-feature-section"
-        aria-labelledby="mk-feature-title"
+        class="mk-definitions-panel"
+        aria-labelledby="mk-definitions-title"
         data-reveal
-        style="--mk-delay: .08s;"
+        style="--mk-delay: .07s;"
     >
         <div class="mk-section-head">
             <p class="mk-kicker">Platform definitions</p>
-            <h2 id="mk-feature-title" class="font-display">What each part of the platform does</h2>
+            <h2 id="mk-definitions-title" class="font-display">What each part of the platform does</h2>
             <p>Every core workflow — defined clearly so your team knows what they're activating.</p>
         </div>
 
-        <table class="mk-full-table" aria-label="Feature definitions">
-            <thead>
-                <tr>
-                    <th style="width: 22%;">Feature area</th>
-                    <th style="width: 48%;">Definition</th>
-                    <th style="width: 18%;">Category</th>
-                    <th style="width: 12%;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($featureDefinitions as $def): ?>
+        <div class="mk-definitions-table-wrap">
+            <table class="mk-definitions-table" aria-label="Platform feature definitions">
+                <thead>
                     <tr>
-                        <td>
-                            <p class="mk-def-name"><?= e($def['name']) ?></p>
-                        </td>
-                        <td>
-                            <p class="mk-def-desc"><?= e($def['desc']) ?></p>
-                        </td>
-                        <td>
-                            <span class="mk-badge <?= e($def['badge']) ?>"><?= e($def['category']) ?></span>
-                        </td>
-                        <td>
-                            <span class="mk-badge <?= e($def['status_badge']) ?>"><?= e($def['status']) ?></span>
-                        </td>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Description</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
+                </thead>
+                <tbody>
+                    <?php foreach ($featureDefinitions as $def): ?>
+                        <tr>
+                            <th scope="row"><?= e($def['name']) ?></th>
+                            <td><span class="mk-badge <?= e($def['badge']) ?>"><?= e($def['category']) ?></span></td>
+                            <td><span class="mk-badge <?= e($def['status_badge']) ?>"><?= e($def['status']) ?></span></td>
+                            <td class="mk-def-desc"><?= e($def['desc']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <!-- ── Module access matrix ─────────────────────────────── -->
+    <!-- ── Module access matrix ───────────────────────────────── -->
     <section
         id="modules"
-        class="mk-module-section"
-        aria-labelledby="mk-module-title"
+        class="mk-modules-panel"
+        aria-labelledby="mk-modules-title"
         data-reveal
-        style="--mk-delay: .11s;"
+        style="--mk-delay: .09s;"
     >
         <div class="mk-section-head">
             <p class="mk-kicker">Module access matrix</p>
-            <h2 id="mk-module-title" class="font-display">Which modules are included per plan</h2>
+            <h2 id="mk-modules-title" class="font-display">Which modules are included per plan</h2>
             <p>Feature availability by subscription tier — choose the coverage that fits your rollout.</p>
         </div>
 
-        <table class="mk-full-table" aria-label="Module access by plan">
-            <thead>
-                <tr>
-                    <th style="width: 34%;">Module</th>
-                    <th style="width: 22%;">Starter</th>
-                    <th style="width: 22%;">Growth</th>
-                    <th style="width: 22%;">Enterprise</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($moduleMatrix as $row): ?>
-                    <tr>
-                        <td style="font-weight: 700;"><?= e($row['module']) ?></td>
-                        <?php foreach (['starter', 'growth', 'enterprise'] as $tier): ?>
-                            <td>
-                                <?php if ($row[$tier]): ?>
-                                    <span class="mk-check-icon" aria-label="Included" role="img">
-                                        <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                                            <polyline
-                                                points="2,5 4.5,7.5 8,2.5"
-                                                stroke="#085041"
-                                                stroke-width="1.5"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            />
-                                        </svg>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="mk-dash-icon" aria-label="Not included" role="img">
-                                        <span aria-hidden="true"></span>
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="mk-modules-matrix" aria-label="Module access by plan">
+            <div class="mk-matrix-header">
+                <div class="mk-matrix-label">Module</div>
+                <div class="mk-matrix-col">Starter</div>
+                <div class="mk-matrix-col">Growth</div>
+                <div class="mk-matrix-col">Enterprise</div>
+            </div>
+
+            <?php foreach ($moduleMatrix as $row): ?>
+                <div class="mk-matrix-row">
+                    <div class="mk-matrix-label"><?= e($row['module']) ?></div>
+                    <?php foreach (['starter', 'growth', 'enterprise'] as $tier): ?>
+                        <div class="mk-matrix-col">
+                            <?php if ($row[$tier]): ?>
+                                <span class="mk-check-icon" aria-label="Included" role="img">
+                                    <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                                        <polyline
+                                            points="2,5 4.5,7.5 8,2.5"
+                                            stroke="#16a34a"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                </span>
+                            <?php else: ?>
+                                <span class="mk-dash-icon" aria-label="Not included" role="img">
+                                    <span aria-hidden="true"></span>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
 
         <p class="mk-footnote">
             Need detailed comparison? <a href="/pricing">Open full pricing and module matrix.</a>
         </p>
-
     </section>
 
     <!-- ── Final CTA ────────────────────────────────────────── -->
     <section
         class="mk-final-cta-panel"
         data-reveal
-        style="--mk-delay: .14s;"
+        style="--mk-delay: .11s;"
     >
         <div class="mk-cta-text">
             <p class="mk-kicker">Launch Fast</p>
