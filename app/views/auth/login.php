@@ -4,6 +4,11 @@
 
     <div class="login-shell">
         <aside class="login-story" aria-hidden="true">
+            <!-- Back to Home Button (Above Barangay HRIS) -->
+            <a href="/" class="back-home-btn" style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.85rem;border-radius:0.375rem;background:#f3f4f6;color:#2563eb;font-weight:500;font-size:0.95rem;text-decoration:none;box-shadow:0 1px 4px 0 rgba(37,99,235,0.06);transition:background 0.2s;cursor:pointer;min-width:0;margin-bottom:0.75rem;">
+                <svg width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                <span style="font-size:0.95rem;">Home</span>
+            </a>
             <div class="story-head">
                 <span class="story-badge">Barangay HRIS</span>
                 <span class="story-status">Live operations</span>
@@ -33,7 +38,9 @@
         </aside>
 
         <article class="login-panel">
-            <div class="panel-head">
+
+           
+            <div class="panel-head" style="position:relative;">
                 <p class="panel-kicker">Secure Access</p>
                 <h2 class="font-display text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</h2>
                 <p class="text-sm leading-relaxed text-slate-600">Sign in to continue to your dashboard.</p>
@@ -58,6 +65,7 @@
                 </label>
 
                 <button type="submit" class="login-submit">Sign in to dashboard</button>
+
             </form>
 
             <div class="panel-foot">
