@@ -55,6 +55,7 @@ foreach ($planRows as $plan) {
 
     <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
+    <!-- ── Pricing hero ────────────────────────────────────── -->
     <section class="mk-pricing-hero" aria-labelledby="mk-pricing-title" data-reveal style="--mk-delay: .05s;">
         <div class="mk-pricing-hero-main">
             <p class="mk-kicker">Pricing and Access</p>
@@ -68,6 +69,25 @@ foreach ($planRows as $plan) {
                     ? 'Your selected plan applies feature locks immediately. Checkout simulation remains optional for billing-state validation.'
                     : 'Choose a plan, then continue through billing controls to activate production access.' ?>
             </p>
+
+            <!-- Progress stepper (commitment-consistency) -->
+            <div class="mk-stepper" aria-label="Selection progress">
+                <div class="mk-step is-active">
+                    <span class="mk-step-number">1</span>
+                    <span>Choose Plan</span>
+                </div>
+                <span class="mk-step-divider" aria-hidden="true"></span>
+                <div class="mk-step">
+                    <span class="mk-step-number">2</span>
+                    <span>Create Account</span>
+                </div>
+                <span class="mk-step-divider" aria-hidden="true"></span>
+                <div class="mk-step">
+                    <span class="mk-step-number">3</span>
+                    <span>Start Working</span>
+                </div>
+            </div>
+
             <div class="mk-hero-tags" aria-label="Pricing highlights">
                 <span class="mk-hero-tag is-blue">Quarterly Billing</span>
                 <span class="mk-hero-tag is-teal">Role-Aware Access</span>
@@ -123,14 +143,14 @@ foreach ($planRows as $plan) {
                         $planCode = strtoupper((string) ($plan['plan_code'] ?? ''));
                         $planHook = 'Reliable entry point for launching core HR workflows.';
                         $confidence = 86;
-                        $cardDelay = number_format(0.14 + ($index * 0.05), 2, '.', '');
+                        $cardDelay = number_format(0.14 + ($index * 0.06), 2, '.', '');
 
                         $tierClass = 'is-starter';
                         $tierTag = 'Starter';
 
                         if (str_contains($planCode, 'GROWTH')) {
                             $tierClass = 'is-recommended';
-                            $tierTag = 'Recommended';
+                            $tierTag = 'Most Popular';
                             $planHook = 'Most selected for complete operations rollout and daily use.';
                             $confidence = 94;
                         } elseif (str_contains($planCode, 'ENTERPRISE')) {
@@ -140,9 +160,11 @@ foreach ($planRows as $plan) {
                             $confidence = 98;
                         }
 
+                        $priceRaw = (float) ($plan['price_amount'] ?? 0);
+                        $monthlyEquiv = $priceRaw / 3;
                         $modalPrice = $isContactOnly
                             ? 'Contact Sales'
-                            : 'PHP ' . number_format((float) ($plan['price_amount'] ?? 0), 2) . ' / quarter';
+                            : 'PHP ' . number_format($priceRaw, 2) . ' / quarter';
                         ?>
                         <label
                             class="mk-plan-card <?= e($tierClass) ?> <?= $isChecked ? 'is-selected' : '' ?>"
@@ -150,8 +172,8 @@ foreach ($planRows as $plan) {
                             data-plan-name="<?= e($planDisplayName) ?>"
                             data-plan-price="<?= e($modalPrice) ?>"
                             data-plan-hook="<?= e($planHook) ?>"
-                            data-reveal
-                            style="--mk-delay: <?= e($cardDelay) ?>s;"
+                            data-scroll-reveal
+                            style="transition-delay: <?= e($cardDelay) ?>s;"
                         >
                             <input
                                 type="radio"
@@ -167,9 +189,16 @@ foreach ($planRows as $plan) {
                             <div class="mk-plan-head">
                                 <p class="mk-plan-name font-display"><?= e($planDisplayName) ?></p>
                                 <p class="mk-plan-price">
-                                    <?= $isContactOnly ? 'Contact Sales' : 'PHP ' . e(number_format((float) ($plan['price_amount'] ?? 0), 2)) ?>
-                                    <span><?= $isContactOnly ? '' : '/ quarter' ?></span>
+                                    <?php if ($isContactOnly): ?>
+                                        Contact Sales
+                                    <?php else: ?>
+                                        PHP <?= e(number_format($monthlyEquiv, 2)) ?>
+                                        <span>/ month</span>
+                                    <?php endif; ?>
                                 </p>
+                                <?php if (!$isContactOnly): ?>
+                                    <p class="mk-plan-anchor">Billed as PHP <?= e(number_format($priceRaw, 2)) ?> per quarter</p>
+                                <?php endif; ?>
                                 <div class="mk-plan-meta">
                                     <span><strong><?= e((string) max(1, $featureCount)) ?></strong> modules</span>
                                     <span><?= $isContactOnly ? 'Guided onboarding' : 'Self-serve rollout' ?></span>
@@ -181,13 +210,12 @@ foreach ($planRows as $plan) {
                             <div class="mk-plan-psych">
                                 <p class="mk-plan-social <?= e($tierClass) ?>"><?= e($planHook) ?></p>
                                 <?php if (!$isContactOnly): ?>
-                                    <p class="mk-plan-anchor">Equivalent to <?= e('PHP ' . number_format(((float) ($plan['price_amount'] ?? 0)) / 3, 2)) ?>/month billed quarterly.</p>
                                     <div class="mk-plan-confidence" aria-label="Plan confidence score">
                                         <div class="mk-plan-confidence-head">
                                             <span>Adoption confidence</span>
                                             <strong><?= e((string) $confidence) ?>%</strong>
                                         </div>
-                                        <span class="mk-plan-meter" aria-hidden="true"><span style="width: <?= e((string) $confidence) ?>%"></span></span>
+                                        <span class="mk-plan-meter" aria-hidden="true" style="--mk-meter-width: <?= e((string) $confidence) ?>%"><span></span></span>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -214,17 +242,17 @@ foreach ($planRows as $plan) {
                     <h2 class="font-display">How rollout works</h2>
 
                     <div class="mk-side-block">
-                        <h3>1. Select plan</h3>
+                        <h3><span class="mk-step-num">1</span> Select plan</h3>
                         <p><?= $isTestingMode ? 'Choose the plan that unlocks modules for your test run.' : 'Choose the quarterly tier for your workspace.' ?></p>
                     </div>
 
                     <div class="mk-side-block">
-                        <h3>2. Sign in and continue</h3>
+                        <h3><span class="mk-step-num">2</span> Sign in and continue</h3>
                         <p>Open the workspace and validate your routing, approvals, and operational flow.</p>
                     </div>
 
                     <div class="mk-side-block">
-                        <h3>3. Validate billing behavior</h3>
+                        <h3><span class="mk-step-num">3</span> Validate billing behavior</h3>
                         <p><?= $isTestingMode ? 'Run checkout simulation only when you need billing outcome tests.' : 'Complete billing flow to activate production access.' ?></p>
                     </div>
                 </aside>
@@ -246,6 +274,7 @@ foreach ($planRows as $plan) {
         </form>
     <?php endif; ?>
 
+    <!-- ── Comparison table ────────────────────────────────── -->
     <?php if ($hasPlans): ?>
         <section class="mk-compare-section" id="pricing-compare" aria-labelledby="mk-compare-title" data-reveal style="--mk-delay: .16s;">
             <div class="mk-section-head">
@@ -282,25 +311,64 @@ foreach ($planRows as $plan) {
         </section>
     <?php endif; ?>
 
+    <!-- ── FAQ + Final CTA ─────────────────────────────────── -->
     <section class="mk-pricing-bottom" data-reveal style="--mk-delay: .2s;">
         <div class="mk-faq" aria-labelledby="mk-faq-title">
             <h2 id="mk-faq-title" class="font-display">FAQ</h2>
-            <article>
-                <h3>Can we enable monthly billing now?</h3>
-                <p>No. Monthly billing is intentionally disabled for this release.</p>
-            </article>
-            <article>
-                <h3>Is payment processed in this environment?</h3>
-                <p>
-                    <?= $isTestingMode
-                        ? 'No. Checkout outcomes are simulated and optional in testing mode.'
-                        : 'Checkout behavior is controlled by production billing flow.' ?>
-                </p>
-            </article>
-            <article>
-                <h3>Can Enterprise self-checkout immediately?</h3>
-                <p>Enterprise follows a contact-sales path during this phase.</p>
-            </article>
+
+            <div class="mk-faq-item">
+                <button class="mk-faq-question" type="button" aria-expanded="false">
+                    Can we enable monthly billing now?
+                    <svg class="mk-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mk-faq-answer">
+                    <p>No. Monthly billing is intentionally disabled for this release. Quarterly billing ensures operational stability and simpler access management.</p>
+                </div>
+            </div>
+
+            <div class="mk-faq-item">
+                <button class="mk-faq-question" type="button" aria-expanded="false">
+                    Is payment processed in this environment?
+                    <svg class="mk-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mk-faq-answer">
+                    <p>
+                        <?= $isTestingMode
+                            ? 'No. Checkout outcomes are simulated and optional in testing mode.'
+                            : 'Checkout behavior is controlled by production billing flow.' ?>
+                    </p>
+                </div>
+            </div>
+
+            <div class="mk-faq-item">
+                <button class="mk-faq-question" type="button" aria-expanded="false">
+                    Can Enterprise self-checkout immediately?
+                    <svg class="mk-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mk-faq-answer">
+                    <p>Enterprise follows a contact-sales path during this phase. A dedicated onboarding specialist will guide your team through the setup.</p>
+                </div>
+            </div>
+
+            <div class="mk-faq-item">
+                <button class="mk-faq-question" type="button" aria-expanded="false">
+                    Can I upgrade my plan later?
+                    <svg class="mk-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mk-faq-answer">
+                    <p>Yes. You can upgrade at any time without losing your existing data or configurations. The difference is prorated for the remaining quarter.</p>
+                </div>
+            </div>
+
+            <div class="mk-faq-item">
+                <button class="mk-faq-question" type="button" aria-expanded="false">
+                    What happens when my subscription expires?
+                    <svg class="mk-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mk-faq-answer">
+                    <p>Your data remains safe and accessible in read-only mode. Module access is paused until you renew. No data is ever deleted due to subscription expiry.</p>
+                </div>
+            </div>
         </div>
 
         <aside class="mk-final-cta" aria-label="Pricing call to action">
@@ -314,6 +382,7 @@ foreach ($planRows as $plan) {
         </aside>
     </section>
 
+    <!-- ── Plan decision modal ─────────────────────────────── -->
     <div class="mk-plan-modal-backdrop" id="planDecisionModal" hidden>
         <div class="mk-plan-modal" role="dialog" aria-modal="true" aria-labelledby="mk-plan-modal-title" aria-describedby="mk-plan-modal-copy">
             <button class="mk-plan-modal-close" type="button" data-plan-modal-close aria-label="Close plan modal">&times;</button>
