@@ -6,177 +6,181 @@ $designationOptions = is_array($designations ?? null) ? $designations : [];
 $supervisorOptions = is_array($supervisors ?? null) ? $supervisors : [];
 ?>
 
-<section class="emp-page">
-	<header class="emp-hero">
-		<div class="emp-hero-copy">
-			<p class="emp-kicker">Edit Employee</p>
-			<h2 class="emp-title font-display">Update employee profile details</h2>
-			<p class="emp-subtitle">Apply changes to personal and employment records while keeping data validation in place.</p>
-			<div class="emp-tags">
-				<span class="emp-tag">Inline updates</span>
-				<span class="emp-tag">Audit trail ready</span>
-			</div>
-		</div>
+<section class="page">
+    <header class="page-banner">
+        <div class="page-banner-copy">
+            <p class="page-banner-kicker">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Profile Management
+            </p>
+            <h2 class="page-banner-title">Update employee profile details</h2>
+            <p class="page-banner-sub">Adjust identity or employment records while keeping validation and audit trails intact.</p>
+            <div class="page-banner-meta">
+                <span class="badge badge-teal">ID: <?= e((string) ($model['employee_code'] ?? 'NEW')) ?></span>
+                <span class="badge">Audit Active</span>
+            </div>
+        </div>
+        <div class="page-banner-actions">
+            <a class="btn btn-secondary" href="/employees/<?= (int) ($model['id'] ?? 0) ?>">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                View Profile
+            </a>
+        </div>
+    </header>
 
-		<div class="emp-hero-actions">
-			<a class="emp-action-link" href="/employees/<?= (int) ($model['id'] ?? 0) ?>">Back to profile</a>
-		</div>
-	</header>
+    <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
-	<?php require __DIR__ . '/../partials/alerts.php'; ?>
+    <form class="card glass-card" method="post" action="/employees/<?= (int) ($model['id'] ?? 0) ?>/update" novalidate>
+        <input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+        
+        <section class="form-section card-shine">
+            <div class="form-section-head">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--blue-50); color: var(--blue-600); display: flex; align-items: center; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <h3>Personal Details</h3>
+                </div>
+                <p>Core identity and contact information synchronized across all modules.</p>
+            </div>
+            
+            <div class="form-grid">
+                <label>
+                    <span class="field-label">First Name <em class="text-red">*</em></span>
+                    <input type="text" name="first_name" value="<?= e((string) ($input['first_name'] ?? '')) ?>" required>
+                </label>
+                <label>
+                    <span class="field-label">Middle Name</span>
+                    <input type="text" name="middle_name" value="<?= e((string) ($input['middle_name'] ?? '')) ?>">
+                </label>
+                <label>
+                    <span class="field-label">Last Name <em class="text-red">*</em></span>
+                    <input type="text" name="last_name" value="<?= e((string) ($input['last_name'] ?? '')) ?>" required>
+                </label>
+                <label>
+                    <span class="field-label">Gender <em class="text-red">*</em></span>
+                    <select name="gender" required>
+                        <?php foreach (['Male', 'Female', 'Other'] as $gender): ?>
+                            <option value="<?= e($gender) ?>" <?= (($input['gender'] ?? '') === $gender) ? 'selected' : '' ?>><?= e($gender) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Date of Birth <em class="text-red">*</em></span>
+                    <input type="date" name="date_of_birth" value="<?= e((string) ($input['date_of_birth'] ?? '')) ?>" required>
+                </label>
+                <label>
+                    <span class="field-label">Marital Status</span>
+                    <select name="marital_status">
+                        <?php foreach (['Single', 'Married', 'Divorced', 'Widowed'] as $item): ?>
+                            <option value="<?= e($item) ?>" <?= (($input['marital_status'] ?? 'Single') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Nationality</span>
+                    <input type="text" name="nationality" value="<?= e((string) ($input['nationality'] ?? '')) ?>">
+                </label>
+                <label>
+                    <span class="field-label">Phone Number</span>
+                    <input type="tel" name="phone" value="<?= e((string) ($input['phone'] ?? '')) ?>">
+                </label>
+                <label>
+                    <span class="field-label">Email Address</span>
+                    <input type="email" name="email" value="<?= e((string) ($input['email'] ?? '')) ?>">
+                </label>
+                <label class="full-width">
+                    <span class="field-label">Residential Address</span>
+                    <textarea name="address" rows="3"><?= e((string) ($input['address'] ?? '')) ?></textarea>
+                </label>
+            </div>
+        </section>
 
-	<form class="emp-form-card" method="post" action="/employees/<?= (int) ($model['id'] ?? 0) ?>/update">
-		<input type="hidden" name="_csrf" value="<?= e((string) ($csrf ?? '')) ?>">
+        <section class="form-section card-shine">
+            <div class="form-section-head">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--teal-50); color: var(--teal-600); display: flex; align-items: center; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3>Employment Assignment</h3>
+                </div>
+                <p>Placement records and status details used for payroll and reporting.</p>
+            </div>
+            
+            <div class="form-grid">
+                <label>
+                    <span class="field-label">Department <em class="text-red">*</em></span>
+                    <select name="department_id" required>
+                        <?php foreach ($departmentOptions as $department): ?>
+                            <option value="<?= (int) $department['id'] ?>" <?= ((int) ($input['department_id'] ?? 0) === (int) $department['id']) ? 'selected' : '' ?>>
+                                <?= e((string) $department['department_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Designation <em class="text-red">*</em></span>
+                    <select name="designation_id" required>
+                        <?php foreach ($designationOptions as $designation): ?>
+                            <option value="<?= (int) $designation['id'] ?>" <?= ((int) ($input['designation_id'] ?? 0) === (int) $designation['id']) ? 'selected' : '' ?>>
+                                <?= e((string) $designation['designation_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Employment Type</span>
+                    <select name="employment_type">
+                        <?php foreach (['Full-Time', 'Part-Time', 'Contract', 'Intern'] as $item): ?>
+                            <option value="<?= e($item) ?>" <?= (($input['employment_type'] ?? 'Full-Time') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Contract Status</span>
+                    <select name="employment_status">
+                        <?php foreach (['Active', 'Probation', 'On Leave', 'Resigned', 'Terminated'] as $item): ?>
+                            <option value="<?= e($item) ?>" <?= (($input['employment_status'] ?? 'Active') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>
+                    <span class="field-label">Date Hired <em class="text-red">*</em></span>
+                    <input type="date" name="date_hired" value="<?= e((string) ($input['date_hired'] ?? '')) ?>" required>
+                </label>
+                <label>
+                    <span class="field-label">Regularization Date</span>
+                    <input type="date" name="date_regularized" value="<?= e((string) ($input['date_regularized'] ?? '')) ?>">
+                </label>
+                <label>
+                    <span class="field-label">Separation Date</span>
+                    <input type="date" name="date_separated" value="<?= e((string) ($input['date_separated'] ?? '')) ?>">
+                </label>
+                <label class="full-width">
+                    <span class="field-label">Supervisor / Reporting Manager</span>
+                    <select name="supervisor_id">
+                        <option value="">No direct supervisor</option>
+                        <?php foreach ($supervisorOptions as $supervisor): ?>
+                            <option value="<?= (int) $supervisor['id'] ?>" <?= ((int) ($input['supervisor_id'] ?? 0) === (int) $supervisor['id']) ? 'selected' : '' ?>>
+                                <?= e((string) ($supervisor['employee_code'] . ' — ' . $supervisor['first_name'] . ' ' . $supervisor['last_name'])) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+            </div>
+        </section>
 
-		<section class="emp-form-section">
-			<div class="emp-section-head">
-				<h3>Personal Details</h3>
-				<p>Maintain core employee identity and contact information.</p>
-			</div>
-
-			<div class="emp-form-grid">
-				<div class="emp-field">
-					<label for="first_name">First Name</label>
-					<input id="first_name" type="text" name="first_name" value="<?= e((string) ($input['first_name'] ?? '')) ?>" required>
-				</div>
-
-				<div class="emp-field">
-					<label for="middle_name">Middle Name</label>
-					<input id="middle_name" type="text" name="middle_name" value="<?= e((string) ($input['middle_name'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field">
-					<label for="last_name">Last Name</label>
-					<input id="last_name" type="text" name="last_name" value="<?= e((string) ($input['last_name'] ?? '')) ?>" required>
-				</div>
-
-				<div class="emp-field">
-					<label for="gender">Gender</label>
-					<select id="gender" name="gender" required>
-						<?php foreach (['Male', 'Female', 'Other'] as $gender): ?>
-							<option value="<?= e($gender) ?>" <?= (($input['gender'] ?? '') === $gender) ? 'selected' : '' ?>><?= e($gender) ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="date_of_birth">Date of Birth</label>
-					<input id="date_of_birth" type="date" name="date_of_birth" value="<?= e((string) ($input['date_of_birth'] ?? '')) ?>" required>
-				</div>
-
-				<div class="emp-field">
-					<label for="marital_status">Marital Status</label>
-					<select id="marital_status" name="marital_status">
-						<?php foreach (['Single', 'Married', 'Divorced', 'Widowed'] as $item): ?>
-							<option value="<?= e($item) ?>" <?= (($input['marital_status'] ?? 'Single') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="nationality">Nationality</label>
-					<input id="nationality" type="text" name="nationality" value="<?= e((string) ($input['nationality'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field">
-					<label for="phone">Phone</label>
-					<input id="phone" type="text" name="phone" value="<?= e((string) ($input['phone'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field">
-					<label for="email">Email</label>
-					<input id="email" type="email" name="email" value="<?= e((string) ($input['email'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field full">
-					<label for="address">Address</label>
-					<textarea id="address" name="address" rows="3"><?= e((string) ($input['address'] ?? '')) ?></textarea>
-				</div>
-			</div>
-		</section>
-
-		<section class="emp-form-section">
-			<div class="emp-section-head">
-				<h3>Employment Details</h3>
-				<p>Update assignment, status, reporting line, and lifecycle dates.</p>
-			</div>
-
-			<div class="emp-form-grid">
-				<div class="emp-field">
-					<label for="department_id">Department</label>
-					<select id="department_id" name="department_id" required>
-						<?php foreach ($departmentOptions as $department): ?>
-							<option value="<?= (int) $department['id'] ?>" <?= ((int) ($input['department_id'] ?? 0) === (int) $department['id']) ? 'selected' : '' ?>>
-								<?= e((string) $department['department_name']) ?>
-							</option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="designation_id">Designation</label>
-					<select id="designation_id" name="designation_id" required>
-						<?php foreach ($designationOptions as $designation): ?>
-							<option value="<?= (int) $designation['id'] ?>" <?= ((int) ($input['designation_id'] ?? 0) === (int) $designation['id']) ? 'selected' : '' ?>>
-								<?= e((string) $designation['designation_name']) ?>
-							</option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="employment_type">Employment Type</label>
-					<select id="employment_type" name="employment_type">
-						<?php foreach (['Full-Time', 'Part-Time', 'Contract', 'Intern'] as $item): ?>
-							<option value="<?= e($item) ?>" <?= (($input['employment_type'] ?? 'Full-Time') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="employment_status">Employment Status</label>
-					<select id="employment_status" name="employment_status">
-						<?php foreach (['Active', 'Probation', 'On Leave', 'Resigned', 'Terminated'] as $item): ?>
-							<option value="<?= e($item) ?>" <?= (($input['employment_status'] ?? 'Active') === $item) ? 'selected' : '' ?>><?= e($item) ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-
-				<div class="emp-field">
-					<label for="date_hired">Date Hired</label>
-					<input id="date_hired" type="date" name="date_hired" value="<?= e((string) ($input['date_hired'] ?? '')) ?>" required>
-				</div>
-
-				<div class="emp-field">
-					<label for="date_regularized">Date Regularized</label>
-					<input id="date_regularized" type="date" name="date_regularized" value="<?= e((string) ($input['date_regularized'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field">
-					<label for="date_separated">Date Separated</label>
-					<input id="date_separated" type="date" name="date_separated" value="<?= e((string) ($input['date_separated'] ?? '')) ?>">
-				</div>
-
-				<div class="emp-field full">
-					<label for="supervisor_id">Supervisor</label>
-					<select id="supervisor_id" name="supervisor_id">
-						<option value="">None</option>
-						<?php foreach ($supervisorOptions as $supervisor): ?>
-							<option value="<?= (int) $supervisor['id'] ?>" <?= ((int) ($input['supervisor_id'] ?? 0) === (int) $supervisor['id']) ? 'selected' : '' ?>>
-								<?= e((string) ($supervisor['employee_code'] . ' - ' . $supervisor['first_name'] . ' ' . $supervisor['last_name'])) ?>
-							</option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-			</div>
-		</section>
-
-		<div class="emp-form-actions">
-			<p class="emp-form-hint">Updates are recorded in audit logs for traceability.</p>
-			<div class="emp-hero-actions">
-				<a class="emp-action-link" href="/employees/<?= (int) ($model['id'] ?? 0) ?>">Cancel</a>
-				<button class="emp-action-primary" type="submit">Save changes</button>
-			</div>
-		</div>
-	</form>
+        <div class="form-actions">
+            <p class="form-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Changes are recorded in the system audit logs for administrative traceability.
+            </p>
+            <div class="inline-actions">
+                <a class="btn btn-ghost" href="/employees/<?= (int) ($model['id'] ?? 0) ?>">Cancel changes</a>
+                <button class="btn btn-primary" type="submit">
+                    Save profile updates
+                </button>
+            </div>
+        </div>
+    </form>
 </section>

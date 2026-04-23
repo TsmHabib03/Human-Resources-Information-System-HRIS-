@@ -1,295 +1,46 @@
-.set-page {
-    display: grid;
-    gap: 18px;
-}
-
-.set-hero {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    border: 1px solid var(--color-border-default);
-    border-radius: 18px;
-    background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 52%, #f0fcf9 100%);
-    box-shadow: var(--shadow-sm);
-    padding: 22px;
-}
-
-.set-hero-copy {
-    display: grid;
-    gap: 7px;
-    max-width: 70ch;
-}
-
-.set-kicker {
-    color: var(--color-accent-teal);
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.set-title {
-    color: var(--color-text-primary);
-    font-size: clamp(1.35rem, 2vw, 1.8rem);
-    font-weight: 800;
-    line-height: 1.2;
-}
-
-.set-subtitle {
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    font-size: 0.9rem;
-}
-
-.set-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 4px;
-}
-
-.set-tag {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    border: 1px solid rgba(15, 118, 110, 0.2);
-    background: rgba(15, 118, 110, 0.09);
-    color: #0f766e;
-    padding: 5px 9px;
-    font-size: 0.73rem;
-    font-weight: 700;
-}
-
-.set-hero-side {
-    display: grid;
-    gap: 8px;
-    min-width: 220px;
-}
-
-.set-stat {
-    border: 1px solid var(--color-border-muted);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.86);
-    padding: 10px 11px;
-    display: grid;
-    gap: 2px;
-}
-
-.set-stat-label {
-    color: var(--color-text-tertiary);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.set-stat-value {
-    color: var(--color-text-primary);
-    font-size: 1.03rem;
-    font-weight: 800;
-}
-
-.set-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-}
-
-.set-card {
-    border: 1px solid var(--color-border-default);
-    border-radius: 16px;
-    background: var(--color-canvas-subtle);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.05);
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-}
-
-.set-section-head {
-    display: grid;
-    gap: 4px;
-}
-
-.set-section-head h3 {
-    color: var(--color-text-primary);
-    font-size: 1rem;
-}
-
-.set-section-head p {
-    color: var(--color-text-secondary);
-    font-size: 0.83rem;
-}
-
-.set-form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.set-field {
-    display: grid;
-    gap: 6px;
-}
-
-.set-field label {
-    color: var(--color-text-secondary);
-    font-size: 0.84rem;
-    font-weight: 700;
-}
-
-.set-field.full {
-    grid-column: 1 / -1;
-}
-
-.set-form-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.set-form-hint {
-    color: var(--color-text-tertiary);
-    font-size: 0.78rem;
-}
-
-.set-btn-primary {
-    border: 1px solid rgba(15, 118, 110, 0.28);
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--color-accent-teal), #0d5f58);
-    color: #ffffff;
-    font-size: 0.84rem;
-    font-weight: 700;
-    padding: 9px 13px;
-    cursor: pointer;
-}
-
-.set-system-form {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-    gap: 10px;
-}
-
-.set-table-wrap {
-    border: 1px solid var(--color-border-default);
-    border-radius: 14px;
-    overflow: auto;
-}
-
-.set-table {
-    width: 100%;
-    min-width: 760px;
-    border-collapse: collapse;
-}
-
-.set-table th,
-.set-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid var(--color-border-muted);
-    vertical-align: middle;
-}
-
-.set-table th {
-    color: var(--color-text-tertiary);
-    font-size: 0.76rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: #f9fbff;
-}
-
-.set-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.05);
-}
-
-.set-role {
-    display: grid;
-    gap: 2px;
-}
-
-.set-role strong {
-    color: var(--color-text-primary);
-    font-size: 0.88rem;
-}
-
-.set-role span {
-    color: var(--color-text-tertiary);
-    font-size: 0.77rem;
-}
-
+/* Settings module - role status badges and toggle button. */
 .set-badge {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    padding: 4px 8px;
-    font-size: 0.74rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+    font-size: 0.72rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-border-default);
+    background: var(--gov-surface-alt);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    line-height: 1.5;
 }
 
 .set-badge-active {
-    color: #0f766e;
-    background: rgba(15, 118, 110, 0.12);
-    border-color: rgba(15, 118, 110, 0.2);
+    color: var(--gov-green);
+    background: var(--gov-green-100);
+    border-color: rgba(16, 107, 58, 0.3);
 }
 
 .set-badge-inactive {
-    color: #b42318;
-    background: rgba(220, 38, 38, 0.12);
-    border-color: rgba(220, 38, 38, 0.2);
+    color: var(--gov-red);
+    background: var(--gov-red-100);
+    border-color: rgba(180, 35, 24, 0.3);
 }
 
 .set-toggle-btn {
-    border: 0;
-    border-radius: 8px;
-    padding: 6px 9px;
-    font-size: 0.76rem;
+    border: 1px solid var(--gov-blue);
+    border-radius: var(--radius-xs);
+    padding: 4px 10px;
+    font-size: 0.74rem;
     font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
     cursor: pointer;
-    background: rgba(37, 99, 235, 0.12);
-    color: #1e40af;
+    background: var(--gov-blue-100);
+    color: var(--gov-blue);
+    transition: var(--transition-fast);
 }
 
-.set-empty {
-    text-align: center;
-    color: var(--color-text-secondary);
-    padding: 24px 12px;
-    font-weight: 600;
-}
-
-@media (max-width: 1100px) {
-    .set-form-grid,
-    .set-system-form {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .set-system-form button,
-    .set-form-actions {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 860px) {
-    .set-hero {
-        flex-direction: column;
-    }
-
-    .set-hero-side {
-        min-width: 0;
-        width: 100%;
-    }
-}
-
-@media (max-width: 640px) {
-    .set-form-grid,
-    .set-system-form {
-        grid-template-columns: 1fr;
-    }
-
-    .set-card {
-        padding: 12px;
-    }
+.set-toggle-btn:hover {
+    background: var(--gov-blue);
+    color: #ffffff;
 }

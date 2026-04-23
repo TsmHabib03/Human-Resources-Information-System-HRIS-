@@ -35,33 +35,47 @@
             datasets: [{
                 label: 'Present',
                 data: payload.values,
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.14)',
-                tension: 0.35,
+                borderColor: '#0b3d91',
+                backgroundColor: 'rgba(11, 61, 145, 0.12)',
+                tension: 0.3,
                 fill: true,
                 pointRadius: 3,
-                pointHoverRadius: 4,
-                pointBackgroundColor: '#2563eb'
+                pointHoverRadius: 5,
+                pointBackgroundColor: '#0b3d91',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 1.5,
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0b1f3a',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    padding: 10,
+                    cornerRadius: 4,
+                    borderColor: '#b68409',
+                    borderWidth: 1
+                }
             },
             scales: {
                 x: {
-                    ticks: { color: '#64748b' },
-                    grid: { color: 'rgba(148, 163, 184, 0.25)' }
+                    ticks: { color: '#4a5a75', font: { size: 11, weight: '600' } },
+                    grid: { color: 'rgba(198, 204, 216, 0.4)', drawBorder: false }
                 },
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        color: '#64748b',
-                        precision: 0
+                        color: '#4a5a75',
+                        precision: 0,
+                        font: { size: 11, weight: '600' }
                     },
-                    grid: { color: 'rgba(148, 163, 184, 0.25)' }
+                    grid: { color: 'rgba(198, 204, 216, 0.4)', drawBorder: false }
                 }
             }
         }

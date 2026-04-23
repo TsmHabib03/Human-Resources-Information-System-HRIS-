@@ -5,7 +5,7 @@
 
 .bill-page {
     display: grid;
-    gap: 18px;
+    gap: var(--space-5);
 }
 
 /* ── Hero ──────────────────────────────────────────────────── */
@@ -13,13 +13,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
+    gap: var(--space-4);
     flex-wrap: wrap;
-    padding: 22px;
-    border-radius: 16px;
-    border: 1px solid var(--color-border-default);
-    background: var(--gradient-hero);
-    box-shadow: var(--shadow-sm);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--blue-600);
+    background: var(--white);
+    box-shadow: var(--shadow-xs);
 }
 
 .bill-kicker {
@@ -27,20 +28,20 @@
     letter-spacing: 0.07em;
     text-transform: uppercase;
     font-weight: 800;
-    color: #6B4EFF;
-    margin: 0 0 6px;
+    color: var(--blue-700);
+    margin: 0 0 5px;
 }
 
 .bill-title {
     font-size: 1.3rem;
     font-weight: 800;
     margin: 0 0 6px;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
 }
 
 .bill-subtitle {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     margin: 0;
     line-height: 1.55;
     max-width: 60ch;
@@ -58,41 +59,41 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    border-radius: 10px;
-    border: 1px solid var(--color-border-default);
-    padding: 0 16px;
+    min-height: 38px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    padding: 0 14px;
     font-size: 0.86rem;
     font-weight: 700;
     cursor: pointer;
     text-decoration: none;
-    color: var(--color-text-primary);
-    background: var(--color-canvas-subtle);
+    color: var(--slate-900);
+    background: var(--white);
     transition: all 200ms ease;
 }
 
 .bill-btn:hover {
-    border-color: rgba(107, 78, 255, 0.3);
-    color: #6B4EFF;
+    border-color: var(--blue-200);
+    color: var(--blue-700);
 }
 
 .bill-btn-primary {
-    background: linear-gradient(135deg, #6B4EFF, #5a3fe0);
+    background: var(--blue-700);
     color: #ffffff;
     border-color: transparent;
-    box-shadow: 0 4px 14px rgba(107, 78, 255, 0.25);
+    box-shadow: 0 2px 6px rgba(29,78,216,0.2);
 }
 
 .bill-btn-primary:hover {
-    background: linear-gradient(135deg, #5a3fe0, #4a32c7);
+    background: var(--blue-800);
     color: #ffffff;
-    box-shadow: 0 6px 18px rgba(107, 78, 255, 0.35);
+    box-shadow: 0 3px 10px rgba(29,78,216,0.28);
 }
 
 .bill-btn-muted {
-    background: var(--color-canvas-subtle);
-    border-color: var(--color-border-default);
-    color: var(--color-text-primary);
+    background: var(--white);
+    border-color: var(--color-border);
+    color: var(--slate-900);
 }
 
 .bill-btn-danger {
@@ -108,16 +109,16 @@
 
 /* ── Tabs ──────────────────────────────────────────────────── */
 .bill-tabs-wrap {
-    border-radius: 16px;
-    border: 1px solid var(--color-border-default);
-    background: var(--color-canvas-subtle);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    background: var(--white);
+    box-shadow: var(--shadow-xs);
     overflow: hidden;
 }
 
 .bill-tabs-nav {
     display: flex;
-    border-bottom: 1px solid var(--color-border-default);
+    border-bottom: 1px solid var(--color-border);
     background: rgba(243, 248, 253, 0.6);
     overflow-x: auto;
 }
@@ -125,13 +126,13 @@
 .bill-tab-btn {
     flex: 1;
     min-width: 140px;
-    padding: 14px 16px;
+    padding: 11px 14px;
     border: none;
     background: none;
     cursor: pointer;
     font-size: 0.84rem;
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     border-bottom: 2px solid transparent;
     transition: all 200ms ease;
     text-align: left;
@@ -143,23 +144,23 @@
     display: block;
     font-size: 0.68rem;
     font-weight: 600;
-    color: var(--color-text-tertiary);
+    color: var(--slate-500);
 }
 
 .bill-tab-btn:hover {
-    color: var(--color-text-primary);
+    color: var(--slate-900);
     background: rgba(255, 255, 255, 0.5);
 }
 
 .bill-tab-btn.is-active {
-    color: #6B4EFF;
-    border-bottom-color: #6B4EFF;
+    color: var(--blue-700);
+    border-bottom-color: var(--blue-700);
     background: rgba(255, 255, 255, 0.8);
 }
 
 .bill-tab-panel {
     display: none;
-    padding: 22px;
+    padding: 18px;
 }
 
 .bill-tab-panel.is-active {
@@ -168,11 +169,11 @@
 
 /* ── Cards ─────────────────────────────────────────────────── */
 .bill-card {
-    border-radius: 14px;
-    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
     background: #ffffff;
-    padding: 18px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    padding: 15px;
+    box-shadow: var(--shadow-xs);
 }
 
 .bill-head {
@@ -184,54 +185,54 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 800;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
 }
 
 .bill-head p {
     margin: 0;
     font-size: 0.84rem;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
 }
 
 /* ── Plan cards grid ───────────────────────────────────────── */
 .bill-plan-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
+    gap: var(--space-4);
     margin-bottom: 16px;
 }
 
 .bill-plan-card {
     position: relative;
-    border-radius: 14px;
-    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
     background: #ffffff;
-    padding: 18px;
+    padding: 15px;
     cursor: pointer;
     display: grid;
-    gap: 8px;
+    gap: 6px;
     transition: all 200ms ease;
 }
 
 .bill-plan-card:hover {
-    border-color: rgba(107, 78, 255, 0.3);
-    box-shadow: 0 8px 24px rgba(107, 78, 255, 0.08);
-    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+    transform: translateY(-1px);
 }
 
 .bill-plan-card.is-selected {
-    border-color: rgba(107, 78, 255, 0.4);
-    box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.1), 0 4px 12px rgba(107, 78, 255, 0.1);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1), 0 3px 10px rgba(37, 99, 235, 0.1);
 }
 
 .bill-plan-card.is-recommended {
     border-color: rgba(15, 118, 110, 0.3);
-    background: linear-gradient(160deg, rgba(15, 118, 110, 0.04), #ffffff 40%);
+    background: var(--white);
 }
 
 .bill-plan-card.is-enterprise {
     border-color: rgba(229, 86, 47, 0.25);
-    background: linear-gradient(160deg, rgba(229, 86, 47, 0.03), #ffffff 40%);
+    background: var(--white);
 }
 
 .bill-plan-input {
@@ -244,14 +245,14 @@
     display: inline-flex;
     width: fit-content;
     padding: 3px 9px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     font-size: 0.64rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    background: rgba(107, 78, 255, 0.1);
-    color: #6B4EFF;
-    border: 1px solid rgba(107, 78, 255, 0.2);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--blue-700);
+    border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
 .bill-plan-tag.is-recommended {
@@ -274,25 +275,25 @@
 .bill-plan-name {
     font-size: 1.1rem;
     font-weight: 800;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
 }
 
 .bill-plan-price {
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
 }
 
 .bill-plan-price small {
     font-size: 0.76rem;
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
 }
 
 .bill-plan-card p {
     margin: 0;
     font-size: 0.84rem;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     line-height: 1.5;
 }
 
@@ -308,7 +309,7 @@
     position: relative;
     padding-left: 18px;
     font-size: 0.82rem;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
 }
 
 .bill-plan-card ul li::before {
@@ -332,27 +333,27 @@
 .bill-form-row label {
     font-size: 0.76rem;
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
 .bill-form-row select,
 .bill-form-row input[type="text"] {
-    padding: 8px 12px;
-    border: 1px solid var(--color-border-default);
-    border-radius: 8px;
+    padding: 7px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     font-size: 0.86rem;
     background: #ffffff;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
     max-width: 320px;
 }
 
 .bill-form-row select:focus,
 .bill-form-row input[type="text"]:focus {
     outline: none;
-    border-color: rgba(107, 78, 255, 0.4);
-    box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.1);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .bill-manage-form {
@@ -362,7 +363,7 @@
 
 /* ── Status card ───────────────────────────────────────────── */
 .bill-status {
-    border-left: 4px solid var(--color-border-default);
+    border-left: 4px solid var(--color-border);
 }
 
 .bill-status-success { border-left-color: #16a34a; }
@@ -375,7 +376,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 800;
-    color: var(--color-text-tertiary);
+    color: var(--slate-500);
     margin: 0 0 4px;
 }
 
@@ -383,13 +384,13 @@
     margin: 0 0 6px;
     font-size: 1.1rem;
     font-weight: 800;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
 }
 
 .bill-status p {
     margin: 0;
     font-size: 0.86rem;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     line-height: 1.5;
 }
 
@@ -401,9 +402,9 @@
 }
 
 .bill-status-meta div {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--color-border-muted);
+    padding: 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--slate-150);
     background: rgba(243, 248, 253, 0.5);
 }
 
@@ -412,21 +413,21 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 700;
-    color: var(--color-text-tertiary);
+    color: var(--slate-500);
     margin: 0 0 2px;
 }
 
 .bill-status-meta dd {
     font-size: 0.86rem;
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--slate-900);
     margin: 0;
 }
 
 /* ── Tables ────────────────────────────────────────────────── */
 .bill-table-wrap {
-    border-radius: 12px;
-    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
     background: #ffffff;
     overflow-x: auto;
 }
@@ -442,17 +443,17 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: var(--slate-600);
     background: rgba(243, 248, 253, 0.8);
-    border-bottom: 1px solid var(--color-border-default);
+    border-bottom: 1px solid var(--color-border);
     text-align: left;
 }
 
 .bill-table td {
     padding: 10px 14px;
     font-size: 0.84rem;
-    color: var(--color-text-primary);
-    border-bottom: 1px solid var(--color-border-muted);
+    color: var(--slate-900);
+    border-bottom: 1px solid var(--slate-150);
 }
 
 .bill-table tr:last-child td {
@@ -465,7 +466,7 @@
 
 .bill-empty {
     text-align: center;
-    color: var(--color-text-tertiary) !important;
+    color: var(--slate-500) !important;
     padding: 28px 14px !important;
     font-style: italic;
 }
@@ -474,7 +475,7 @@
 .bill-pill {
     display: inline-flex;
     padding: 3px 9px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     font-size: 0.66rem;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -488,9 +489,9 @@
 }
 
 .bill-pill-trialing {
-    background: rgba(107, 78, 255, 0.1);
-    color: #6B4EFF;
-    border: 1px solid rgba(107, 78, 255, 0.2);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--blue-700);
+    border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
 .bill-pill-pending,

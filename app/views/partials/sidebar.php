@@ -1,64 +1,76 @@
 <?php
+declare(strict_types=1);
+
+use App\Core\Auth;
+
 $currentPath = (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
-$authUser = auth_user();
-$lockModalEnabled = subscription_lock_modal_enabled();
+$authUser = Auth::user();
+
+$iconDashboard = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6" height="7"/><rect x="11.5" y="2.5" width="6" height="4"/><rect x="2.5" y="12.5" width="6" height="5"/><rect x="11.5" y="9.5" width="6" height="8"/></svg>';
+$iconEmployees = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6.5" r="3"/><path d="M3.5 17c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg>';
+$iconAttendance = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2"/></svg>';
+$iconLeave = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="14" height="13" rx="1"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>';
+$iconPayroll = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="15" height="10" rx="1"/><circle cx="10" cy="10" r="2.2"/><path d="M5.5 8.5v3M14.5 8.5v3"/></svg>';
+$iconSettings = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.4"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/></svg>';
+$iconLogout = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4.5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8"/><path d="M12 6.5 15.5 10 12 13.5M7 10h8.5"/></svg>';
 
 $navItems = [
-    ['path' => '/dashboard', 'label' => 'Dashboard', 'permission' => 'dashboard.view'],
-    ['path' => '/billing', 'label' => 'Billing', 'permission' => ''],
-    ['path' => '/employees', 'label' => 'Employees', 'permission' => 'employees.view'],
-    ['path' => '/attendance', 'label' => 'Attendance', 'permission' => 'attendance.view'],
-    ['path' => '/leave', 'label' => 'Leave', 'permission' => 'leave.view'],
-    ['path' => '/payroll', 'label' => 'Payroll', 'permission' => 'payroll.view'],
-    ['path' => '/settings', 'label' => 'Settings', 'permission' => 'settings.manage'],
+    ['path' => '/', 'label' => 'Dashboard', 'permission' => 'dashboard.view', 'icon' => $iconDashboard],
+    ['path' => '/employees', 'label' => 'Employees', 'permission' => 'employees.view', 'icon' => $iconEmployees],
+    ['path' => '/attendance', 'label' => 'Attendance', 'permission' => 'attendance.view', 'icon' => $iconAttendance],
+    ['path' => '/leave', 'label' => 'Leave', 'permission' => 'leave.view', 'icon' => $iconLeave],
+    ['path' => '/payroll', 'label' => 'Payroll', 'permission' => 'payroll.view', 'icon' => $iconPayroll],
+    ['path' => '/settings', 'label' => 'Settings', 'permission' => 'settings.manage', 'icon' => $iconSettings],
 ];
 ?>
-
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <span class="brand-dot"></span>
-        <div class="brand-meta">
-            <span class="font-display">Barangay HRIS</span>
-            <span>Management Portal</span>
+<aside class="sidebar" id="sidebar" aria-label="Primary">
+    <div class="sidebar-header">
+        <div class="sidebar-seal" aria-hidden="true">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="22" fill="#ffffff" stroke="#b68409" stroke-width="1.5"/>
+                <circle cx="24" cy="24" r="17" fill="none" stroke="#b68409" stroke-width="1"/>
+                <path d="M24 10 L27 19 L36 19 L29 25 L32 34 L24 28 L16 34 L19 25 L12 19 L21 19 Z" fill="#0b3d91" stroke="#0b3d91" stroke-width="0.5"/>
+                <text x="24" y="43" font-family="Inter, sans-serif" font-size="3" font-weight="700" fill="#0b3d91" text-anchor="middle" letter-spacing="0.5">REPUBLIC</text>
+            </svg>
+        </div>
+        <div class="sidebar-brand">
+            <span class="brand-kicker">Official Portal</span>
+            <span class="brand-name">Barangay HRIS</span>
+            <span class="brand-sub">Human Resources System</span>
         </div>
     </div>
-
-    <p class="sidebar-label">Navigation</p>
-
-    <nav class="sidebar-nav">
-        <?php foreach ($navItems as $item): ?>
-            <?php $permission = (string) ($item['permission'] ?? ''); ?>
-            <?php if ($permission !== '' && !can($permission)): ?>
-                <?php continue; ?>
-            <?php endif; ?>
-            <?php
-            $path = (string) ($item['path'] ?? '/');
-            $lockContext = nav_feature_lock_context($path, $authUser);
-            $isLocked = $lockModalEnabled && (bool) ($lockContext['is_locked'] ?? false);
-            $isActive = !$isLocked && str_starts_with($currentPath, $path);
-            $linkHref = $isLocked ? '/billing' : $path;
-            ?>
-            <a
-                class="nav-link<?= $isActive ? ' is-active' : '' ?><?= $isLocked ? ' is-locked' : '' ?>"
-                href="<?= e($linkHref) ?>"
-                <?= $isActive ? 'aria-current="page"' : '' ?>
-                <?= $isLocked ? 'aria-disabled="true"' : '' ?>
-                <?= $isLocked ? 'data-lock-trigger="1"' : '' ?>
-                <?= $isLocked ? 'data-lock-feature-label="' . e((string) ($lockContext['feature_label'] ?? 'This module')) . '"' : '' ?>
-                <?= $isLocked ? 'data-lock-plan-name="' . e((string) ($lockContext['plan_name'] ?? '')) . '"' : '' ?>
-                <?= $isLocked ? 'data-lock-message="' . e((string) ($lockContext['message'] ?? 'Upgrade your plan in Billing to unlock this module.')) . '"' : '' ?>
-            >
-                <span class="nav-link-dot" aria-hidden="true"></span>
-                <span><?= e($item['label']) ?></span>
-                <?php if ($isLocked): ?>
-                    <span class="nav-lock-chip">Locked</span>
+    <div class="sidebar-group">
+        <p class="sidebar-label">Modules</p>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+            <?php foreach ($navItems as $item): ?>
+                <?php if (!can((string) ($item['permission'] ?? ''))): ?>
+                    <?php continue; ?>
                 <?php endif; ?>
-            </a>
-        <?php endforeach; ?>
-    </nav>
-
-    <a class="nav-link logout" href="/logout">
-        <span class="nav-link-dot" aria-hidden="true"></span>
-        <span>Sign out</span>
-    </a>
+                <?php
+                $isRoot = $item['path'] === '/';
+                $isActive = $isRoot ? $currentPath === '/' : str_starts_with($currentPath, $item['path']);
+                ?>
+                <a
+                    class="nav-link<?= $isActive ? ' is-active' : '' ?>"
+                    href="<?= e($item['path']) ?>"
+                    <?= $isActive ? 'aria-current="page"' : '' ?>
+                >
+                    <span class="nav-link-icon" aria-hidden="true"><?= $item['icon'] ?></span>
+                    <span><?= e($item['label']) ?></span>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+    </div>
+    <div class="sidebar-footer">
+        <?php if ($authUser): ?>
+            <div class="sidebar-user">
+                <span class="sidebar-user-name"><?= e((string) ($authUser['username'] ?? 'User')) ?></span>
+                <span class="sidebar-user-role"><?= e((string) ($authUser['role_name'] ?? 'No role')) ?></span>
+            </div>
+        <?php endif; ?>
+        <a class="nav-link logout" href="/logout">
+            <span class="nav-link-icon" aria-hidden="true"><?= $iconLogout ?></span>
+            <span>Sign out</span>
+        </a>
+    </div>
 </aside>

@@ -1,365 +1,97 @@
-.att-page {
-    display: grid;
-    gap: 18px;
-}
-
-.att-hero {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    border: 1px solid var(--color-border-default);
-    border-radius: 18px;
-    background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 56%, #f0fcf9 100%);
-    box-shadow: var(--shadow-sm);
-    padding: 22px;
-}
-
-.att-hero-copy {
-    display: grid;
-    gap: 7px;
-    max-width: 70ch;
-}
-
-.att-kicker {
-    color: var(--color-accent-teal);
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.att-title {
-    color: var(--color-text-primary);
-    font-size: clamp(1.35rem, 2vw, 1.8rem);
-    font-weight: 800;
-    line-height: 1.2;
-}
-
-.att-subtitle {
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    font-size: 0.9rem;
-}
-
-.att-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 4px;
-}
-
-.att-tag {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    background: rgba(37, 99, 235, 0.09);
-    color: #1e40af;
-    padding: 5px 9px;
-    font-size: 0.73rem;
-    font-weight: 700;
-}
-
-.att-hero-side {
-    display: grid;
-    gap: 8px;
-    min-width: 220px;
-}
-
-.att-stat {
-    border: 1px solid var(--color-border-muted);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.86);
-    padding: 10px 11px;
-    display: grid;
-    gap: 2px;
-}
-
-.att-stat-label {
-    color: var(--color-text-tertiary);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.att-stat-value {
-    color: var(--color-text-primary);
-    font-size: 1.03rem;
-    font-weight: 800;
-}
-
-.att-card {
-    border: 1px solid var(--color-border-default);
-    border-radius: 16px;
-    background: var(--color-canvas-subtle);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.05);
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-}
-
-.att-section-head {
-    display: grid;
-    gap: 4px;
-}
-
-.att-section-head h3 {
-    color: var(--color-text-primary);
-    font-size: 1rem;
-}
-
-.att-section-head p {
-    color: var(--color-text-secondary);
-    font-size: 0.83rem;
-}
-
-.att-form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.att-field {
-    display: grid;
-    gap: 6px;
-}
-
-.att-field label {
-    color: var(--color-text-secondary);
-    font-size: 0.84rem;
-    font-weight: 700;
-}
-
-.att-field.full {
-    grid-column: 1 / -1;
-}
-
-.att-form-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.att-form-hint {
-    color: var(--color-text-tertiary);
-    font-size: 0.78rem;
-}
-
-.att-btn-primary {
-    border: 1px solid rgba(37, 99, 235, 0.28);
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--color-accent-blue), #1f4fc7);
-    color: #ffffff;
-    font-size: 0.84rem;
-    font-weight: 700;
-    padding: 9px 13px;
-    cursor: pointer;
-}
-
-.att-toolbar {
-    display: grid;
-    gap: 10px;
-}
-
-.att-filter-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(160px, 0.8fr) minmax(170px, 0.9fr) auto;
-    gap: 10px;
-}
-
-.att-filter-field {
-    display: grid;
-    gap: 6px;
-}
-
-.att-filter-field span {
-    color: var(--color-text-tertiary);
-    font-size: 0.74rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.att-filter-btn {
-    align-self: end;
-    border: 1px solid var(--color-border-default);
-    border-radius: 10px;
-    background: #ffffff;
-    color: var(--color-text-primary);
-    font-weight: 700;
-    padding: 10px 12px;
-    cursor: pointer;
-}
-
-.att-filter-btn:hover {
-    border-color: rgba(37, 99, 235, 0.3);
-}
-
-.att-table-wrap {
-    border: 1px solid var(--color-border-default);
-    border-radius: 14px;
-    overflow: auto;
-}
-
-.att-table {
-    width: 100%;
-    min-width: 900px;
-    border-collapse: collapse;
-}
-
-.att-table th,
-.att-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid var(--color-border-muted);
-    vertical-align: middle;
-}
-
-.att-table th {
-    color: var(--color-text-tertiary);
-    font-size: 0.76rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: #f9fbff;
-}
-
-.att-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.05);
-}
-
-.att-name {
-    display: grid;
-    gap: 2px;
-}
-
-.att-name strong {
-    color: var(--color-text-primary);
-    font-size: 0.88rem;
-}
-
-.att-name span {
-    color: var(--color-text-tertiary);
-    font-size: 0.77rem;
-}
-
+/* Attendance module - status badges. Shared primitives live in components.css. */
 .att-badge {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    padding: 4px 8px;
-    font-size: 0.74rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+    font-size: 0.72rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-border-default);
+    background: var(--gov-surface-alt);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    line-height: 1.5;
 }
 
 .att-badge-present {
-    color: #0f766e;
-    background: rgba(15, 118, 110, 0.12);
-    border-color: rgba(15, 118, 110, 0.2);
+    color: var(--gov-green);
+    background: var(--gov-green-100);
+    border-color: rgba(16, 107, 58, 0.3);
 }
 
 .att-badge-late {
-    color: #92400e;
-    background: rgba(217, 119, 6, 0.14);
-    border-color: rgba(217, 119, 6, 0.22);
+    color: var(--gov-amber);
+    background: var(--gov-amber-100);
+    border-color: rgba(154, 90, 0, 0.3);
 }
 
 .att-badge-half_day {
-    color: #1e40af;
-    background: rgba(37, 99, 235, 0.14);
-    border-color: rgba(37, 99, 235, 0.24);
+    color: var(--gov-blue);
+    background: var(--gov-blue-100);
+    border-color: rgba(11, 61, 145, 0.3);
 }
 
 .att-badge-holiday,
 .att-badge-rest_day {
-    color: #475569;
-    background: #eef3fa;
+    color: var(--color-text-secondary);
+    background: var(--gov-surface-alt);
     border-color: var(--color-border-default);
 }
 
 .att-badge-absent {
-    color: #b42318;
-    background: rgba(220, 38, 38, 0.12);
-    border-color: rgba(220, 38, 38, 0.2);
+    color: var(--gov-red);
+    background: var(--gov-red-100);
+    border-color: rgba(180, 35, 24, 0.3);
 }
 
 .att-badge-default {
     color: var(--color-text-secondary);
-    background: #eef3fa;
+    background: var(--gov-surface-alt);
     border-color: var(--color-border-default);
 }
 
-.att-empty {
-    text-align: center;
-    color: var(--color-text-secondary);
-    padding: 24px 12px;
-    font-weight: 600;
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-color: rgba(226, 232, 240, 0.8);
 }
 
-.att-pagination {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+.glass-toolbar {
+    background: rgba(248, 250, 252, 0.6);
+    backdrop-filter: blur(5px);
 }
 
-.att-page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid var(--color-border-default);
-    background: #ffffff;
-    color: var(--color-text-primary);
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 700;
+.card-shine {
+    position: relative;
+    overflow: hidden;
 }
 
-.att-page-link.is-active {
-    border-color: rgba(37, 99, 235, 0.3);
-    background: rgba(37, 99, 235, 0.12);
-    color: #1947b7;
+.card-shine::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
 }
 
-@media (max-width: 1100px) {
-    .att-form-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .att-filter-form {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .att-filter-btn {
-        grid-column: 1 / -1;
-    }
+.card-shine:hover::after {
+    opacity: 1;
 }
 
-@media (max-width: 860px) {
-    .att-hero {
-        flex-direction: column;
-    }
-
-    .att-hero-side {
-        min-width: 0;
-        width: 100%;
-    }
+.interactive-rows tbody tr {
+    transition: background var(--transition-fast);
 }
 
-@media (max-width: 640px) {
-    .att-form-grid,
-    .att-filter-form {
-        grid-template-columns: 1fr;
-    }
-
-    .att-card {
-        padding: 12px;
-    }
+.interactive-rows tbody tr:hover {
+    background: var(--blue-50) !important;
 }
+
+.text-red { color: var(--red-600); }
+.text-blue { color: var(--blue-600); }
+.text-mono { font-family: var(--font-mono); font-size: var(--text-xs); }

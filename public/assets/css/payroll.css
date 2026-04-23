@@ -1,93 +1,29 @@
-.pay-page {
-    display: grid;
-    gap: 18px;
-}
-
-.pay-hero {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    border: 1px solid var(--color-border-default);
-    border-radius: 18px;
-    background: linear-gradient(135deg, #f7fbff 0%, #edf6ff 52%, #f4fdf8 100%);
-    box-shadow: var(--shadow-sm);
-    padding: 22px;
-}
-
-.pay-hero-copy {
-    display: grid;
-    gap: 7px;
-    max-width: 70ch;
-}
-
-.pay-kicker {
-    color: var(--color-accent-blue);
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.pay-title {
-    color: var(--color-text-primary);
-    font-size: clamp(1.35rem, 2vw, 1.8rem);
-    font-weight: 800;
-    line-height: 1.2;
-}
-
-.pay-subtitle {
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    font-size: 0.9rem;
-}
-
-.pay-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 4px;
-}
-
-.pay-tag {
+/* Payroll module — badge variants and two-column grid. */
+.pay-badge {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    background: rgba(37, 99, 235, 0.09);
-    color: #1e40af;
-    padding: 5px 9px;
-    font-size: 0.73rem;
-    font-weight: 700;
-}
-
-.pay-hero-side {
-    display: grid;
-    gap: 8px;
-    min-width: 220px;
-}
-
-.pay-stat {
-    border: 1px solid var(--color-border-muted);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.86);
-    padding: 10px 11px;
-    display: grid;
-    gap: 2px;
-}
-
-.pay-stat-label {
-    color: var(--color-text-tertiary);
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
     font-size: 0.72rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-border-default);
+    background: var(--gov-surface-alt);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    line-height: 1.5;
 }
 
-.pay-stat-value {
-    color: var(--color-text-primary);
-    font-size: 1.03rem;
-    font-weight: 800;
+.pay-badge-current {
+    color: var(--gov-green);
+    background: var(--gov-green-100);
+    border-color: rgba(16, 107, 58, 0.3);
+}
+
+.pay-badge-historical {
+    color: var(--color-text-secondary);
+    background: var(--gov-surface-alt);
+    border-color: var(--color-border-default);
 }
 
 .pay-grid {
@@ -96,248 +32,8 @@
     gap: 14px;
 }
 
-.pay-card {
-    border: 1px solid var(--color-border-default);
-    border-radius: 16px;
-    background: var(--color-canvas-subtle);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.05);
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-}
-
-.pay-section-head {
-    display: grid;
-    gap: 4px;
-}
-
-.pay-section-head h3 {
-    color: var(--color-text-primary);
-    font-size: 1rem;
-}
-
-.pay-section-head p {
-    color: var(--color-text-secondary);
-    font-size: 0.83rem;
-}
-
-.pay-inline-form {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-    gap: 10px;
-}
-
-.pay-field {
-    display: grid;
-    gap: 6px;
-}
-
-.pay-field label {
-    color: var(--color-text-secondary);
-    font-size: 0.84rem;
-    font-weight: 700;
-}
-
-.pay-field.full {
-    grid-column: 1 / -1;
-}
-
-.pay-form-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.pay-form-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.pay-form-hint {
-    color: var(--color-text-tertiary);
-    font-size: 0.78rem;
-}
-
-.pay-btn-primary {
-    border: 1px solid rgba(37, 99, 235, 0.28);
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--color-accent-blue), #1f4fc7);
-    color: #ffffff;
-    font-size: 0.84rem;
-    font-weight: 700;
-    padding: 9px 13px;
-    cursor: pointer;
-}
-
-.pay-search {
-    display: grid;
-    gap: 8px;
-}
-
-.pay-search-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-}
-
-.pay-search-btn {
-    border: 1px solid var(--color-border-default);
-    border-radius: 10px;
-    background: #ffffff;
-    color: var(--color-text-primary);
-    font-weight: 700;
-    padding: 10px 12px;
-    cursor: pointer;
-}
-
-.pay-search-btn:hover {
-    border-color: rgba(37, 99, 235, 0.3);
-}
-
-.pay-table-wrap {
-    border: 1px solid var(--color-border-default);
-    border-radius: 14px;
-    overflow: auto;
-}
-
-.pay-table {
-    width: 100%;
-    min-width: 860px;
-    border-collapse: collapse;
-}
-
-.pay-table th,
-.pay-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid var(--color-border-muted);
-    vertical-align: middle;
-}
-
-.pay-table th {
-    color: var(--color-text-tertiary);
-    font-size: 0.76rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: #f9fbff;
-}
-
-.pay-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.05);
-}
-
-.pay-name {
-    display: grid;
-    gap: 2px;
-}
-
-.pay-name strong {
-    color: var(--color-text-primary);
-    font-size: 0.88rem;
-}
-
-.pay-name span {
-    color: var(--color-text-tertiary);
-    font-size: 0.77rem;
-}
-
-.pay-badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    padding: 4px 8px;
-    font-size: 0.74rem;
-    font-weight: 700;
-}
-
-.pay-badge-current {
-    color: #0f766e;
-    background: rgba(15, 118, 110, 0.12);
-    border-color: rgba(15, 118, 110, 0.2);
-}
-
-.pay-badge-historical {
-    color: #475569;
-    background: #eef3fa;
-    border-color: var(--color-border-default);
-}
-
-.pay-empty {
-    text-align: center;
-    color: var(--color-text-secondary);
-    padding: 24px 12px;
-    font-weight: 600;
-}
-
-.pay-pagination {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.pay-page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid var(--color-border-default);
-    background: #ffffff;
-    color: var(--color-text-primary);
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
-
-.pay-page-link.is-active {
-    border-color: rgba(37, 99, 235, 0.3);
-    background: rgba(37, 99, 235, 0.12);
-    color: #1947b7;
-}
-
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
     .pay-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 1100px) {
-    .pay-inline-form,
-    .pay-form-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .pay-inline-form button,
-    .pay-form-actions {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 860px) {
-    .pay-hero {
-        flex-direction: column;
-    }
-
-    .pay-hero-side {
-        min-width: 0;
-        width: 100%;
-    }
-}
-
-@media (max-width: 640px) {
-    .pay-inline-form,
-    .pay-form-grid,
-    .pay-search-form {
-        grid-template-columns: 1fr;
-    }
-
-    .pay-card {
-        padding: 12px;
     }
 }

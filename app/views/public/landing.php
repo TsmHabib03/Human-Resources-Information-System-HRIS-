@@ -41,7 +41,7 @@ $featureDefinitions = [
         'badge'    => 'mk-badge-core',
         'status'   => 'Live',
         'icon'     => 'users',
-        'color'    => 'is-purple',
+        'color'    => 'is-blue',
     ],
     [
         'name'     => 'Onboarding workflow',
