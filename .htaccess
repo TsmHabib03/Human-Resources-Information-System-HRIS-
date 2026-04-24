@@ -3,3 +3,15 @@
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
+# ── Disable directory listing ─────────────────────────────────────
+Options -Indexes
+
+# ── Block direct web access to sensitive directories ──────────────
+RewriteEngine On
+RewriteRule ^(app|storage|database|vendor|\.git)(\/.*)?$ - [F,L]
+
+# ── Block .env and other sensitive root files ─────────────────────
+<FilesMatch "^(\.env.*|composer\.(json|lock)|README\.md|\.gitignore|\.gitattributes|phpunit\.xml|\.htpasswd|Makefile)$">
+    Require all denied
+</FilesMatch>

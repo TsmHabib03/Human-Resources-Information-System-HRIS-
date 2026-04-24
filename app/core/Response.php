@@ -14,9 +14,26 @@ final class Response
         exit;
     }
 
+    /**
+     * Redirect to a path.
+     * Only relative paths starting with / are accepted to prevent open-redirect attacks.
+     * Protocol-relative URLs (//evil.com) are rejected and fall back to /.
+     */
     public static function redirect(string $path): void
     {
-        header('Location: ' . $path);
+        // Reject empty, external URLs, and protocol-relative URLs
+        if (
+            $path === '' ||
+            !str_starts_with($path, '/') ||
+            str_starts_with($path, '//')
+        ) {
+            $path = '/';
+        }
+
+        // Strip any CR/LF characters to prevent header injection
+        $path = str_replace(["\r", "\n", "\0"], '', $path);
+
+        header('Location: ' . $path, true, 302);
         exit;
     }
 }

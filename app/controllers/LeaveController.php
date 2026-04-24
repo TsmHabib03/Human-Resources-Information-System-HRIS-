@@ -23,20 +23,20 @@ final class LeaveController extends Controller
     public function __construct()
     {
         $this->leaveRequests = new LeaveRequest();
-        $this->employees = new Employee();
+        $this->employees     = new Employee();
     }
 
     public function index(): void
     {
         $status = trim((string) ($_GET['status'] ?? ''));
-        $query = trim((string) ($_GET['q'] ?? ''));
-        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $query  = trim((string) ($_GET['q'] ?? ''));
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
 
         $employeeScopeId = $this->employeeScopeId();
-        $scopeFilterId = $employeeScopeId;
+        $scopeFilterId   = $employeeScopeId;
         $employeeOptions = $this->employees->listSimple();
         $currentEmployee = null;
-        $isSelfService = $employeeScopeId !== null;
+        $isSelfService   = $employeeScopeId !== null;
 
         if ($isSelfService) {
             $query = '';
@@ -45,12 +45,12 @@ final class LeaveController extends Controller
                 $currentEmployee = $this->employees->find((int) $employeeScopeId);
                 $employeeOptions = $currentEmployee ? [$currentEmployee] : [];
             } else {
-                $scopeFilterId = -1;
+                $scopeFilterId   = -1;
                 $employeeOptions = [];
             }
         }
 
-        $total = $this->leaveRequests->countFiltered($status, $query, $scopeFilterId);
+        $total      = $this->leaveRequests->countFiltered($status, $query, $scopeFilterId);
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
 
         if ($page > $totalPages) {
@@ -58,35 +58,42 @@ final class LeaveController extends Controller
         }
 
         $this->view('leave/index', [
-            'title' => 'Leave Management',
-            'csrf' => CSRF::token(),
-            'requests' => $this->leaveRequests->listFiltered($status, $query, $page, self::PER_PAGE, $scopeFilterId),
-            'leaveTypes' => $this->leaveRequests->leaveTypes(),
-            'statusOptions' => $this->leaveRequests->statuses(),
-            'employees' => $employeeOptions,
+            'title'           => 'Leave Management',
+            'csrf'            => CSRF::token(),
+            'requests'        => $this->leaveRequests->listFiltered($status, $query, $page, self::PER_PAGE, $scopeFilterId),
+            'leaveTypes'      => $this->leaveRequests->leaveTypes(),
+            'statusOptions'   => $this->leaveRequests->statuses(),
+            'employees'       => $employeeOptions,
             'currentEmployee' => $currentEmployee,
-            'isSelfService' => $isSelfService,
-            'query' => $query,
-            'status' => $status,
-            'page' => $page,
-            'totalPages' => $totalPages,
-            'total' => $total,
-            'success' => Session::pullFlash('success'),
-            'error' => Session::pullFlash('error'),
-            'errors' => Session::pullFlash('errors', []),
-            'old' => Session::pullFlash('old', []),
+            'isSelfService'   => $isSelfService,
+            'query'           => $query,
+            'status'          => $status,
+            'page'            => $page,
+            'totalPages'      => $totalPages,
+            'total'           => $total,
+            'success'         => Session::pullFlash('success'),
+            'error'           => Session::pullFlash('error'),
+            'errors'          => Session::pullFlash('errors', []),
+            'old'             => Session::pullFlash('old', []),
         ]);
     }
 
     public function store(): void
     {
+        // CSRF verification
+        $token = $_POST['_csrf'] ?? null;
+        if (!CSRF::verify(is_string($token) ? $token : null)) {
+            Session::flash('error', 'Your session token is invalid. Please try again.');
+            $this->redirect('/leave');
+        }
+
         $data = [
-            'employee_id' => trim((string) ($_POST['employee_id'] ?? '')),
+            'employee_id'   => trim((string) ($_POST['employee_id'] ?? '')),
             'leave_type_id' => trim((string) ($_POST['leave_type_id'] ?? '')),
-            'start_date' => trim((string) ($_POST['start_date'] ?? '')),
-            'end_date' => trim((string) ($_POST['end_date'] ?? '')),
-            'total_days' => trim((string) ($_POST['total_days'] ?? '')),
-            'reason' => trim((string) ($_POST['reason'] ?? '')),
+            'start_date'    => trim((string) ($_POST['start_date'] ?? '')),
+            'end_date'      => trim((string) ($_POST['end_date'] ?? '')),
+            'total_days'    => trim((string) ($_POST['total_days'] ?? '')),
+            'reason'        => mb_substr(trim((string) ($_POST['reason'] ?? '')), 0, 1000),
         ];
 
         $employeeScopeId = $this->employeeScopeId();
@@ -124,7 +131,7 @@ final class LeaveController extends Controller
             $this->redirect('/leave');
         }
 
-        $id = $this->leaveRequests->createRequest($data);
+        $id      = $this->leaveRequests->createRequest($data);
         $created = $this->leaveRequests->find($id);
         Audit::log('leave', 'CREATE', $id, null, $created);
 
@@ -134,15 +141,33 @@ final class LeaveController extends Controller
 
     public function approve(string $id): void
     {
+        // CSRF verification
+        $token = $_POST['_csrf'] ?? null;
+        if (!CSRF::verify(is_string($token) ? $token : null)) {
+            Session::flash('error', 'Your session token is invalid. Please try again.');
+            $this->redirect('/leave');
+        }
+
         $leaveId = (int) $id;
-        $before = $this->leaveRequests->find($leaveId);
+        $before  = $this->leaveRequests->find($leaveId);
 
         if (!$before) {
             Session::flash('error', 'Leave request not found.');
             $this->redirect('/leave');
         }
 
-        $remarks = trim((string) ($_POST['review_remarks'] ?? 'Approved'));
+        // ── Prevent self-approval ─────────────────────────────────
+        $currentUser             = Auth::user();
+        $currentUserEmployeeId   = isset($currentUser['employee_id']) ? (int) $currentUser['employee_id'] : null;
+        $requesterEmployeeId     = isset($before['employee_id']) ? (int) $before['employee_id'] : null;
+
+        if ($currentUserEmployeeId !== null && $requesterEmployeeId !== null && $currentUserEmployeeId === $requesterEmployeeId) {
+            Session::flash('error', 'You cannot approve your own leave request.');
+            $this->redirect('/leave');
+        }
+
+        $remarks = mb_substr(trim((string) ($_POST['review_remarks'] ?? 'Approved')), 0, 500);
+
         if (!$this->leaveRequests->updateStatus($leaveId, 'Approved', Auth::id(), $remarks)) {
             Session::flash('error', 'Only pending requests can be approved.');
             $this->redirect('/leave');
@@ -157,15 +182,33 @@ final class LeaveController extends Controller
 
     public function reject(string $id): void
     {
+        // CSRF verification
+        $token = $_POST['_csrf'] ?? null;
+        if (!CSRF::verify(is_string($token) ? $token : null)) {
+            Session::flash('error', 'Your session token is invalid. Please try again.');
+            $this->redirect('/leave');
+        }
+
         $leaveId = (int) $id;
-        $before = $this->leaveRequests->find($leaveId);
+        $before  = $this->leaveRequests->find($leaveId);
 
         if (!$before) {
             Session::flash('error', 'Leave request not found.');
             $this->redirect('/leave');
         }
 
-        $remarks = trim((string) ($_POST['review_remarks'] ?? 'Rejected'));
+        // ── Prevent self-rejection of own request ─────────────────
+        $currentUser           = Auth::user();
+        $currentUserEmployeeId = isset($currentUser['employee_id']) ? (int) $currentUser['employee_id'] : null;
+        $requesterEmployeeId   = isset($before['employee_id']) ? (int) $before['employee_id'] : null;
+
+        if ($currentUserEmployeeId !== null && $requesterEmployeeId !== null && $currentUserEmployeeId === $requesterEmployeeId) {
+            Session::flash('error', 'You cannot reject your own leave request.');
+            $this->redirect('/leave');
+        }
+
+        $remarks = mb_substr(trim((string) ($_POST['review_remarks'] ?? 'Rejected')), 0, 500);
+
         if (!$this->leaveRequests->updateStatus($leaveId, 'Rejected', Auth::id(), $remarks)) {
             Session::flash('error', 'Only pending requests can be rejected.');
             $this->redirect('/leave');

@@ -6,24 +6,26 @@ use App\Core\Auth;
 $currentPath = (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
 $authUser = Auth::user();
 
-$iconDashboard = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6" height="7"/><rect x="11.5" y="2.5" width="6" height="4"/><rect x="2.5" y="12.5" width="6" height="5"/><rect x="11.5" y="9.5" width="6" height="8"/></svg>';
-$iconEmployees = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6.5" r="3"/><path d="M3.5 17c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg>';
+$iconDashboard  = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6" height="7"/><rect x="11.5" y="2.5" width="6" height="4"/><rect x="2.5" y="12.5" width="6" height="5"/><rect x="11.5" y="9.5" width="6" height="8"/></svg>';
+$iconEmployees  = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6.5" r="3"/><path d="M3.5 17c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg>';
 $iconAttendance = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2"/></svg>';
-$iconLeave = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="14" height="13" rx="1"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>';
-$iconPayroll = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="15" height="10" rx="1"/><circle cx="10" cy="10" r="2.2"/><path d="M5.5 8.5v3M14.5 8.5v3"/></svg>';
-$iconSettings = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.4"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/></svg>';
-$iconLogout = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4.5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8"/><path d="M12 6.5 15.5 10 12 13.5M7 10h8.5"/></svg>';
+$iconLeave      = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="14" height="13" rx="1"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>';
+$iconPayroll    = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="15" height="10" rx="1"/><circle cx="10" cy="10" r="2.2"/><path d="M5.5 8.5v3M14.5 8.5v3"/></svg>';
+$iconSettings   = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.4"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/></svg>';
+$iconLogout     = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4.5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8"/><path d="M12 6.5 15.5 10 12 13.5M7 10h8.5"/></svg>';
 
 $navItems = [
-    ['path' => '/', 'label' => 'Dashboard', 'permission' => 'dashboard.view', 'icon' => $iconDashboard],
-    ['path' => '/employees', 'label' => 'Employees', 'permission' => 'employees.view', 'icon' => $iconEmployees],
+    ['path' => '/',           'label' => 'Dashboard',  'permission' => 'dashboard.view',  'icon' => $iconDashboard],
+    ['path' => '/employees',  'label' => 'Employees',  'permission' => 'employees.view',  'icon' => $iconEmployees],
     ['path' => '/attendance', 'label' => 'Attendance', 'permission' => 'attendance.view', 'icon' => $iconAttendance],
-    ['path' => '/leave', 'label' => 'Leave', 'permission' => 'leave.view', 'icon' => $iconLeave],
-    ['path' => '/payroll', 'label' => 'Payroll', 'permission' => 'payroll.view', 'icon' => $iconPayroll],
-    ['path' => '/settings', 'label' => 'Settings', 'permission' => 'settings.manage', 'icon' => $iconSettings],
+    ['path' => '/leave',      'label' => 'Leave',      'permission' => 'leave.view',      'icon' => $iconLeave],
+    ['path' => '/payroll',    'label' => 'Payroll',    'permission' => 'payroll.view',    'icon' => $iconPayroll],
+    ['path' => '/settings',   'label' => 'Settings',   'permission' => 'settings.manage', 'icon' => $iconSettings],
 ];
 ?>
-<aside class="sidebar" id="sidebar" aria-label="Primary">
+<aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+
+    <!-- ── Brand header ──────────────────────────────────── -->
     <div class="sidebar-header">
         <div class="sidebar-seal" aria-hidden="true">
             <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -39,6 +41,8 @@ $navItems = [
             <span class="brand-sub">Human Resources System</span>
         </div>
     </div>
+
+    <!-- ── Navigation modules (grows to fill space) ──────── -->
     <div class="sidebar-group">
         <p class="sidebar-label">Modules</p>
         <nav class="sidebar-nav" aria-label="Main navigation">
@@ -47,7 +51,7 @@ $navItems = [
                     <?php continue; ?>
                 <?php endif; ?>
                 <?php
-                $isRoot = $item['path'] === '/';
+                $isRoot   = $item['path'] === '/';
                 $isActive = $isRoot ? $currentPath === '/' : str_starts_with($currentPath, $item['path']);
                 ?>
                 <a
@@ -61,6 +65,8 @@ $navItems = [
             <?php endforeach; ?>
         </nav>
     </div>
+
+    <!-- ── Account block — pinned to bottom ──────────────── -->
     <div class="sidebar-footer">
         <?php if ($authUser): ?>
             <div class="sidebar-user">
@@ -73,4 +79,5 @@ $navItems = [
             <span>Sign out</span>
         </a>
     </div>
+
 </aside>

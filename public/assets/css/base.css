@@ -95,15 +95,19 @@ ul {
 }
 /* ============================================================
    Authentication shell — government login layout
+   Palette: teal (#0f766e) + navy (#0b3d91)
    ============================================================ */
+
 .auth-page {
     min-height: 100vh;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    background: var(--color-canvas-default);
+    background: var(--gov-surface-alt);
 }
+
+/* ── Top banner ─────────────────────────────────────────────── */
 .auth-banner {
-    background: var(--gov-blue);
+    background: var(--gov-ink-900);
     color: #ffffff;
     padding: 6px 24px;
     font-size: 0.72rem;
@@ -114,7 +118,7 @@ ul {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-bottom: 3px solid var(--gov-gold);
+    border-bottom: 2px solid var(--gov-teal);
 }
 .auth-banner-left {
     display: inline-flex;
@@ -127,177 +131,170 @@ ul {
     flex-shrink: 0;
 }
 .auth-banner-right {
-    opacity: 0.85;
+    opacity: 0.75;
 }
+
+/* ── Centering shell (wraps all auth views) ─────────────────── */
 .auth-shell {
-    width: min(1024px, 94vw);
-    margin: 48px auto;
-    padding: 0 var(--space-lg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 32px 20px 48px;
 }
+
+/* Generic auth card (used by forgot-password etc.) */
 .auth-card {
     background: var(--gov-white);
     border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--gov-teal);
+    border-radius: var(--radius-xl);
     padding: var(--space-2xl);
-    box-shadow: var(--shadow-sm);
-}
-.login-shell {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: var(--gov-white);
     box-shadow: var(--shadow-md);
+    width: min(420px, 100%);
 }
-.login-story {
-    padding: 40px 36px;
-    background: var(--gov-blue);
-    color: #ffffff;
+
+/* ── Login card — single centered box ───────────────────────── */
+.login-card {
+    background: var(--gov-white);
+    border: 1px solid var(--color-border-default);
+    border-top: 3px solid var(--gov-blue);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    width: min(400px, 100%);
+    overflow: hidden;
+}
+
+/* Logo section — top-center above the form */
+.login-card-logo {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    position: relative;
-}
-.login-story::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 4px;
-    background: var(--gov-gold);
-}
-.story-seal {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #ffffff;
-    padding: 6px;
-    display: grid;
-    place-items: center;
-    box-shadow: var(--shadow-sm);
-}
-.story-seal svg {
-    width: 100%;
-    height: 100%;
-}
-.story-agency {
-    display: grid;
-    gap: 2px;
-}
-.story-agency .agency-kicker {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-.story-agency .agency-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.005em;
-}
-.story-agency .agency-sub {
-    font-size: 0.82rem;
-    opacity: 0.85;
-}
-.story-title {
-    font-size: 1.55rem;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-}
-.story-text {
-    font-size: 0.88rem;
-    line-height: 1.6;
-    opacity: 0.9;
-    max-width: 42ch;
-}
-.story-list {
-    display: grid;
+    align-items: center;
     gap: 8px;
-    list-style: none;
+    padding: 24px 28px 14px;
+    background: var(--gov-white);
 }
-.story-list li {
-    position: relative;
-    padding-left: 20px;
-    font-size: 0.85rem;
-    opacity: 0.92;
+
+.login-logo-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--gov-blue);
+    border: 2px solid var(--gov-blue-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 12px rgba(11, 61, 145, 0.2);
+    flex-shrink: 0;
 }
-.story-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 7px;
-    width: 10px;
-    height: 2px;
-    background: var(--gov-gold);
+
+.login-logo-circle svg {
+    width: 26px;
+    height: 26px;
+    color: #ffffff;
+    stroke: #ffffff;
 }
-.story-caption {
-    margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.22);
-    font-size: 0.76rem;
-    opacity: 0.78;
-    letter-spacing: 0.02em;
+
+.login-logo-circle img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
 }
-.login-panel {
-    padding: 40px 36px;
+
+.login-logo-name {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gov-ink-400);
+}
+
+/* Card body — contains head, alerts, form, foot */
+.login-card-body {
+    padding: 0 28px 22px;
     display: grid;
     gap: 14px;
-    background: var(--gov-white);
-    align-content: start;
 }
-.panel-head {
+
+/* Back-to-home link */
+.login-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gov-blue);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    margin-top: -2px;
+}
+.login-back-link:hover {
+    color: var(--gov-blue-600);
+    text-decoration: underline;
+}
+.login-back-link svg {
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+/* Card heading block */
+.login-card-head {
     display: grid;
-    gap: 6px;
-    padding-bottom: 14px;
+    gap: 4px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--color-border-muted);
 }
-.panel-kicker {
+
+.login-kicker {
     color: var(--gov-blue);
-    font-size: 0.7rem;
+    font-size: 0.66rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
-.panel-title {
-    font-size: 1.4rem;
+
+.login-title {
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--color-text-primary);
     letter-spacing: -0.01em;
+    line-height: 1.25;
 }
-.panel-sub {
+
+.login-desc {
     color: var(--color-text-secondary);
-    font-size: 0.86rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
 }
+
+/* Alerts wrapper */
 .panel-alerts .alert {
     margin: 0;
 }
+
+/* ── Form fields ─────────────────────────────────────────────── */
 .login-form {
     display: grid;
-    gap: 14px;
+    gap: 12px;
 }
 .login-field {
     display: grid;
-    gap: 6px;
+    gap: 5px;
 }
 .field-label {
     color: var(--color-text-primary);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 .login-field input {
     width: 100%;
     border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    padding: 9px 11px;
     background: var(--gov-white);
     color: var(--color-text-primary);
-    font-size: 0.9rem;
-    transition: var(--transition-fast);
+    font-size: 0.875rem;
+    font-family: var(--font-family);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .login-field input::placeholder {
     color: var(--gov-ink-300);
@@ -314,61 +311,85 @@ ul {
     position: relative;
 }
 .password-wrap input {
-    padding-right: 72px;
+    padding-right: 70px;
 }
 .password-toggle {
     position: absolute;
     right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    border: 1px solid var(--color-border-default);
-    background: var(--gov-surface-alt);
+    border: 1px solid var(--gov-blue-100);
+    background: var(--gov-blue-50);
     color: var(--gov-blue);
     border-radius: var(--radius-sm);
-    height: 28px;
-    padding: 0 10px;
-    font-size: 0.72rem;
+    height: 26px;
+    padding: 0 9px;
+    font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    transition: var(--transition-fast);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 .password-toggle:hover {
     background: var(--gov-blue-100);
     border-color: var(--gov-blue);
 }
+
+/* Submit button — navy primary, matches dashboard action color */
 .login-submit {
+    width: 100%;
     border: 1px solid var(--gov-blue);
-    border-radius: var(--radius-sm);
-    padding: 11px 16px;
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
     background: var(--gov-blue);
     color: #ffffff;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 700;
+    font-family: var(--font-family);
     letter-spacing: 0.01em;
     cursor: pointer;
-    transition: var(--transition-fast);
-    margin-top: 4px;
+    transition: background var(--transition-fast), border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+    margin-top: 2px;
 }
 .login-submit:hover {
     background: var(--gov-blue-600);
     border-color: var(--gov-blue-600);
+    box-shadow: 0 2px 8px rgba(11, 61, 145, 0.22);
 }
 .login-submit:focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
 }
-.panel-foot {
+
+/* ── Card footer ─────────────────────────────────────────────── */
+.login-card-foot {
     display: grid;
-    gap: 12px;
-    padding-top: 14px;
+    gap: 8px;
+    padding-top: 12px;
     border-top: 1px solid var(--color-border-muted);
 }
+
+/* Seed note (testing credentials) */
+.seed-note {
+    border-left: 3px solid var(--gov-gold);
+    background: var(--gov-gold-100);
+    padding: 8px 12px;
+    color: var(--gov-ink-700);
+    font-size: 0.8rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    line-height: 1.5;
+}
+.seed-note strong {
+    color: var(--gov-ink-900);
+}
+
+/* Security badges */
 .panel-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
 }
 .panel-meta span {
     display: inline-flex;
@@ -378,54 +399,70 @@ ul {
     background: var(--gov-surface-alt);
     padding: 3px 8px;
     color: var(--color-text-secondary);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 600;
+    letter-spacing: 0.02em;
 }
-.seed-note {
-    border-left: 3px solid var(--gov-gold);
-    background: var(--gov-gold-100);
-    padding: 8px 12px;
-    color: var(--gov-ink-700);
-    font-size: 0.8rem;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+/* Forgot password link */
+.login-forgot-wrap {
+    text-align: center;
 }
-.seed-note strong {
-    color: var(--gov-ink-900);
+.login-forgot-link {
+    font-size: 0.78rem;
+    color: var(--gov-teal);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition-fast);
 }
+.login-forgot-link:hover {
+    color: var(--gov-teal-600);
+    text-decoration: underline;
+}
+
+/* Legal text */
+.login-legal {
+    font-size: 0.72rem;
+    color: var(--color-text-tertiary);
+    text-align: center;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    padding-top: 4px;
+}
+
+/* ── Auth footer ─────────────────────────────────────────────── */
 .auth-footer {
-    padding: 18px 24px;
+    padding: 16px 24px;
     text-align: center;
     border-top: 1px solid var(--color-border-default);
     background: var(--gov-white);
     color: var(--color-text-tertiary);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
 }
 .auth-footer strong {
     color: var(--color-text-primary);
 }
-@media (max-width: 900px) {
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 520px) {
     .auth-shell {
-        width: min(560px, 94vw);
-        margin: 24px auto;
+        padding: 20px 12px 40px;
+        align-items: stretch;
     }
-    .login-shell {
+    .login-card {
+        border-radius: var(--radius-lg);
     }
-    .login-story {
-        padding: 26px 24px;
+    .login-card-logo {
+        padding: 24px 24px 16px;
     }
-    .login-panel {
-        padding: 26px 24px;
+    .login-card-body {
+        padding: 0 20px 24px;
     }
-}
-@media (max-width: 560px) {
     .auth-banner {
         padding: 6px 14px;
-        font-size: 0.68rem;
+        font-size: 0.66rem;
     }
     .auth-banner-right {
-        display: none;
-    }
-    .login-story {
         display: none;
     }
 }

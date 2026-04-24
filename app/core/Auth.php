@@ -41,11 +41,13 @@ final class Auth
 
         $stmt->execute([
             'username' => $identity,
-            'email' => $identity,
+            'email'    => $identity,
         ]);
         $user = $stmt->fetch();
 
         if (!$user || (int) $user['is_active'] !== 1) {
+            // Constant-time return to prevent username enumeration via timing
+            password_verify($password, '$2y$12$dummyhashfortimingnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
             return false;
         }
 
@@ -55,6 +57,13 @@ final class Auth
 
         if (!password_verify($password, (string) $user['password_hash'])) {
             self::incrementFailedAttempts((int) $user['id'], (int) $user['failed_attempts']);
+
+            // Log failed attempt with IP for security audit
+            Audit::log('auth', 'LOGIN_FAILED', (int) $user['id'], null, [
+                'username' => $identity,
+                'ip'       => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            ]);
+
             return false;
         }
 
@@ -64,18 +73,25 @@ final class Auth
             ->execute(['id' => (int) $user['id']]);
 
         Session::regenerate();
+
+        // Clear any stale permission cache from a previous session
+        Session::remove('_permissions');
+
         Session::set('auth_user', [
-            'id' => (int) $user['id'],
-            'username' => (string) $user['username'],
-            'email' => (string) $user['email'],
-            'role_id' => (int) $user['role_id'],
-            'employee_id' => isset($user['employee_id']) && $user['employee_id'] !== null ? (int) $user['employee_id'] : null,
-            'role_name' => (string) $user['role_name'],
+            'id'          => (int) $user['id'],
+            'username'    => (string) $user['username'],
+            'email'       => (string) $user['email'],
+            'role_id'     => (int) $user['role_id'],
+            'employee_id' => isset($user['employee_id']) && $user['employee_id'] !== null
+                ? (int) $user['employee_id']
+                : null,
+            'role_name'   => (string) $user['role_name'],
         ]);
 
         Audit::log('auth', 'LOGIN', (int) $user['id'], null, [
             'username' => (string) $user['username'],
-            'email' => (string) $user['email'],
+            'email'    => (string) $user['email'],
+            'ip'       => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
         ]);
 
         return true;
@@ -87,9 +103,15 @@ final class Auth
         Audit::log('auth', 'LOGOUT', isset($currentUser['id']) ? (int) $currentUser['id'] : null, $currentUser, null);
 
         Session::remove('auth_user');
+        Session::remove('_permissions'); // Clear permission cache on logout
         Session::regenerate();
     }
 
+    /**
+     * Check if the authenticated user has a given permission.
+     * Results are cached in the session for the duration of the request cycle
+     * to avoid repeated DB queries on every can() call.
+     */
     public static function can(string $permissionKey): bool
     {
         $user = self::user();
@@ -97,7 +119,13 @@ final class Auth
             return false;
         }
 
-        $db = Database::connection();
+        // Return cached result if available
+        $cached = Session::get('_permissions', null);
+        if (is_array($cached) && array_key_exists($permissionKey, $cached)) {
+            return (bool) $cached[$permissionKey];
+        }
+
+        $db   = Database::connection();
         $stmt = $db->prepare(
             'SELECT 1
              FROM hris_role_permissions rp
@@ -107,11 +135,18 @@ final class Auth
         );
 
         $stmt->execute([
-            'role_id' => (int) $user['role_id'],
+            'role_id'    => (int) $user['role_id'],
             'permission' => $permissionKey,
         ]);
 
-        return (bool) $stmt->fetchColumn();
+        $result = (bool) $stmt->fetchColumn();
+
+        // Cache result for this session to avoid redundant queries
+        $cached                  = is_array($cached) ? $cached : [];
+        $cached[$permissionKey]  = $result;
+        Session::set('_permissions', $cached);
+
+        return $result;
     }
 
     private static function isLocked(array $user): bool
@@ -130,7 +165,7 @@ final class Auth
 
     private static function incrementFailedAttempts(int $userId, int $currentAttempts): void
     {
-        $db = Database::connection();
+        $db          = Database::connection();
         $maxAttempts = (int) env('AUTH_MAX_ATTEMPTS', 5);
         $lockMinutes = (int) env('AUTH_LOCK_MINUTES', 15);
 
@@ -144,7 +179,7 @@ final class Auth
                  WHERE id = :id'
             )->execute([
                 'lock_minutes' => $lockMinutes,
-                'id' => $userId,
+                'id'           => $userId,
             ]);
             return;
         }
@@ -152,7 +187,7 @@ final class Auth
         $db->prepare('UPDATE hris_users SET failed_attempts = :attempts WHERE id = :id')
             ->execute([
                 'attempts' => $attempts,
-                'id' => $userId,
+                'id'       => $userId,
             ]);
     }
 

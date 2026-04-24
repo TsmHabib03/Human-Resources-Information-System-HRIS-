@@ -13,6 +13,12 @@ use App\Models\Settings;
 
 final class SettingsController extends Controller
 {
+    /** Allowed date format strings — whitelist only */
+    private const VALID_DATE_FORMATS = ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd-m-Y', 'F j, Y', 'j F Y'];
+
+    /** Allowed ISO 4217 currency codes */
+    private const VALID_CURRENCIES = ['PHP', 'USD', 'EUR', 'GBP', 'JPY', 'SGD', 'AUD', 'CAD', 'HKD', 'MYR'];
+
     private Settings $settings;
 
     public function __construct()
@@ -23,30 +29,42 @@ final class SettingsController extends Controller
     public function index(): void
     {
         $this->view('settings/index', [
-            'title' => 'Settings',
-            'csrf' => CSRF::token(),
+            'title'   => 'Settings',
+            'csrf'    => CSRF::token(),
             'company' => $this->settings->companyProfile(),
-            'roles' => $this->settings->rolesWithPermissionCount(),
-            'system' => $this->settings->loadSystemSettings(),
+            'roles'   => $this->settings->rolesWithPermissionCount(),
+            'system'  => $this->settings->loadSystemSettings(),
             'success' => Session::pullFlash('success'),
-            'error' => Session::pullFlash('error'),
-            'errors' => Session::pullFlash('errors', []),
+            'error'   => Session::pullFlash('error'),
+            'errors'  => Session::pullFlash('errors', []),
         ]);
     }
 
     public function saveCompany(): void
     {
+        // CSRF verification
+        $token = $_POST['_csrf'] ?? null;
+        if (!CSRF::verify(is_string($token) ? $token : null)) {
+            Session::flash('error', 'Your session token is invalid. Please try again.');
+            $this->redirect('/settings');
+        }
+
         $data = [
-            'company_name' => trim((string) ($_POST['company_name'] ?? '')),
-            'address' => trim((string) ($_POST['address'] ?? '')),
-            'phone' => trim((string) ($_POST['phone'] ?? '')),
-            'email' => trim((string) ($_POST['email'] ?? '')),
-            'website' => trim((string) ($_POST['website'] ?? '')),
-            'logo_path' => trim((string) ($_POST['logo_path'] ?? '')),
+            'company_name' => mb_substr(trim((string) ($_POST['company_name'] ?? '')), 0, 200),
+            'address'      => mb_substr(trim((string) ($_POST['address'] ?? '')), 0, 500),
+            'phone'        => mb_substr(trim((string) ($_POST['phone'] ?? '')), 0, 50),
+            'email'        => mb_substr(trim((string) ($_POST['email'] ?? '')), 0, 150),
+            'website'      => mb_substr(trim((string) ($_POST['website'] ?? '')), 0, 250),
+            'logo_path'    => mb_substr(trim((string) ($_POST['logo_path'] ?? '')), 0, 500),
         ];
 
         $errors = Validator::required($data, ['company_name']);
         $errors = array_merge($errors, Validator::email($data, 'email'));
+
+        // Validate website URL format if provided
+        if ($data['website'] !== '' && !filter_var($data['website'], FILTER_VALIDATE_URL)) {
+            $errors['website'] = 'Website must be a valid URL.';
+        }
 
         if ($errors !== []) {
             Session::flash('errors', $errors);
@@ -63,13 +81,39 @@ final class SettingsController extends Controller
 
     public function saveSystem(): void
     {
+        // CSRF verification
+        $token = $_POST['_csrf'] ?? null;
+        if (!CSRF::verify(is_string($token) ? $token : null)) {
+            Session::flash('error', 'Your session token is invalid. Please try again.');
+            $this->redirect('/settings');
+        }
+
         $data = [
-            'timezone' => trim((string) ($_POST['timezone'] ?? 'Asia/Manila')),
-            'date_format' => trim((string) ($_POST['date_format'] ?? 'Y-m-d')),
+            'timezone'         => trim((string) ($_POST['timezone'] ?? 'Asia/Manila')),
+            'date_format'      => trim((string) ($_POST['date_format'] ?? 'Y-m-d')),
             'default_currency' => trim((string) ($_POST['default_currency'] ?? 'PHP')),
         ];
 
         $errors = Validator::required($data, ['timezone', 'date_format', 'default_currency']);
+
+        // ── Whitelist validation ──────────────────────────────────
+        if ($errors === [] || !isset($errors['timezone'])) {
+            if (!in_array($data['timezone'], timezone_identifiers_list(), true)) {
+                $errors['timezone'] = 'Invalid timezone selected.';
+            }
+        }
+
+        if ($errors === [] || !isset($errors['date_format'])) {
+            if (!in_array($data['date_format'], self::VALID_DATE_FORMATS, true)) {
+                $errors['date_format'] = 'Invalid date format selected.';
+            }
+        }
+
+        if ($errors === [] || !isset($errors['default_currency'])) {
+            if (!in_array($data['default_currency'], self::VALID_CURRENCIES, true)) {
+                $errors['default_currency'] = 'Invalid currency code.';
+            }
+        }
 
         if ($errors !== []) {
             Session::flash('errors', $errors);

@@ -237,6 +237,30 @@ final class EmployeeController extends Controller
 
         $errors = array_merge($errors, Validator::email($data, 'email'));
 
+        // ── Date of birth cannot be in the future ─────────────────
+        if (!isset($errors['date_of_birth']) && $data['date_of_birth'] !== '') {
+            if (strtotime($data['date_of_birth']) > time()) {
+                $errors['date_of_birth'] = 'Date of birth cannot be in the future.';
+            }
+        }
+
+        // ── Input length limits ───────────────────────────────────
+        $maxLengths = [
+            'first_name'  => 100,
+            'middle_name' => 100,
+            'last_name'   => 100,
+            'phone'       => 30,
+            'email'       => 150,
+            'address'     => 500,
+            'nationality' => 100,
+        ];
+
+        foreach ($maxLengths as $field => $max) {
+            if (!isset($errors[$field]) && isset($data[$field]) && mb_strlen($data[$field]) > $max) {
+                $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . " must not exceed {$max} characters.";
+            }
+        }
+
         if ($data['supervisor_id'] !== '' && !ctype_digit($data['supervisor_id'])) {
             $errors['supervisor_id'] = 'Supervisor value is invalid.';
         }

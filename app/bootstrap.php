@@ -85,3 +85,18 @@ $appConfig = config('app');
 date_default_timezone_set((string) ($appConfig['timezone'] ?? 'UTC'));
 
 Session::start();
+
+// ── Security headers ──────────────────────────────────────────────
+// These are also set in .htaccess; sending here ensures coverage
+// when Apache mod_headers is unavailable or app is run via CLI/other server.
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('X-XSS-Protection: 1; mode=block');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+}
+
+// ── Server-side session expiry ────────────────────────────────────
+// Enforces timeout independently of the cookie lifetime, destroying
+// idle/abandoned sessions so they cannot be hijacked later.
+Session::checkExpiry();

@@ -1,7 +1,7 @@
 .app-body {
     margin: 0;
     padding: 0;
-    font-family: var(--font-sans);
+    font-family: var(--font-family);
     color: var(--color-text-primary);
     background: var(--color-canvas-default);
 }
@@ -78,7 +78,7 @@
 }
 
 .sidebar-header {
-    padding: 16px 18px 14px;
+    padding: 11px 16px 11px;
     border-bottom: 1px solid var(--color-border-default);
     display: grid;
     grid-template-columns: auto 1fr;
@@ -87,8 +87,8 @@
 }
 
 .sidebar-seal {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: var(--gov-blue);
     padding: 4px;
@@ -118,7 +118,7 @@
 
 .brand-name {
     color: var(--color-text-primary);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.005em;
@@ -131,17 +131,17 @@
 }
 
 .sidebar-group {
-    padding: 14px 12px 6px;
-    display: grid;
-    gap: 1px;
+    padding: 8px 10px 4px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-label {
-    margin: 0 8px 6px;
+    margin: 0 4px 4px;
     color: var(--color-text-tertiary);
-    font-size: 0.66rem;
+    font-size: 0.6rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
 }
 
@@ -156,14 +156,15 @@
     align-items: center;
     gap: 10px;
     color: var(--color-text-secondary);
-    padding: 8px 10px;
-    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    border-radius: var(--radius-md);
     border-left: 3px solid transparent;
     font-weight: 600;
-    font-size: 0.84rem;
+    font-size: 0.875rem;
     transition: background var(--transition-fast), color var(--transition-fast);
     text-decoration: none;
     position: relative;
+    min-height: 34px;
 }
 
 .nav-link-icon {
@@ -172,6 +173,7 @@
     display: grid;
     place-items: center;
     color: currentColor;
+    flex-shrink: 0;
 }
 
 .nav-link-icon svg {
@@ -196,47 +198,66 @@
     color: var(--gov-blue);
 }
 
+/* ── Sidebar account block — pinned to bottom ───────────── */
 .sidebar-footer {
     margin-top: auto;
-    padding: 12px;
+    padding: 10px;
     border-top: 1px solid var(--color-border-default);
     display: grid;
-    gap: 10px;
+    gap: 4px;
 }
 
 .sidebar-user {
     padding: 8px 10px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     background: var(--gov-surface-alt);
+    border: 1px solid var(--gov-line-soft);
     display: grid;
     gap: 2px;
 }
 
 .sidebar-user-name {
-    color: var(--color-text-primary);
+    color: var(--gov-ink-900);
     font-size: 0.82rem;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .sidebar-user-role {
-    color: var(--color-text-tertiary);
-    font-size: 0.72rem;
-    font-weight: 500;
+    color: var(--gov-ink-400);
+    font-size: 0.68rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+}
+
+/* Legacy top-account block — no longer rendered, kept as safety */
+.sidebar-account {
+    display: none;
 }
 
 .nav-link.logout {
     color: var(--gov-red);
     border-left-color: transparent;
+    min-height: 36px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
 }
 
 .nav-link.logout:hover {
     background: var(--gov-red-100);
+    color: var(--gov-red);
 }
 
 .nav-link.logout .nav-link-icon {
     color: var(--gov-red);
+    width: 18px;
+    height: 18px;
+}
+
+.nav-link.logout .nav-link-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* ============================================================
