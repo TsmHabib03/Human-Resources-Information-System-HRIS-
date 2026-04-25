@@ -1901,6 +1901,11 @@
     animation: mk-count-up 400ms ease-out forwards;
 }
 
+/* ── Ensure [hidden] works reliably ──────────────────────── */
+[hidden] {
+    display: none !important;
+}
+
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════════ */

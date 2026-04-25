@@ -22,16 +22,6 @@ $assetVersion = (string) max(
     <link rel="stylesheet" href="/assets/css/components.css?v=<?= e($assetVersion) ?>">
 </head>
 <body class="auth-page">
-    <div class="auth-banner" role="region" aria-label="Official notice">
-        <span class="auth-banner-left">
-            <svg class="auth-banner-seal" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="8" cy="8" r="7.2" fill="#b68409"/>
-                <path d="M8 3.5 L9 6.2 L11.8 6.2 L9.6 8 L10.4 10.8 L8 9.1 L5.6 10.8 L6.4 8 L4.2 6.2 L7 6.2 Z" fill="#ffffff"/>
-            </svg>
-            <span>An official Human Resources Information System</span>
-        </span>
-        <span class="auth-banner-right">Secure &middot; CSRF Protected</span>
-    </div>
     <main class="auth-shell">
         <?php require $contentView; ?>
     </main>

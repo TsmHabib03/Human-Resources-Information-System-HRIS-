@@ -146,11 +146,23 @@
         loadingOverlay.hidden = false;
     };
 
+    var hideLoadingOverlay = function () {
+        if (!loadingOverlay) return;
+        loadingOverlay.hidden = true;
+    };
+
     var setButtonLoading = function (button, loadingLabel) {
         if (!button) return;
         button.disabled = true;
         button.classList.add('is-loading');
         button.textContent = loadingLabel || 'Processing...';
+    };
+
+    var resetButtonLoading = function (button, originalLabel) {
+        if (!button) return;
+        button.disabled = false;
+        button.classList.remove('is-loading');
+        if (originalLabel) button.textContent = originalLabel;
     };
 
     var closePlanModal = function (restoreFocus) {
@@ -356,9 +368,27 @@
                 var selectedCard = selected.closest('[data-plan-card]');
                 var submitNow = function () {
                     isSubmitting = true;
+                    var originalLabel = submitButton ? submitButton.getAttribute('data-submit-label') : '';
                     setButtonLoading(submitButton, submitButton ? submitButton.getAttribute('data-loading-label') : 'Processing...');
                     showLoadingOverlay();
-                    picker.submit();
+
+                    /* Safety net: auto-hide if navigation stalls */
+                    var fallbackTimer = window.setTimeout(function () {
+                        hideLoadingOverlay();
+                        resetButtonLoading(submitButton, originalLabel);
+                        isSubmitting = false;
+                        if (window.console && console.warn) console.warn('Plan submission timed out; you can retry.');
+                    }, 8000);
+
+                    try {
+                        HTMLFormElement.prototype.submit.call(picker);
+                    } catch (e) {
+                        window.clearTimeout(fallbackTimer);
+                        hideLoadingOverlay();
+                        resetButtonLoading(submitButton, originalLabel);
+                        isSubmitting = false;
+                        if (window.console && console.error) console.error('Plan submission failed:', e);
+                    }
                 };
 
                 if (picker.hasAttribute('data-plan-modal-form')) {
@@ -416,9 +446,27 @@
 
             var submitNow = function () {
                 isSubmitting = true;
+                var originalLabel = submitButton ? submitButton.textContent : '';
                 setButtonLoading(submitButton, 'Processing selection...');
                 showLoadingOverlay();
-                form.submit();
+
+                /* Safety net: auto-hide if navigation stalls */
+                var fallbackTimer = window.setTimeout(function () {
+                    hideLoadingOverlay();
+                    resetButtonLoading(submitButton, originalLabel);
+                    isSubmitting = false;
+                    if (window.console && console.warn) console.warn('Plan submission timed out; you can retry.');
+                }, 8000);
+
+                try {
+                    HTMLFormElement.prototype.submit.call(form);
+                } catch (e) {
+                    window.clearTimeout(fallbackTimer);
+                    hideLoadingOverlay();
+                    resetButtonLoading(submitButton, originalLabel);
+                    isSubmitting = false;
+                    if (window.console && console.error) console.error('Plan submission failed:', e);
+                }
             };
 
             openPlanModal(payload, submitNow, submitButton || form);

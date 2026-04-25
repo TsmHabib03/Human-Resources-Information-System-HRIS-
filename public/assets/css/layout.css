@@ -198,6 +198,59 @@
     color: var(--gov-blue);
 }
 
+/* ── Locked nav link (subscription feature lock) ──────── */
+.nav-link-locked {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    color: var(--gov-ink-300);
+    padding: 7px 12px;
+    border-radius: var(--radius-md);
+    border-left: 3px solid transparent;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    text-decoration: none;
+    position: relative;
+    min-height: 34px;
+    cursor: pointer;
+}
+
+.nav-link-locked:hover {
+    color: var(--gov-ink-500);
+    background: var(--gov-surface-alt);
+    text-decoration: none;
+}
+
+.nav-link-locked .nav-link-icon {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    color: currentColor;
+    flex-shrink: 0;
+}
+
+.nav-link-locked .nav-link-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.nav-link-lock {
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    color: var(--gov-amber);
+    flex-shrink: 0;
+}
+
+.nav-link-lock svg {
+    width: 14px;
+    height: 14px;
+}
+
 /* ── Sidebar account block — pinned to bottom ───────────── */
 .sidebar-footer {
     margin-top: auto;

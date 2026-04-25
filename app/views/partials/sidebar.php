@@ -12,7 +12,9 @@ $iconAttendance = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" st
 $iconLeave      = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="14" height="13" rx="1"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>';
 $iconPayroll    = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="15" height="10" rx="1"/><circle cx="10" cy="10" r="2.2"/><path d="M5.5 8.5v3M14.5 8.5v3"/></svg>';
 $iconSettings   = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.4"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/></svg>';
+$iconBilling    = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="16" height="12" rx="1"/><path d="M2 8h16M6 2v3M14 2v3"/></svg>';
 $iconLogout     = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4.5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8"/><path d="M12 6.5 15.5 10 12 13.5M7 10h8.5"/></svg>';
+$iconLock       = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="12" height="9" rx="1"/><path d="M7 8V5a3 3 0 0 1 6 0v3"/></svg>';
 
 $navItems = [
     ['path' => '/',           'label' => 'Dashboard',  'permission' => 'dashboard.view',  'icon' => $iconDashboard],
@@ -21,6 +23,7 @@ $navItems = [
     ['path' => '/leave',      'label' => 'Leave',      'permission' => 'leave.view',      'icon' => $iconLeave],
     ['path' => '/payroll',    'label' => 'Payroll',    'permission' => 'payroll.view',    'icon' => $iconPayroll],
     ['path' => '/settings',   'label' => 'Settings',   'permission' => 'settings.manage', 'icon' => $iconSettings],
+    ['path' => '/billing',    'label' => 'Billing',    'permission' => 'billing.view',    'icon' => $iconBilling],
 ];
 ?>
 <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
@@ -53,15 +56,38 @@ $navItems = [
                 <?php
                 $isRoot   = $item['path'] === '/';
                 $isActive = $isRoot ? $currentPath === '/' : str_starts_with($currentPath, $item['path']);
+
+                $lockContext = nav_feature_lock_context($item['path'], $authUser);
+                $isLocked    = (bool) ($lockContext['is_locked'] ?? false);
+                $lockMessage = (string) ($lockContext['message'] ?? '');
+                $featureLabel = (string) ($lockContext['feature_label'] ?? $item['label']);
+                $planName    = (string) ($lockContext['plan_name'] ?? '');
                 ?>
-                <a
-                    class="nav-link<?= $isActive ? ' is-active' : '' ?>"
-                    href="<?= e($item['path']) ?>"
-                    <?= $isActive ? 'aria-current="page"' : '' ?>
-                >
-                    <span class="nav-link-icon" aria-hidden="true"><?= $item['icon'] ?></span>
-                    <span><?= e($item['label']) ?></span>
-                </a>
+                <?php if ($isLocked): ?>
+                    <a
+                        class="nav-link nav-link-locked<?= $isActive ? ' is-active' : '' ?>"
+                        href="<?= e($item['path']) ?>"
+                        <?= $isActive ? 'aria-current="page"' : '' ?>
+                        data-lock-trigger
+                        data-lock-feature-label="<?= e($featureLabel) ?>"
+                        data-lock-message="<?= e($lockMessage) ?>"
+                        data-lock-plan-name="<?= e($planName) ?>"
+                        aria-label="<?= e($item['label']) ?> — locked"
+                    >
+                        <span class="nav-link-icon" aria-hidden="true"><?= $item['icon'] ?></span>
+                        <span><?= e($item['label']) ?></span>
+                        <span class="nav-link-lock" aria-hidden="true"><?= $iconLock ?></span>
+                    </a>
+                <?php else: ?>
+                    <a
+                        class="nav-link<?= $isActive ? ' is-active' : '' ?>"
+                        href="<?= e($item['path']) ?>"
+                        <?= $isActive ? 'aria-current="page"' : '' ?>
+                    >
+                        <span class="nav-link-icon" aria-hidden="true"><?= $item['icon'] ?></span>
+                        <span><?= e($item['label']) ?></span>
+                    </a>
+                <?php endif; ?>
             <?php endforeach; ?>
         </nav>
     </div>
@@ -81,3 +107,4 @@ $navItems = [
     </div>
 
 </aside>
+
