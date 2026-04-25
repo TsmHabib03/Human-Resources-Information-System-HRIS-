@@ -12,7 +12,6 @@ $featureDefinitions = [
         'desc'     => 'Real-time clock-in and clock-out logging per employee with shift scheduling, overtime detection, and daily reconciliation against approved schedules.',
         'category' => 'Attendance',
         'badge'    => 'mk-badge-attendance',
-        'status'   => 'Live',
         'icon'     => 'clock',
         'color'    => 'is-blue',
     ],
@@ -21,7 +20,6 @@ $featureDefinitions = [
         'desc'     => 'Multi-type leave request workflow covering filing, manager approval, HR override, balance computation, and calendar blocking with automatic payroll deduction triggers.',
         'category' => 'Leave',
         'badge'    => 'mk-badge-leave',
-        'status'   => 'Live',
         'icon'     => 'calendar',
         'color'    => 'is-teal',
     ],
@@ -30,7 +28,6 @@ $featureDefinitions = [
         'desc'     => 'End-to-end payroll run engine that calculates gross pay, statutory deductions (SSS, PhilHealth, Pag-IBIG, BIR), net pay, and generates per-employee payslips per cutoff.',
         'category' => 'Payroll',
         'badge'    => 'mk-badge-payroll',
-        'status'   => 'Live',
         'icon'     => 'banknotes',
         'color'    => 'is-amber',
     ],
@@ -39,7 +36,6 @@ $featureDefinitions = [
         'desc'     => 'Centralized employee profile database storing personal info, employment history, department assignments, job levels, salary grades, and document attachments.',
         'category' => 'Core HR',
         'badge'    => 'mk-badge-core',
-        'status'   => 'Live',
         'icon'     => 'users',
         'color'    => 'is-blue',
     ],
@@ -48,7 +44,6 @@ $featureDefinitions = [
         'desc'     => 'Structured new-hire checklist that sequences document submission, credential provisioning, orientation scheduling, and probation tracking under HR and direct manager oversight.',
         'category' => 'Core HR',
         'badge'    => 'mk-badge-core',
-        'status'   => 'Beta',
         'icon'     => 'rocket',
         'color'    => 'is-green',
     ],
@@ -57,7 +52,6 @@ $featureDefinitions = [
         'desc'     => 'Permission layer that controls which modules, records, and actions each user can see or perform — enforced across every view based on assigned role and subscription plan coverage.',
         'category' => 'Admin',
         'badge'    => 'mk-badge-admin',
-        'status'   => 'Live',
         'icon'     => 'shield',
         'color'    => 'is-coral',
     ],
@@ -66,7 +60,6 @@ $featureDefinitions = [
         'desc'     => 'Configurable multi-level approval chains for leave, overtime, reimbursements, and schedule changes — with escalation rules, deadline reminders, and full audit trails.',
         'category' => 'Admin',
         'badge'    => 'mk-badge-admin',
-        'status'   => 'Live',
         'icon'     => 'route',
         'color'    => 'is-blue',
     ],
@@ -75,7 +68,6 @@ $featureDefinitions = [
         'desc'     => 'Pre-built and custom report builder covering headcount, attendance summaries, leave utilization, payroll cost breakdown, and compliance output for government filings.',
         'category' => 'Admin',
         'badge'    => 'mk-badge-admin',
-        'status'   => 'Planned',
         'icon'     => 'chart',
         'color'    => 'is-teal',
     ],
@@ -248,11 +240,6 @@ $svgIcons = [
 
         <div class="mk-bento-grid">
             <?php foreach ($featureDefinitions as $i => $def):
-                $statusClass = match($def['status']) {
-                    'Live'    => 'is-live',
-                    'Beta'    => 'is-beta',
-                    default   => 'is-planned',
-                };
                 $cardDelay = number_format(0.1 + ($i * 0.04), 2, '.', '');
             ?>
                 <div
@@ -264,7 +251,6 @@ $svgIcons = [
                         <div class="mk-bento-icon <?= e($def['color']) ?>">
                             <?= $svgIcons[$def['icon']] ?? '' ?>
                         </div>
-                        <span class="mk-status-dot <?= e($statusClass) ?>"><?= e($def['status']) ?></span>
                     </div>
                     <h3><?= e($def['name']) ?></h3>
                     <p><?= e($def['desc']) ?></p>
