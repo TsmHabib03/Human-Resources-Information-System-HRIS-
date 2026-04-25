@@ -195,13 +195,14 @@ final class Employee extends Model
         $conditions = [];
 
         if ($query !== '') {
-            $conditions[] = '(e.employee_code LIKE :q1 OR e.first_name LIKE :q2 OR e.last_name LIKE :q3 OR e.email LIKE :q4 OR d.department_name LIKE :q5 OR ds.designation_name LIKE :q6)';
+            $conditions[] = '(e.employee_code LIKE :q1 OR e.first_name LIKE :q2 OR e.last_name LIKE :q3 OR e.email LIKE :q4 OR d.department_name LIKE :q5 OR ds.designation_name LIKE :q6 OR CONCAT(e.first_name, " ", e.last_name) LIKE :q7)';
             $params['q1'] = '%' . $query . '%';
             $params['q2'] = '%' . $query . '%';
             $params['q3'] = '%' . $query . '%';
             $params['q4'] = '%' . $query . '%';
             $params['q5'] = '%' . $query . '%';
             $params['q6'] = '%' . $query . '%';
+            $params['q7'] = '%' . $query . '%';
         }
 
         if ($status !== '') {
