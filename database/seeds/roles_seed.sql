@@ -155,7 +155,7 @@ JOIN hris_permissions p ON p.permission_key IN (
     'attendance.view', 'attendance.manage',
     'leave.view', 'leave.approve',
     'payroll.view',
-    'billing.view'
+    'billing.view', 'billing.manage'
 )
 WHERE r.role_name = 'HR Admin'
   AND NOT EXISTS (

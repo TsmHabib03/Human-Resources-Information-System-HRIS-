@@ -15,8 +15,11 @@ $assetVersion = (string) max(
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/settings.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/responsive.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/css/employees.css') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/css/billing.css') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/css/lock-modal.css') ?: 1),
     (int) (filemtime(__DIR__ . '/../../../public/assets/js/app.js') ?: 1),
-    (int) (filemtime(__DIR__ . '/../../../public/assets/js/dashboard.js') ?: 1)
+    (int) (filemtime(__DIR__ . '/../../../public/assets/js/dashboard.js') ?: 1),
+    (int) (filemtime(__DIR__ . '/../../../public/assets/js/lock-modal.js') ?: 1)
 );
 ?>
 <!doctype html>
@@ -44,22 +47,11 @@ $assetVersion = (string) max(
     <link rel="stylesheet" href="/assets/css/payroll.css?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="/assets/css/settings.css?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="/assets/css/employees.css?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="/assets/css/billing.css?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="/assets/css/lock-modal.css?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="/assets/css/responsive.css?v=<?= e($assetVersion) ?>">
 </head>
 <body class="app-body">
-    <div class="gov-banner" role="region" aria-label="Official notice">
-        <span class="gov-banner-left">
-            <svg class="gov-banner-seal" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="8" cy="8" r="7.2" fill="#b68409"/>
-                <path d="M8 3.5 L9 6.2 L11.8 6.2 L9.6 8 L10.4 10.8 L8 9.1 L5.6 10.8 L6.4 8 L4.2 6.2 L7 6.2 Z" fill="#ffffff"/>
-            </svg>
-            <span>An official Human Resources Information System</span>
-        </span>
-        <span class="gov-banner-right">
-            <span>Secure &middot; CSRF Protected</span>
-        </span>
-    </div>
-
     <div class="app-shell">
         <?php require __DIR__ . '/../partials/sidebar.php'; ?>
 
@@ -108,5 +100,6 @@ $assetVersion = (string) max(
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="/assets/js/app.js?v=<?= e($assetVersion) ?>"></script>
     <script src="/assets/js/dashboard.js?v=<?= e($assetVersion) ?>"></script>
+    <script src="/assets/js/lock-modal.js?v=<?= e($assetVersion) ?>"></script>
 </body>
 </html>
