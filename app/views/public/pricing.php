@@ -119,17 +119,17 @@ foreach ($planRows as $plan) {
             <input type="hidden" name="billing_cycle" value="quarterly">
 
             <div class="mk-selection-summary" data-selection-summary>
-                <p class="mk-kicker">Selection Preview</p>
-                <p class="mk-selection-plan" data-selection-plan><?= e($defaultPlanName !== '' ? $defaultPlanName : 'No plan selected') ?></p>
-                <p class="mk-selection-note">
-                    <?= $isTestingMode
-                        ? 'Selected plan immediately controls testing module access. Simulated checkout is optional.'
-                        : 'Quarterly billing remains fixed in this release. Enterprise follows contact-sales onboarding.' ?>
-                </p>
-                <p class="mk-selection-social">Most teams begin with <?= e(normal_plan_name()) ?> and move to Growth once payroll and settings become core daily workflows.</p>
-            </div>
+                <div class="mk-selection-summary-head">
+                    <p class="mk-kicker">Selection Preview</p>
+                    <p class="mk-selection-plan" data-selection-plan><?= e($defaultPlanName !== '' ? $defaultPlanName : 'No plan selected') ?></p>
+                    <p class="mk-selection-note">
+                        <?= $isTestingMode
+                            ? 'Selected plan immediately controls testing module access. Simulated checkout is optional.'
+                            : 'Quarterly billing remains fixed in this release. Enterprise follows contact-sales onboarding.' ?>
+                    </p>
+                    <p class="mk-selection-social">Most teams begin with <?= e(normal_plan_name()) ?> and move to Growth once payroll and settings become core daily workflows.</p>
+                </div>
 
-            <div class="mk-pricing-layout">
                 <div class="mk-plan-cards mk-plan-cards-pricing" id="pricing-plans" aria-label="Plan options">
                     <?php foreach ($planRows as $index => $plan): ?>
                         <?php
@@ -237,25 +237,6 @@ foreach ($planRows as $plan) {
                         </label>
                     <?php endforeach; ?>
                 </div>
-
-                <aside class="mk-pricing-side" aria-label="Selection details">
-                    <h2 class="font-display">How rollout works</h2>
-
-                    <div class="mk-side-block">
-                        <h3><span class="mk-step-num">1</span> Select plan</h3>
-                        <p><?= $isTestingMode ? 'Choose the plan that unlocks modules for your test run.' : 'Choose the quarterly tier for your workspace.' ?></p>
-                    </div>
-
-                    <div class="mk-side-block">
-                        <h3><span class="mk-step-num">2</span> Sign in and continue</h3>
-                        <p>Open the workspace and validate your routing, approvals, and operational flow.</p>
-                    </div>
-
-                    <div class="mk-side-block">
-                        <h3><span class="mk-step-num">3</span> Validate billing behavior</h3>
-                        <p><?= $isTestingMode ? 'Run checkout simulation only when you need billing outcome tests.' : 'Complete billing flow to activate production access.' ?></p>
-                    </div>
-                </aside>
             </div>
 
             <p class="mk-live-region" aria-live="polite"></p>
@@ -272,6 +253,25 @@ foreach ($planRows as $plan) {
                 <a class="mk-btn mk-btn-muted" href="/login">Already have an account</a>
             </div>
         </form>
+
+        <aside class="mk-pricing-side" aria-label="Selection details">
+            <h2 class="font-display">How rollout works</h2>
+
+            <div class="mk-side-block">
+                <h3><span class="mk-step-num">1</span> Select plan</h3>
+                <p><?= $isTestingMode ? 'Choose the plan that unlocks modules for your test run.' : 'Choose the quarterly tier for your workspace.' ?></p>
+            </div>
+
+            <div class="mk-side-block">
+                <h3><span class="mk-step-num">2</span> Sign in and continue</h3>
+                <p>Open the workspace and validate your routing, approvals, and operational flow.</p>
+            </div>
+
+            <div class="mk-side-block">
+                <h3><span class="mk-step-num">3</span> Validate billing behavior</h3>
+                <p><?= $isTestingMode ? 'Run checkout simulation only when you need billing outcome tests.' : 'Complete billing flow to activate production access.' ?></p>
+            </div>
+        </aside>
     <?php endif; ?>
 
     <!-- ── Comparison table ────────────────────────────────── -->
